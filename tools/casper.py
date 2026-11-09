@@ -43,18 +43,18 @@ def side(f=0, mode='walk', blink=False):
     b = B(38, 30, 2, 3); X, R = b.X, b.R
     G = 25
     if mode == 'tuck':           # balled up mid-flip: legs tucked under, head in
-        ell(X, 16, 14, 7, 5, lambda x, y: K['wS'] if y > 15 else K['w'])
+        ell(X, 16, 14, 7.6, 5.8, lambda x, y: K['wS'] if y > 15 else K['w'])
         R(11, 17, 3, 2, K['wS']); R(18, 17, 3, 2, K['wS']); X(11, 19, K['nail']); X(20, 19, K['nail'])
         ell(X, 22, 10, 3.4, 3, K['w']); R(23, 10, 4, 2, K['w']); X(27, 10, K['nose']); X(26, 10, K['nose'])
         R(20, 7, 2, 2, K['ear']); X(23, 9, K['eye'])
         X(9, 11, K['w']); X(8, 10, K['w']); X(8, 9, K['w'])
         b.outline(.45); return b.im
     if mode == 'sit':
-        ell(X, 11, 19, 5, 4.5, lambda x, y: K['wS'] if y > 20 else K['w'])        # haunch
+        ell(X, 11, 19, 5.8, 5.2, lambda x, y: K['wS'] if y > 20 else K['w'])        # haunch
         R(7, G - 2, 6, 2, K['wS']); X(7, G - 1, K['nail']); X(9, G - 1, K['nail'])
         R(13, 13, 6, 8, K['w'])
-        ell(X, 17, 13, 4, 4.5, K['w'])                                            # upright chest
-        R(16, 16, 2, G - 16, K['wS']); R(18, 16, 2, G - 16, K['w']); X(16, G - 1, K['nail']); X(18, G - 1, K['nail'])
+        ell(X, 17, 13, 4.8, 5.2, K['w'])                                            # upright chest
+        R(15, 16, 3, G - 16, K['wS']); R(18, 16, 3, G - 16, K['w']); X(16, G - 1, K['nail']); X(18, G - 1, K['nail'])
         for i in range(4): R(18 + i, 9 - i, 3, 4, K['w'])                         # neck
         wag = f % 2
         for i, (dx, dy) in enumerate(((0, 0), (-1, 0), (-2, -1), (-3, -1), (-4, -2 + wag), (-5, -3 + wag))): X(6 + dx, 21 + dy, K['w'] if i < 4 else K['wS'])
@@ -66,12 +66,12 @@ def side(f=0, mode='walk', blink=False):
     sw = [2, 1, -2, -1][f] if mode == 'walk' else 0
     def leg(x, dx, col, lift=0):
         top = 13 + by
-        R(x + dx, top, 2, G - top - lift, col); X(x + dx, G - 1 - lift, K['nail']); X(x + dx + 1, G - 1 - lift, col)
+        R(x + dx, top, 3, G - top - lift, col); X(x + dx, G - 1 - lift, K['nail']); X(x + dx + 2, G - 1 - lift, K['nail'])
     # far legs (shaded), diagonal pairs swing together
     leg(11, -sw, K['wS'], lift=1 if sw < 0 else 0); leg(21, sw, K['wS'], lift=1 if sw > 0 else 0)
     # lean body: deep chest, tucked waist, narrow hips
-    ell(X, 20, 11.5 + by, 4.2, 3.8, K['w']); ell(X, 10.5, 11 + by, 4, 3.2, K['w'])
-    R(11, 9 + by, 9, 4, K['w']); R(11, 13 + by, 9, 1, K['wS']); R(18, 14 + by, 4, 1, K['wS'])
+    ell(X, 20, 11.5 + by, 4.8, 4.6, K['w']); ell(X, 10.5, 11 + by, 4.8, 4.2, K['w'])      # a bit more weight
+    R(11, 8 + by, 9, 6, K['w']); R(11, 14 + by, 9, 1, K['wS']); R(17, 15 + by, 5, 1, K['wS']); R(7, 14 + by, 6, 1, K['wS'])
     # near legs
     leg(9, sw, K['w'], lift=1 if sw > 0 else 0); leg(19, -sw, K['w'], lift=1 if sw < 0 else 0)
     # thin tail curving up
@@ -79,7 +79,7 @@ def side(f=0, mode='walk', blink=False):
     for i, (dx, dy) in enumerate(((0, 0), (-1, -1), (-2, -2), (-2, -3), (-2 + wag, -4), (-1 + wag * 2, -5))): X(7 + dx, 10 + by + dy, K['w'] if i < 4 else K['wS'])
     # neck angled up-forward, head out front
     lift = -1 if mode == 'bark' else 0
-    for i in range(4): R(20 + i, 9 - i + by + lift, 3, 4, K['w'])
+    for i in range(4): R(20 + i, 9 - i + by + lift, 4, 5, K['w'])
     head(X, R, 0, by + lift, mode, f, blink)
     b.outline(.45)
     return b.im
@@ -90,7 +90,7 @@ def front(f=0, blink=False):
     G = 25; bob = [0, -1, 0, -1][f]; sw = [1, 0, -1, 0][f]
     # legs (back pair behind, front pair)
     R(6, 18, 2, G - 18 - (sw < 0), K['wS']); R(14, 18, 2, G - 18 - (sw > 0), K['wS'])
-    ell(X, 11, 16 + bob, 5.5, 5, lambda x, y: K['wS'] if y > 17 + bob else K['w'])
+    ell(X, 11, 16 + bob, 6.6, 5.8, lambda x, y: K['wS'] if y > 17 + bob else K['w'])
     R(7, 17 + bob, 3, G - 17 - bob - (sw > 0), K['w']); R(12, 17 + bob, 3, G - 17 - bob - (sw < 0), K['w'])
     for x0, l in ((7, sw > 0), (12, sw < 0)): X(x0, G - 1 - l, K['nail']); X(x0 + 2, G - 1 - l, K['nail'])
     # head: long face, ears flopping out at the sides with cream tips
@@ -112,7 +112,7 @@ def back(f=0):
     b = B(26, 30, 2, 2); X, R = b.X, b.R
     G = 25; bob = [0, -1, 0, -1][f]; sw = [1, 0, -1, 0][f]
     R(7, 17 + bob, 2, G - 17 - bob - (sw > 0), K['wS']); R(13, 17 + bob, 2, G - 17 - bob - (sw < 0), K['wS'])
-    ell(X, 11, 14 + bob, 5.5, 5.5, lambda x, y: K['wS'] if y > 16 + bob else K['w'])
+    ell(X, 11, 14 + bob, 6.6, 6.2, lambda x, y: K['wS'] if y > 16 + bob else K['w'])
     ell(X, 11, 6 + bob, 4.5, 4, K['w'])
     for ex, d in ((5, -1), (16, 1)): R(ex, 3 + bob, 2, 3, K['w']); R(ex + d, 4 + bob, 2, 2, K['ear'])
     R(6, 19 + bob, 3, G - 19 - bob - (sw < 0), K['w']); R(13, 19 + bob, 3, G - 19 - bob - (sw > 0), K['w'])
