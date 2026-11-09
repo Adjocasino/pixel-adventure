@@ -58,6 +58,10 @@ def side(f, near_missing=True, idle=False, blink=False, wag=0):
     ell(X, 24.5, 12 + hy, 2.4, 1.8, K['beard']); X(23, 13 + hy, K['beard']); X(25, 14 + hy, K['beard'])   # beard
     R(22, 4 + hy, 4, 2, K['gX']); X(25, 6 + hy, K['wL']); X(22, 10 + hy, K['gX']); X(21, 9 + hy, K['gX'])   # graying face
     R(23, 5 + hy, 3, 1, K['wL'])                                       # white senior eyebrow tuft
+    # forehead detail: wispy top-knot, fur strands, white blaze running down to the muzzle
+    X(21, 1 + hy, K['gX']); X(23, 1 + hy, K['gL']); X(22, 2 + hy, K['wL'])
+    X(19, 3 + hy, K['gL']); X(20, 4 + hy, K['gD']); X(21, 3 + hy, K['gD']); X(23, 3 + hy, K['g']); X(24, 4 + hy, K['gD'])
+    X(25, 3 + hy, K['wL']); X(25, 4 + hy, K['wL']); X(26, 5 + hy, K['w']); X(26, 6 + hy, K['w'])
     if blink: X(23, 7 + hy, K['gD']); X(24, 7 + hy, K['gD'])
     else: X(23, 6 + hy, K['gD']); X(24, 6 + hy, K['gD']); X(23, 7 + hy, K['eye']); X(24, 7 + hy, K['eye'])   # droopy, half-closed
     # scarf: navy band around the neck + drape over the shoulder, white print
@@ -96,6 +100,11 @@ def front(f, blink=False):
     ell(X, 10, 12.5 + hy, 2.6, 1.8, K['beard'])                         # beard
     R(7, 4 + hy, 7, 2, K['gX']); R(6, 8 + hy, 2, 2, K['gX']); R(13, 8 + hy, 2, 2, K['gX'])    # graying face
     R(5, 5 + hy, 3, 1, K['wL']); R(13, 5 + hy, 3, 1, K['wL'])           # white senior eyebrows
+    # forehead detail: white blaze down the middle, fur parting strands, wispy tufts on top
+    R(9, 2 + hy, 2, 7, K['wL']); X(9, 1 + hy, K['w']); X(10, 8 + hy, K['w'])
+    X(7, 3 + hy, K['gD']); X(8, 2 + hy, K['gL']); X(12, 3 + hy, K['gD']); X(11, 2 + hy, K['gL'])
+    X(6, 4 + hy, K['g']); X(14, 4 + hy, K['g']); X(8, 4 + hy, K['gL']); X(12, 4 + hy, K['gL'])
+    X(7, 1 + hy, K['gX']); X(12, 1 + hy, K['gX']); X(10, 0 + hy, K['gX'])
     if blink: R(6, 7 + hy, 2, 1, K['gD']); R(13, 7 + hy, 2, 1, K['gD'])
     else: R(6, 6 + hy, 2, 1, K['gD']); R(13, 6 + hy, 2, 1, K['gD']); R(6, 7 + hy, 2, 1, K['eye']); R(13, 7 + hy, 2, 1, K['eye'])   # sleepy lids
     # scarf band + sling over the dog's left shoulder (viewer's right)
@@ -115,7 +124,7 @@ def back(f):
     G = 21
     R(13, 14 + bob, 3, G - 15 - bob - lift, K['gD']); R(13, G - 2 - lift, 4, 2, K['wS'])      # far front leg (right)
     ell(X, 10, 13 + bob * .5, 6.5, 5, lambda x, y: K['gL'] if y > 13 else K['g'])
-    ell(X, 10, 4.5 + bob, 5.5, 3.8, K['g']); R(8, 2 + bob, 4, 2, K['gX'])                                   # back of the head
+    ell(X, 10, 4.5 + bob, 5.5, 3.8, K['g']); R(8, 2 + bob, 4, 2, K['gX']); X(9, 1 + bob, K['wL']); X(11, 1 + bob, K['gX']); X(7, 3 + bob, K['gD']); X(13, 3 + bob, K['gD']); X(10, 3 + bob, K['wL'])                                   # back of the head
     ell(X, 5, 6 + bob, 1.4, 2.8, K['gD']); ell(X, 15, 6 + bob, 1.4, 2.8, K['gD'])
     # back legs, fluffy white
     R(5 + (bk > 0), G - 5, 3, 5, K['w']); R(12 - (bk < 0), G - 5, 3, 5, K['w'])

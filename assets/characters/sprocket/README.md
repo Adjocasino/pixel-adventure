@@ -13,3 +13,4 @@ The user's dog: a three-legged Shih Tzu, white and gray, with **one front leg mi
   - last row: idle, tail wag, blink, front blink
 - **Which side shows the sling:** facing left shows the scarf sling on the near shoulder with no leg; facing right shows his real front leg. Ears were made smaller after the user's feedback.
 - **Senior dog (about 11 years old):** graying, frosted face; white bushy eyebrows; droopy half-closed sleepy eyes; a gentler, slower 3-legged gait (smaller hop and bob; previews at 150 ms per frame).
+- **Forehead detail:** a white blaze running down the middle to the muzzle, fur-parting strands, and wispy tufts on top of the head (also on the back of the head).
