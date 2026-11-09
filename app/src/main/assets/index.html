@@ -305,7 +305,8 @@ function makeGirl(dir,f,o={}){
   if(dir==='down'){X(7,15+Y,GOLD);X(8,15+Y,GOLD2);}
   // sleeves (slightly flared) + hands
   if(dir==='side'){RR(7,13+Y,3,3,GC.drS);RR(6,15+Y,4,1,GC.trim);RR(7,16+Y,3,1,GC.skin);}
-  else{RR(2,12+Y,2,3,GC.dr);RR(12,12+Y,2,3,GC.drS);RR(1,15+Y,3,1,GC.trim);RR(12,15+Y,3,1,GC.trim);X(2,16+Y,GC.skin);X(3,16+Y,GC.skin);X(12,16+Y,GC.skinS);X(13,16+Y,GC.skinS);}
+  else{if(o.reach!=='l'){RR(2,12+Y,2,3,GC.dr);RR(1,15+Y,3,1,GC.trim);X(2,16+Y,GC.skin);X(3,16+Y,GC.skin);}
+    if(o.reach!=='r'){RR(12,12+Y,2,3,GC.drS);RR(12,15+Y,3,1,GC.trim);X(12,16+Y,GC.skinS);X(13,16+Y,GC.skinS);}}
   // capelet
   if(dir==='side'){for(let x=3;x<=11;x++){X(x,11+Y,GC.drD);X(x,12+Y,GC.drD);}for(let x=3;x<=10;x++)X(x,13+Y,GC.drL);X(11,12+Y,GOLD);}
   else{for(let x=3;x<=12;x++){X(x,11+Y,GC.drD);X(x,12+Y,x<5?GC.drS:GC.drD);}for(let x=2;x<=13;x++)X(x,13+Y,GC.drL);
@@ -319,7 +320,7 @@ function makeGirl(dir,f,o={}){
     for(let y=6;y<=13;y++){H(3,y,y>11?GC.hairM:GC.hair);H(12,y,GC.hairM);}
     for(let y=8;y<=14;y++){H(2,y,y===14?GC.hairK:GC.hairM);H(13,y,GC.hairK);}
     H(3,14,GC.hairK);H(12,14,GC.hairK);H(3,8,GC.hairL);H(3,9,GC.hairL);H(4,5,GC.hairL);
-    X(5,7+Y,GC.eT);X(5,8+Y,GC.eB);X(10,7+Y,GC.eT);X(10,8+Y,GC.eB);X(4,9+Y,GC.blush);X(11,9+Y,GC.blush);
+    const ly=o.look?-1:0;X(5,7+Y+ly,GC.eT);X(5,8+Y+ly,GC.eB);X(10,7+Y+ly,GC.eT);X(10,8+Y+ly,GC.eB);X(4,9+Y,GC.blush);X(11,9+Y,GC.blush);
   }else if(dir==='up'){
     cap();for(let y=5;y<=14;y++)for(let x=3;x<=12;x++)H(x,y,y===14?GC.hairK:x>9?GC.hairM:GC.hair);
     for(let y=8;y<=14;y++){H(2,y,GC.hairM);H(13,y,GC.hairK);}
@@ -330,6 +331,8 @@ function makeGirl(dir,f,o={}){
     for(let y=6;y<=9;y++)H(8,y,GC.hairM);H(4,8,GC.hairL);H(4,9,GC.hairL);H(5,10,GC.hairL);
     X(10,7+Y,GC.eT);X(10,8+Y,GC.eB);X(11,9+Y,GC.blush);
   }
+  if(dir==='down'&&o.reach){const m=o.reach==='r'?(x=>x):(x=>15-x),Q=(x,y,w,h,c)=>{for(let j=0;j<h;j++)for(let i=0;i<w;i++)X(m(x+i),y+j+Y,c);};
+    Q(12,10,2,3,GC.drS);Q(13,9,2,1,GC.dr);Q(14,8,2,1,GC.dr);Q(15,7,2,1,GC.trim);Q(16,5,2,2,GC.skin);X(m(17),4+Y,GC.skin);}
   // witch hat: wide brim, floppy bent tip, soft-blue band, gold star charm
   const cone=dir==='side'?[[1,4,11],[0,4,10],[-1,4,9],[-2,4,8],[-3,3,7],[-4,2,6],[-5,1,4],[-6,0,2]]
                          :[[1,4,11],[0,5,10],[-1,5,10],[-2,6,9],[-3,6,9],[-4,7,9],[-5,8,10],[-6,9,11],[-7,11,12]];
@@ -827,16 +830,25 @@ function render(){
 }
 function drawHero(cx,cy){
   const set=CHARS[pl.char].set[pl.dir];let s;if(pl.moving)s=set.walk[Math.floor(pl.anim)%4];else{const ph=(T+40)%230;s=ph<7&&pl.dir!=='up'?set.idle[2]:set.idle[(T>>5)%2];}
-  const x=Math.round(pl.x-cx-(s.width>>1)),y=Math.round(pl.y-cy-(s.height-1));
+  const e=pl.emote,hop=e>=24&&e<34?Math.round(3*Math.sin((e-24)/10*Math.PI)):e>=52&&e<62?Math.round(3*Math.sin((e-52)/10*Math.PI)):0;
+  const x=Math.round(pl.x-cx-(s.width>>1)),y=Math.round(pl.y-cy-(s.height-1)-hop);
   if(pl.act>0&&pl.dir==='up')drawSwing(cx,cy);
   ctx.drawImage(s,x,y);
   if(pl.act>0&&pl.dir!=='up')drawSwing(cx,cy);
 }
 function drawEmote(cx,cy){
-  const t=pl.emote,k=t/110,x=Math.round(pl.x-cx-7+Math.sin(t/9)*3),y=Math.round(pl.y-cy-40-Math.min(1,t/14)*4-k*k*34);
-  const pop=t<8?t/8:1;ctx.globalAlpha=t>88?(110-t)/22:1;
-  const s=JELLY[(t>>3)%2];ctx.drawImage(s,x+7-s.width*pop/2,y+(1-pop)*8,s.width*pop,s.height*pop);
-  if(t%10===0)parts.push({x:pl.x+(Math.random()-.5)*14,y:pl.y,z:28+k*30,vx:0,vy:0,vz:.5,t:24,c:'#bfe9f2',bub:1});
+  // two jellyfish: the character hops at each one, and each one dodges away, then they swirl and float off
+  const t=pl.emote,px=pl.x-cx,py=pl.y-cy,ease=k=>1-Math.pow(1-Math.min(1,Math.max(0,k)),3);
+  const pop=Math.min(1,t/8),fade=t>92?(110-t)/18:1;
+  const jel=(bx,by,dt,dir,ph)=>{let x=px+bx+Math.sin(t/9+ph)*2,y=py+by+Math.sin(t/5+ph)*1.5;const k=(t-dt)/7;
+    if(t>=dt){x+=dir*18*ease(k);y-=8*ease(k);if(t>=dt+16){const k2=(t-dt-16)/12;x-=dir*13*ease(k2);y+=4*ease(k2);}}return[x,y,t>=dt&&k<1?dir:0];};
+  let A=jel(-22,-40,58,-1,0),B=jel(6,-42,30,1,2);
+  if(t>=80){const ang=(t-80)/7,cyy=py-50-Math.max(0,t-92)*1.6;A=[px-8-11*Math.cos(ang),cyy+4*Math.sin(ang),0];B=[px-8+11*Math.cos(ang),cyy-4*Math.sin(ang),0];}
+  [A,B].forEach(([x,y,dd],i)=>{const s=JELLY[((t>>2)+i)%2];
+    if(dd){ctx.globalAlpha=.3*fade;ctx.drawImage(s,Math.round(x-dd*7),Math.round(y+3));}
+    ctx.globalAlpha=Math.max(0,fade);const w=s.width*pop,h=s.height*pop;ctx.drawImage(s,Math.round(x+8-w/2),Math.round(y+(1-pop)*9),w,h);});
+  for(const[dt,j]of[[30,B],[58,A]]){const k=t-dt;if(k>=0&&k<6){ctx.fillStyle='#ffffff';const r=2+k;for(const[a,b]of[[r,0],[-r,0],[0,r],[0,-r]])ctx.fillRect(Math.round(j[0]+8+a),Math.round(j[1]+8+b),1,1);}}
+  if(t%10===0&&t<90)parts.push({x:pl.x+(Math.random()-.5)*20,y:pl.y,z:20+Math.random()*10,vx:0,vy:0,vz:.5,t:24,c:'#bfe9f2',bub:1});
   ctx.globalAlpha=1;
 }
 function drawSwing(cx,cy){
