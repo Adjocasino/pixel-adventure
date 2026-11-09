@@ -302,18 +302,18 @@ function makeGirl(dir,f,o={}){
   if(dir==='down')X(7,15+Y,GC.clip);
   if(dir==='side'){RR(7,13+Y,3,3,GC.drS);RR(7,15+Y,3,1,GC.trim);RR(7,16+Y,3,1,GC.skin);}
   else{RR(2,12+Y,2,4,GC.dr);RR(12,12+Y,2,4,GC.drS);RR(2,15+Y,2,1,GC.trim);RR(12,15+Y,2,1,GC.trim);X(2,16+Y,GC.skin);X(3,16+Y,GC.skin);X(12,16+Y,GC.skinS);X(13,16+Y,GC.skinS);}
-  if(dir==='down'){RR(5,12+Y,6,1,GC.wh);X(5,13+Y,GC.ice);X(10,13+Y,GC.ice);RR(7,12+Y,2,2,GC.blk);X(6,14+Y,GC.blk);X(9,14+Y,GC.blk);}
-  if(dir==='up')RR(5,12+Y,6,1,GC.ice);
-  if(dir==='side'){RR(8,12+Y,4,1,GC.wh);X(11,13+Y,GC.blk);}
+  if(dir==='down'){RR(5,12+Y,6,1,GC.trim);X(5,13+Y,GC.drL);X(10,13+Y,GC.drL);RR(7,12+Y,2,2,GC.blk);X(6,14+Y,GC.blk);X(9,14+Y,GC.blk);}
+  if(dir==='up')RR(5,12+Y,6,1,GC.drL);
+  if(dir==='side'){RR(8,12+Y,4,1,GC.trim);X(11,13+Y,GC.blk);}
   // head
   [[5,10],[4,11],[3,12],[3,12],[3,12],[3,12],[3,12],[4,11],[5,10]].forEach(([a,z],i)=>{for(let x=a;x<=z;x++)X(x,2+i+Y,x>10?GC.skinS:GC.skin);});
   const H=(x,y,c=GC.hair)=>X(x,y+Y,c);
   const cap=()=>{for(let x=5;x<=10;x++)H(x,1);for(let x=4;x<=11;x++)H(x,2);for(let x=3;x<=12;x++){H(x,3);H(x,4);}};
   if(dir==='down'){
-    cap();for(let x=3;x<=12;x++)H(x,5,x===6||x===9?GC.hairM:GC.hair);
+    cap();for(let x=6;x<=9;x++)X(x,4+Y,GC.skin);H(5,4,GC.hairM);H(10,4,GC.hairM);for(const x of[3,4,11,12])H(x,5,x===4||x===11?GC.hairM:GC.hair);
     for(let y=6;y<=13;y++){H(3,y,y>11?GC.hairM:GC.hair);H(12,y,GC.hairM);}
     for(let y=8;y<=14;y++){H(2,y,y===14?GC.hairK:GC.hairM);H(13,y,y===14?GC.hairK:GC.hairK);}
-    H(4,6);H(11,6);H(3,14,GC.hairK);H(12,14,GC.hairK);
+    H(3,14,GC.hairK);H(12,14,GC.hairK);
     H(5,3,GC.hairL);H(6,3,GC.hairL);H(7,3,GC.sheen);H(9,3,GC.hairL);H(10,3,GC.hairL);H(6,2,GC.hairL);H(3,8,GC.hairL);H(3,9,GC.hairL);
     H(11,4,GC.clip);H(12,5,GC.clip);
     X(5,7+Y,GC.eT);X(5,8+Y,GC.eB);X(10,7+Y,GC.eT);X(10,8+Y,GC.eB);X(4,9+Y,GC.blush);X(11,9+Y,GC.blush);
@@ -323,7 +323,7 @@ function makeGirl(dir,f,o={}){
     H(5,3,GC.hairL);H(6,3,GC.hairL);H(7,3,GC.sheen);H(9,3,GC.hairL);H(10,3,GC.hairL);H(6,2,GC.hairL);H(5,7,GC.hairL);H(5,8,GC.hairL);H(4,11,GC.hairL);
     H(3,4,GC.clip);H(2,5,GC.clip);
   }else{
-    cap();for(let x=3;x<=12;x++)H(x,5);H(12,6);H(11,6,GC.hairM);
+    cap();for(let x=10;x<=11;x++)X(x,4+Y,GC.skin);H(12,4,GC.hairM);for(let x=3;x<=8;x++)H(x,5,x===8?GC.hairM:GC.hair);
     for(let y=6;y<=14;y++)for(let x=2;x<=7;x++)H(x,y,y===14?GC.hairK:x<4?GC.hairM:GC.hair);
     for(let y=6;y<=9;y++)H(8,y,GC.hairM);
     H(5,3,GC.hairL);H(6,3,GC.hairL);H(7,3,GC.sheen);H(8,3,GC.hairL);H(4,8,GC.hairL);H(4,9,GC.hairL);H(5,10,GC.hairL);
