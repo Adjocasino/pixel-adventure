@@ -240,7 +240,7 @@ function makeHouse(){
 const HC={skin:C('#f6cfa6'),skinS:C('#e3ad86'),hair:C('#8a5532'),hairS:C('#673b22'),hairL:C('#b07848'),eye:C('#2b2233'),blush:C('#f0907a'),
   tun:C('#3a8fa0'),tunS:C('#2b6e80'),tunL:C('#5aaebb'),scarf:C('#d9573f'),scarfS:C('#a83c2c'),belt:C('#6b4428'),pants:C('#454166'),boot:C('#5c3a26'),bootL:C('#80553a')};
 function makeHero(dir,f,o={}){
-  const b=buf(18,26),O=1,X=(x,y,c)=>sp(b,x+O,y+1,c),RR=(x,y,w,h,c)=>{for(let j=0;j<h;j++)for(let i=0;i<w;i++)X(x+i,y+j,c);};
+  const b=buf(18,25),O=1,X=(x,y,c)=>sp(b,x+O,y+1,c),RR=(x,y,w,h,c)=>{for(let j=0;j<h;j++)for(let i=0;i<w;i++)X(x+i,y+j,c);};
   const bob=f%2?-1:0,lift=f===1?1:f===3?2:0;
   if(dir!=='side'){
     const leg=(lx,up)=>{RR(lx,18-up,3,3,HC.pants);RR(lx,21-up,3,2,HC.boot);X(lx,21-up,HC.bootL);};
@@ -291,7 +291,7 @@ const GC={skin:C('#f6d2b0'),skinS:C('#e3b08e'),hairK:C('#3c1a15'),hair:C('#7a433
   ice:C('#9cd1f8'),wh:C('#e6f6ff'),blk:C('#14121f'),blk2:C('#2a234d'),clip:C('#60c1ee')};
 function makeGirl(dir,f,o={}){
   // witch Inad: 22x34 buffer (hat needs headroom). Character origin offset (3,8).
-  const OX=o.ride?6:4,OY=7,b=buf(o.ride?28:24,33),X=(x,y,c)=>sp(b,x+OX,y+OY,c),RR=(x,y,w,h,c)=>{for(let j=0;j<h;j++)for(let i=0;i<w;i++)X(x+i,y+j,c);};
+  const OX=o.ride?6:4,OY=7,b=buf(o.ride?28:24,o.ride?33:31),X=(x,y,c)=>sp(b,x+OX,y+OY,c),RR=(x,y,w,h,c)=>{for(let j=0;j<h;j++)for(let i=0;i<w;i++)X(x+i,y+j,c);};
   const lift=f===1?1:f===3?2:0,Y=f%2?-1:0,GOLD=C('#f2d36b'),GOLD2=C('#c9a23a');
   // legs
   if(o.ride){}
@@ -336,7 +336,22 @@ function makeGirl(dir,f,o={}){
   }
   if(dir==='down'&&o.reach){const m=o.reach==='r'?(x=>x):(x=>15-x),Q=(x,y,w,h,c)=>{for(let j=0;j<h;j++)for(let i=0;i<w;i++)X(m(x+i),y+j+Y,c);};
     Q(12,10,2,3,GC.drS);Q(13,9,2,1,GC.dr);Q(14,8,2,1,GC.dr);Q(15,7,2,1,GC.trim);Q(16,5,2,2,GC.skin);X(m(17),4+Y,GC.skin);}
-  if(o.ride){
+  if(o.ride&&dir!=='side'){
+    const W1=C('#9a6838'),W2=C('#6e4626'),ST=P(['#9c6a26','#c9963a','#e0b85a','#f3d98a']),sw=f%2;
+    for(let y=19;y<=20;y++){for(let x=2;x<=5;x++)X(x,y+Y,x<3?GC.drL:GC.dr);for(let x=10;x<=13;x++)X(x,y+Y,x>12?GC.drS:GC.dr);}
+    for(const x of[2,3,4,5,10,11,12,13])X(x,21+Y,GC.trim);
+    RR(4,21+Y,2,1,GC.blk2);RR(10,21+Y,2,1,GC.blk2);RR(3+sw,22+Y,3,2,GC.blk);RR(10-sw,22+Y,3,2,GC.blk);
+    if(dir==='down'){
+      for(let x=0;x<=1;x++)for(let y=14;y<=18;y++)X(x,y+Y,pick(ST,(x+y+f)%3?.7:.3,x,y));
+      for(let x=14;x<=15;x++)for(let y=14;y<=18;y++)X(x,y+Y,pick(ST,(x+y+f)%3?.7:.3,x,y));
+      for(let y=16;y<=23;y++){X(7,y+Y,W1);X(8,y+Y,W2);}X(7,24+Y,W2);X(8,24+Y,W2);
+    }else{
+      for(let y=17;y<=18;y++){X(7,y+Y,W1);X(8,y+Y,W2);}for(let x=6;x<=9;x++)X(x,19+Y,GC.trim);
+      const rows=[[20,6,9],[21,5,10],[22,4,11],[23,4,11],[24,5,10],[25,6,9]];
+      for(const[y,a,z]of rows)for(let x=a;x<=z;x++)X(x+((y>23&&sw)?(x<8?-1:1):0),y+Y,pick(ST,((x*3+y+f*2)%4===0)?.95:((x+y)%3===0?.25:.6),x,y));
+    }
+  }
+  if(o.ride&&dir==='side'){
     // hair blown back
     for(let y=6;y<=12;y++)H(1,y+((f+y)%3===0?1:0),y>10?GC.hairK:GC.hairM);for(let y=8;y<=11;y++)H(0,y+(f%2),GC.hairK);
     // robe drapes below the broom, legs dangle in front
@@ -669,7 +684,7 @@ function input(){
 function buildChar(fn){const o={};for(const d of['down','up','side'])o[d==='side'?'right':d]={walk:[0,1,2,3].map(f=>fn(d,f)),idle:[fn(d,0),fn(d,0,{breath:1}),fn(d,0,{blink:1})]};
   o.left={walk:o.right.walk.map(flipC),idle:o.right.idle.map(flipC)};return o;}
 const CHARS={girl:{name:'Inad',set:buildChar(makeGirl)},kid:{name:'Kid',set:buildChar(makeHero)}};
-{const r=[0,1,2,3].map(f=>makeGirl('side',f,{ride:1}));CHARS.girl.ride={right:r,left:r.map(flipC)};
+{const r=[0,1,2,3].map(f=>makeGirl('side',f,{ride:1}));CHARS.girl.ride={right:r,left:r.map(flipC),down:[0,1,2,3].map(f=>makeGirl('down',f,{ride:1})),up:[0,1,2,3].map(f=>makeGirl('up',f,{ride:1}))};
  CHARS.girl.extra={reachR:makeGirl('down',0,{reach:'r',look:1}),reachL:makeGirl('down',0,{reach:'l',look:1}),look:makeGirl('down',0,{look:1})};}
 let map=null,T=0,fade=null,cam={x:0,y:0},parts=[],msgT=0;
 const pl={x:0,y:0,dir:'down',anim:0,act:0,moving:false,stepT:0,char:'girl',emote:0,faceX:'right',riding:false};
@@ -740,13 +755,13 @@ function update(){
     if(mag>0&&pl.act===0){pl.dir=Math.abs(inp.x)>Math.abs(inp.y)*1.05?(inp.x<0?'left':'right'):(inp.y<0?'up':'down');
       if(pl.dir==='left'||pl.dir==='right')pl.faceX=pl.dir;else if(Math.abs(inp.x)>.2)pl.faceX=inp.x<0?'left':'right';
       move(inp.x*sp,inp.y*sp);pl.anim+=sp*mag*.09;pl.moving=true;
-      if(pl.riding&&T%3===0){const fx=pl.faceX==='right'?-1:1;parts.push({x:pl.x+fx*(11+Math.random()*4),y:pl.y+1,z:7+Math.random()*4,vx:fx*.3,vy:(Math.random()-.5)*.2,vz:.15,t:22,c:['#9cd1f8','#ffffff','#f2d36b'][Math.random()*3|0],bub:1});}
+      if(pl.riding&&T%3===0){const v=DV[pl.dir],fx=-v[0],fy=-v[1];parts.push({x:pl.x+fx*(11+Math.random()*4)+(Math.random()-.5)*4,y:pl.y+fy*6+1,z:7+Math.random()*4,vx:fx*.3,vy:fy*.3,vz:.15,t:22,c:['#9cd1f8','#ffffff','#f2d36b'][Math.random()*3|0],bub:1});}
       if(pl.riding){if((pl.stepT+=1)>20){pl.stepT=0;noise(.3,.05,900,400);}}
       else if((pl.stepT+=sp*mag)>(inp.run?13:15)){pl.stepT=0;const W=map.w*TS;const t=map.tp[clamp(pl.y|0,0,map.h*TS-1)*W+clamp(pl.x|0,0,W-1)];sfx.step(t);
         if(inp.run&&(t===T_S||t===T_D))parts.push({x:pl.x,y:pl.y,z:0,vx:-DV[pl.dir][0]*.3,vy:0,vz:.4,t:16,c:t===T_S?'#e4cd95':'#9f774f',dust:1});}}
     else{pl.moving=false;pl.anim=0;pl.riding=false;}
   }
-  if(pl.emote&&++pl.emote>110)pl.emote=0;
+  if(pl.emote&&(pl.emote+=.45)>110)pl.emote=0;
   // exits
   const W=map.w*TS,H=map.h*TS;
   if(pl.x<0||pl.y<0||pl.x>=W||pl.y>=H){const e=exitAt(map,pl.x,pl.y);if(e){travel(e.to,e.sx,e.sy,e.dir);return;}}
@@ -859,7 +874,7 @@ function render(){
 }
 function drawHero(cx,cy){
   const ch=CHARS[pl.char],set=ch.set[pl.dir];let s,lift=0;
-  if(pl.riding){s=ch.ride[pl.faceX][(T>>3)%4];lift=4+Math.round(Math.sin(T/8));}
+  if(pl.riding){s=ch.ride[pl.dir][(T>>3)%4];lift=2+Math.round(Math.sin(T/8));}
   else if(pl.emote&&ch.extra&&pl.dir==='down'&&!pl.moving){const e=pl.emote;s=e>=22&&e<36?ch.extra.reachR:e>=50&&e<64?ch.extra.reachL:e<92&&(T+40)%230>=7?ch.extra.look:set.idle[0];}
   else if(pl.moving)s=set.walk[Math.floor(pl.anim)%4];else{const ph=(T+40)%230;s=ph<7&&pl.dir!=='up'?set.idle[2]:set.idle[(T>>5)%2];}
   const e=pl.emote,hop=e>=24&&e<34?Math.round(3*Math.sin((e-24)/10*Math.PI)):e>=52&&e<62?Math.round(3*Math.sin((e-52)/10*Math.PI)):0;
@@ -880,7 +895,7 @@ function drawEmote(cx,cy){
     if(dd){ctx.globalAlpha=.3*fade;ctx.drawImage(s,Math.round(x-dd*7),Math.round(y+3));}
     ctx.globalAlpha=Math.max(0,fade);const w=s.width*pop,h=s.height*pop;ctx.drawImage(s,Math.round(x+8-w/2),Math.round(y+(1-pop)*9),w,h);});
   for(const[dt,j]of[[30,B],[58,A]]){const k=t-dt;if(k>=0&&k<6){ctx.fillStyle='#ffffff';const r=2+k;for(const[a,b]of[[r,0],[-r,0],[0,r],[0,-r]])ctx.fillRect(Math.round(j[0]+8+a),Math.round(j[1]+8+b),1,1);}}
-  if(t%10===0&&t<90)parts.push({x:pl.x+(Math.random()-.5)*20,y:pl.y,z:20+Math.random()*10,vx:0,vy:0,vz:.5,t:24,c:'#bfe9f2',bub:1});
+  if(T%18===0&&t<90)parts.push({x:pl.x+(Math.random()-.5)*20,y:pl.y,z:20+Math.random()*10,vx:0,vy:0,vz:.5,t:24,c:'#bfe9f2',bub:1});
   ctx.globalAlpha=1;
 }
 function drawSwing(cx,cy){
