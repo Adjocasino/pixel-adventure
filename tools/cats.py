@@ -24,11 +24,11 @@ class B:
 CATS={
  'precious':dict(body=C('#ecdcc6'),bodyS=C('#d8c3a6'),point=C('#5b4033'),pointS=C('#4a3328'),paw=C('#fbf7f1'),tail=C('#4a3328'),face=C('#e8d6bf'),
    mask=[C('#3a261c'),C('#4a3328'),C('#6e4e3a'),C('#a07e64')],ear=C('#4a3328'),earIn=C('#b88a7c'),bib=C('#fbf7f1'),eyes=[C('#8fb6ff'),C('#8fb6ff')],nose=C('#2b1d3a'),
-   whisk=C('#ffffff'),thick=1,grumpy=0),
+   whisk=C('#ffffff'),thick=0,grumpy=0,mouth='smile'),
  'cotton':dict(body=C('#ffffff'),bodyS=C('#e9e6ef'),point=C('#ffffff'),pointS=C('#e9e6ef'),paw=C('#ffffff'),tail=C('#ffffff'),face=C('#ffffff'),mask=None,
-   ear=C('#ffffff'),earIn=C('#f4b6b0'),bib=None,eyes=[C('#5d8fe8'),(C('#5d8fe8'),C('#c3cf55'))],nose=C('#f4a6b4'),whisk=C('#a59cad'),thick=0,grumpy=0),
+   ear=C('#ffffff'),earIn=C('#f4b6b0'),bib=None,eyes=[C('#5d8fe8'),(C('#5d8fe8'),C('#c3cf55'))],nose=C('#f4a6b4'),whisk=C('#a59cad'),thick=0,grumpy=0,mouth='flat'),
  'collete':dict(body=C('#ffffff'),bodyS=C('#e9e6ef'),point=C('#ffffff'),pointS=C('#e9e6ef'),paw=C('#ffffff'),tail=C('#ffffff'),face=C('#ffffff'),mask=None,
-   ear=C('#ffffff'),earIn=C('#e9a9a4'),bib=None,eyes=[C('#6f93c4'),C('#6f93c4')],nose=C('#f4a6b4'),whisk=C('#a59cad'),thick=0,grumpy=1),
+   ear=C('#ffffff'),earIn=C('#e9a9a4'),bib=None,eyes=[C('#6f93c4'),C('#6f93c4')],nose=C('#f4a6b4'),whisk=C('#a59cad'),thick=0,grumpy=1,mouth='pout'),
 }
 DARK=C('#1a1024');WH=C('#ffffff');SH2=C('#cfcadb')
 def head(b,cat,hx,hy,blink=False):
@@ -58,16 +58,14 @@ def head(b,cat,hx,hy,blink=False):
         b.sp(ex+1,ey+1,DARK) if not k['mask'] else b.sp(ex,ey+1,DARK)
         b.sp(ex,ey,WH) if not k['grumpy'] else None
         if k['grumpy']:
-            b.sp(ex,ey,k['face']);b.sp(ex+1,ey,OUT if True else k['face'])
-            b.sp(ex,ey,OUT)
-            # angry brow
-            if i==0:b.sp(ex,ey-2,OUT);b.sp(ex+1,ey-1,OUT)
-            else:b.sp(ex+1,ey-2,OUT);b.sp(ex,ey-1,OUT)
+            b.sp(ex,ey,OUT);b.sp(ex+1,ey,OUT)
     # nose & mouth
     nx,ny=int(hx-1),int(hy+1)
     b.sp(nx,ny,k['nose']);b.sp(nx+1,ny,k['nose'])
     mc=C('#f3e6d6') if k['mask'] else OUT
-    if k['grumpy']:b.sp(nx-1,ny+2,mc);b.sp(nx,ny+1,mc);b.sp(nx+1,ny+1,mc);b.sp(nx+2,ny+2,mc)
+    m=k['mouth']
+    if m=='flat':b.sp(nx,ny+2,mc);b.sp(nx+1,ny+2,mc)
+    elif m=='pout':b.sp(nx-1,ny+3,mc);b.sp(nx,ny+2,mc);b.sp(nx+1,ny+2,mc);b.sp(nx+2,ny+3,mc)
     else:b.sp(nx-1,ny+1,mc);b.sp(nx,ny+2,mc);b.sp(nx+1,ny+2,mc);b.sp(nx+2,ny+1,mc)
     # whiskers
     for s in(-1,1):
