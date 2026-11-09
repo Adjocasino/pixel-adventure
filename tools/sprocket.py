@@ -28,8 +28,8 @@ def side(f, near_missing=True, idle=False, blink=False, wag=0):
     drapes over the near shoulder. False is used (then mirrored) for facing left."""
     b = B(32, 26, 2, 2); X, R = b.X, b.R
     # gait: one front leg does a little hop; front end bobs; back legs alternate
-    bob = [0, -1, 0, 1][f] if not idle else 0
-    fdx, flift = ([0, 1, 2, 1][f], [0, 2, 0, 0][f]) if not idle else (0, 0)
+    bob = [0, 0, 0, 1][f] if not idle else 0                     # old boy: gentle, slower bob
+    fdx, flift = ([0, 1, 1, 0][f], [0, 1, 0, 0][f]) if not idle else (0, 0)
     bdx = [1, 0, -1, 0][f] if not idle else 0
     G = 21                                                    # ground row (paw bottoms)
     # far-side legs (darker): far back leg + far front leg if the far one is the real leg
@@ -56,8 +56,10 @@ def side(f, near_missing=True, idle=False, blink=False, wag=0):
     ell(X, 25, 9.5 + hy, 2.2, 2, K['w'])                               # short white muzzle (flat face)
     X(26, 8 + hy, K['nose']); X(27, 8 + hy, K['nose']); X(26, 9 + hy, K['nose'])
     ell(X, 24.5, 12 + hy, 2.4, 1.8, K['beard']); X(23, 13 + hy, K['beard']); X(25, 14 + hy, K['beard'])   # beard
+    R(22, 4 + hy, 4, 2, K['gX']); X(25, 6 + hy, K['wL']); X(22, 10 + hy, K['gX']); X(21, 9 + hy, K['gX'])   # graying face
+    R(23, 5 + hy, 3, 1, K['wL'])                                       # white senior eyebrow tuft
     if blink: X(23, 7 + hy, K['gD']); X(24, 7 + hy, K['gD'])
-    else: X(23, 6 + hy, K['eye']); X(23, 7 + hy, K['eye']); X(24, 7 + hy, K['eye']); X(24, 6 + hy, K['shine'])
+    else: X(23, 6 + hy, K['gD']); X(24, 6 + hy, K['gD']); X(23, 7 + hy, K['eye']); X(24, 7 + hy, K['eye'])   # droopy, half-closed
     # scarf: navy band around the neck + drape over the shoulder, white print
     for y in range(9, 14):
         for x in range(17, 21): X(x, y + hy, K['sc'] if (x + y) % 5 else K['scP'])
@@ -75,7 +77,7 @@ def side(f, near_missing=True, idle=False, blink=False, wag=0):
 def front(f, blink=False):
     """facing the viewer. The dog's left is the viewer's right: that side has the scarf sling, no leg."""
     b = B(24, 26, 2, 2); X, R = b.X, b.R
-    bob = [0, -1, 0, 1][f]; lift = [0, 2, 0, 0][f]; bk = [0, 1, 0, -1][f]
+    bob = [0, 0, 0, 1][f]; lift = [0, 1, 0, 0][f]; bk = [0, 1, 0, -1][f]
     G = 21
     # back legs peeking behind
     R(6 + (bk > 0), G - 3, 3, 3, K['w']); R(12 - (bk < 0), G - 3, 3, 3, K['w']); R(6, G - 1, 3, 1, K['wS']); R(12, G - 1, 3, 1, K['wS'])
@@ -92,8 +94,10 @@ def front(f, blink=False):
     R(8, 8 + hy, 1, 1, K['wL']); R(12, 8 + hy, 1, 1, K['wL'])
     R(9, 9 + hy, 3, 1, K['nose']); X(10, 10 + hy, K['nose'])
     ell(X, 10, 12.5 + hy, 2.6, 1.8, K['beard'])                         # beard
+    R(7, 4 + hy, 7, 2, K['gX']); R(6, 8 + hy, 2, 2, K['gX']); R(13, 8 + hy, 2, 2, K['gX'])    # graying face
+    R(5, 5 + hy, 3, 1, K['wL']); R(13, 5 + hy, 3, 1, K['wL'])           # white senior eyebrows
     if blink: R(6, 7 + hy, 2, 1, K['gD']); R(13, 7 + hy, 2, 1, K['gD'])
-    else: R(6, 6 + hy, 2, 2, K['eye']); R(13, 6 + hy, 2, 2, K['eye']); X(6, 6 + hy, K['shine']); X(13, 6 + hy, K['shine'])
+    else: R(6, 6 + hy, 2, 1, K['gD']); R(13, 6 + hy, 2, 1, K['gD']); R(6, 7 + hy, 2, 1, K['eye']); R(13, 7 + hy, 2, 1, K['eye'])   # sleepy lids
     # scarf band + sling over the dog's left shoulder (viewer's right)
     for x in range(5, 16): X(x, 12 + hy, K['sc'] if x % 4 else K['scP']); X(x, 13 + hy, K['scS'])
     for i, (a, z) in enumerate([(10, 16), (11, 17), (11, 17), (12, 17), (12, 16), (13, 16)]):
@@ -107,11 +111,11 @@ def front(f, blink=False):
 def back(f):
     """facing away. Dog's left = viewer's left: no front leg there, the scarf tail hangs over it."""
     b = B(24, 26, 2, 2); X, R = b.X, b.R
-    bob = [0, -1, 0, 1][f]; lift = [0, 2, 0, 0][f]; bk = [0, 1, 0, -1][f]
+    bob = [0, 0, 0, 1][f]; lift = [0, 1, 0, 0][f]; bk = [0, 1, 0, -1][f]
     G = 21
     R(13, 14 + bob, 3, G - 15 - bob - lift, K['gD']); R(13, G - 2 - lift, 4, 2, K['wS'])      # far front leg (right)
     ell(X, 10, 13 + bob * .5, 6.5, 5, lambda x, y: K['gL'] if y > 13 else K['g'])
-    ell(X, 10, 4.5 + bob, 5.5, 3.8, K['g'])                                   # back of the head
+    ell(X, 10, 4.5 + bob, 5.5, 3.8, K['g']); R(8, 2 + bob, 4, 2, K['gX'])                                   # back of the head
     ell(X, 5, 6 + bob, 1.4, 2.8, K['gD']); ell(X, 15, 6 + bob, 1.4, 2.8, K['gD'])
     # back legs, fluffy white
     R(5 + (bk > 0), G - 5, 3, 5, K['w']); R(12 - (bk < 0), G - 5, 3, 5, K['w'])
@@ -158,9 +162,9 @@ if __name__ == '__main__':
     for k in range(8): frames.append(scene(U_[k % 4], 48, H - 6 - 23))
     for k in range(12): frames.append(scene(IDLE[[0, 1, 0, 1, 0, 2][k % 6]], 44, H - 6 - 23))
     big = [f.resize((W * 5, H * 5), Image.NEAREST) for f in frames]
-    big[0].save(O + 'sprocket_walk.png', save_all=True, append_images=big[1:], duration=110, loop=0)
+    big[0].save(O + 'sprocket_walk.png', save_all=True, append_images=big[1:], duration=150, loop=0)
     pf = [f.convert('RGB').convert('P', palette=Image.ADAPTIVE) for f in big]
-    pf[0].save(O + 'sprocket_walk.gif', save_all=True, append_images=pf[1:], duration=110, loop=0)
+    pf[0].save(O + 'sprocket_walk.gif', save_all=True, append_images=pf[1:], duration=150, loop=0)
     # size check next to Adjo
     far = Image.open(os.path.join(ROOT, 'assets/characters/farmer/farmer_sheet.png')).convert('RGBA').crop((22 * 4, 36, 22 * 5, 72))
     cmp = Image.new('RGBA', (70, 44), bg); cmp.alpha_composite(far, (8, 4)); cmp.alpha_composite(L_[0], (30, 44 - 4 - 23 - 1))

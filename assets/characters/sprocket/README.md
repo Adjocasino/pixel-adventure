@@ -12,3 +12,4 @@ The user's dog: a three-legged Shih Tzu, white and gray, with **one front leg mi
   - rows right / left / down / up: 4 walk frames each (32×26 cells)
   - last row: idle, tail wag, blink, front blink
 - **Which side shows the sling:** facing left shows the scarf sling on the near shoulder with no leg; facing right shows his real front leg. Ears were made smaller after the user's feedback.
+- **Senior dog (about 11 years old):** graying, frosted face; white bushy eyebrows; droopy half-closed sleepy eyes; a gentler, slower 3-legged gait (smaller hop and bob; previews at 150 ms per frame).
