@@ -25,7 +25,7 @@ def head_side(b,hx,hy,f,air):
     X(10+hx,5+hy,P['hair']);X(11+hx,5+hy,P['hair']);X(12+hx,6+hy,P['hair'])
     TD=C('#3a2226');TW=C('#f6f2ea')
     X(9+hx,9+hy,TD);X(10+hx,9+hy,TD);X(11+hx,9+hy,TD);X(12+hx,9+hy,TD)
-    X(10+hx,10+hy,TW);X(11+hx,10+hy,TD);X(12+hx,10+hy,TW);X(9+hx,10+hy,TD)
+    X(10+hx,10+hy,TW);X(11+hx,10+hy,TW);X(12+hx,10+hy,TW);X(9+hx,10+hy,TD)
     # hat lifts off on airborne frames
     hy2=hy-(1 if air else 0)
     for y,a,z in((-2,5,10),(-1,4,11),(0,4,11)):
@@ -130,7 +130,7 @@ def run_front(d,f):
         X(7,7+Y,P['frameD']);X(8,7+Y,P['frameD']);X(5,7+Y,P['eye']);X(5,8+Y,P['eye']);X(10,7+Y,P['eye']);X(10,8+Y,P['eye'])
         TD=C('#3a2226');TW=C('#f6f2ea')
         for x in range(6,10):X(x,9+Y,TD);X(x,10+Y,TW)
-        X(5,10+Y,TD);X(10,10+Y,TD);X(8,10+Y,TD)
+        X(5,10+Y,TD);X(10,10+Y,TD)
     else:
         for y in range(3,11):
             for x in range(3,13):X(x,y+Y,P['hair'])
