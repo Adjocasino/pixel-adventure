@@ -14,5 +14,5 @@
 - **Adjo's own emote** (picture only: `assets/characters/farmer/adjo_emote.*`, `tools/adjo_emote.py`):
   - A dramatic kabuki-style pose inspired by the user's anime reference: arms crossed wind-up, then a pop with impact lines into the pose.
   - The pose: one arm thrust out with an open palm, the other hand raised by the hat, one knee up, and a cheeky grin.
-  - Right after the pop, his head twirls (right → back → left → front, twice) with a swoosh arc around it.
+  - Right after the pop he does a head roll like the reference video: the head dips down (hat over the eyes), swings right, rolls back with the chin up and a grin, swings left, then settles front with the grin. The hand stays thrust out the whole time.
   - Two little frogs pop in and hop side to side, crossing in front of him, then hop away. They replace the jellyfish for Adjo.

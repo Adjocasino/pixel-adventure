@@ -12,7 +12,7 @@ TD, TW = C('#3a2226'), C('#f6f2ea')
 SPARK, SPARK2 = C('#fff6c8'), C('#ffffff')
 
 
-def adjo(pose='idle', f=0, blink=False, head='front'):
+def adjo(pose='idle', f=0, blink=False, head='front', hx=0, hy=0, look='front'):
     """front view. pose: idle | windup | pose. local coords match farmer.py (feet row 28)."""
     b = B(48, 44, 16, 10); X, R = b.X, b.R
     Y = 1 if pose == 'windup' else 0          # crouch a little before the pop
@@ -56,11 +56,17 @@ def adjo(pose='idle', f=0, blink=False, head='front'):
         R(14, 2, 4, 4, P['skin']); X(17, 3, P['skinS']); X(14, 1, P['skin']); X(16, 0, P['skin']); X(16, 1, P['skin']); X(18, 2, P['skin'])
     # ---- head (front), glasses, cheeky grin in the pose
     R(6, 11 + Y, 4, 1, P['skinS'])
+    if hy < 0: R(6, 11 + Y + hy, 4, -hy + 1, P['skinS'])   # neck stretches when the chin goes up
+    X0, R0 = X, R                      # head roll: shift the whole head + hat
+    X = lambda x, y, c: X0(x + hx, y + hy, c)
+    R = lambda x, y, w, h, c: R0(x + hx, y + hy, w, h, c)
+    gy = -1 if look == 'up' else 0
     for i, (a, z) in enumerate([(5, 10), (4, 11), (3, 12), (3, 12), (3, 12), (3, 12), (3, 12), (4, 11), (5, 10)]):
         for x in range(a, z + 1): X(x, 2 + i + Y, P['skinS'] if x > 10 else P['skin'])
     mir = head == 'left'
     HX = (lambda x, y, c: X(15 - x, y, c)) if mir else X
     H = lambda x, y, c=P['hair']: HX(x, y + Y, c)
+    Y += gy
     if head == 'front':
         for x in range(4, 12): H(x, 3); H(x, 4)
         for x in (4, 5, 7, 8, 10, 11): H(x, 5)
@@ -71,9 +77,10 @@ def adjo(pose='idle', f=0, blink=False, head='front'):
             R(x0 + 1, 6 + Y, 2, 1, P['frameD']); X(x0, 7 + Y, P['frame']); X(x0 + 3, 7 + Y, P['frame']); X(x0, 8 + Y, P['frame']); X(x0 + 3, 8 + Y, P['frame'])
             X(x0 + 1, 7 + Y, P['lens']); X(x0 + 2, 7 + Y, P['lens']); X(x0 + 1, 8 + Y, P['lens']); X(x0 + 2, 8 + Y, P['lens'])
         X(7, 7 + Y, P['frameD']); X(8, 7 + Y, P['frameD'])
+        if look == 'down': blink = True
         if blink: X(5, 8 + Y, P['skinS']); X(10, 8 + Y, P['skinS'])
         else: X(5, 7 + Y, P['eye']); X(5, 8 + Y, P['eye']); X(10, 7 + Y, P['eye']); X(10, 8 + Y, P['eye'])
-        if pose == 'pose':          # big confident grin (same teeth style as the sprint)
+        if pose == 'pose' and look != 'down':          # big confident grin (same teeth style as the sprint)
             X(5, 9, TD); R(6, 9, 4, 1, TW); X(10, 9, TD); X(7, 10, TD); X(8, 10, TD)
     elif head == 'back':
         for y in range(3, 11):
@@ -89,14 +96,16 @@ def adjo(pose='idle', f=0, blink=False, head='front'):
                           (11, 7, 'lens'), (11, 8, 'lens'), (7, 7, 'frameD'), (8, 7, 'frameD'), (10, 7, 'eye'), (10, 8, 'eye')):
             HX(x, y + Y, P[c])
         if pose == 'pose': HX(10, 9 + Y, TD); HX(11, 9 + Y, TW); HX(12, 9 + Y, TW); HX(11, 10 + Y, TD)
+    Y -= gy
     # ---- straw hat (tilted back a touch in the pose)
-    hy = Y - (1 if pose == 'pose' else 0)
+    hty = Y - (1 if pose == 'pose' else 0) + (1 if look == 'down' else -1 if look == 'up' else 0)
     for y, a, z in ((-2, 5, 10), (-1, 4, 11), (0, 4, 11)):
-        for x in range(a, z + 1): X(x, y + hy, P['hatL'] if x < 6 else P['hatS'] if x > 9 else P['hat'])
-    for x in range(4, 12): X(x, 1 + hy, P['bandL'] if x < 6 else P['band'])
-    for x in range(-1, 17): X(x, 2 + hy, P['hatL'] if x < 3 else P['hatS'] if x > 13 else P['hat'])
-    for x in range(-2, 18): X(x, 3 + hy, P['hatD'] if x in (-2, 17) else P['hatS'])
-    for x in range(0, 16, 3): X(x + (f % 2), 2 + hy, P['hatS'])
+        for x in range(a, z + 1): X(x, y + hty, P['hatL'] if x < 6 else P['hatS'] if x > 9 else P['hat'])
+    for x in range(4, 12): X(x, 1 + hty, P['bandL'] if x < 6 else P['band'])
+    for x in range(-1, 17): X(x, 2 + hty, P['hatL'] if x < 3 else P['hatS'] if x > 13 else P['hat'])
+    for x in range(-2, 18): X(x, 3 + hty, P['hatD'] if x in (-2, 17) else P['hatS'])
+    for x in range(0, 16, 3): X(x + (f % 2), 2 + hty, P['hatS'])
+    X, R = X0, R0
     if pose == 'pose':   # raised hand goes in front of the brim
         R(14, 2, 4, 2, P['skin']); X(17, 3, P['skinS'])
     b.outline()
@@ -129,7 +138,7 @@ def frog(f):
 W, H, GROUND = 96, 60, 52
 BG = (95, 172, 114, 255)
 IDLE, BLINK, WIND, POSE, POSEB = adjo('idle'), adjo('idle', blink=True), adjo('windup'), adjo('pose'), adjo('pose', blink=True)
-TWIRL = [adjo('pose', head=h) for h in ('right', 'back', 'left')]
+ROLL = [adjo('pose', hx=-2, hy=1, look='down'), adjo('pose', hx=2, hy=0), adjo('pose', hx=0, hy=-2, look='up'), adjo('pose', hx=-2, hy=0)]
 FROG = [frog(0), frog(1)]
 FROGL = [i.transpose(Image.FLIP_LEFT_RIGHT) for i in FROG]
 AX = W // 2 - 24      # Adjo sprite x (48 wide; local x0 = canvas 16)
@@ -165,15 +174,15 @@ def scene(t):
     elif t < 8: spr, dy = WIND, 0
     elif t < 38:
         spr = POSEB if t in (30, 31) else POSE
-        if 10 <= t < 22: spr = TWIRL[(t - 10) // 2 % 4] if (t - 10) // 2 % 4 < 3 else POSE   # head twirl: right, back, left, front x2
+        if 10 <= t < 22: spr = ROLL[(t - 10) // 3]   # head roll: dip down, swing right, back (chin up), left, then the grin
         dy = -3 if t == 8 else -1 if t == 9 else 0
         dy += 0 if (t // 6) % 2 else 0
     elif t < 42: spr, dy = (WIND if t < 40 else IDLE), 0
     else: spr, dy = (BLINK if t == 44 else IDLE), 0
     put(im, spr, AX, AY + dy)
     if 8 <= t <= 11: burst(im, (t - 8) / 3, W // 2 - 4, GROUND - 22)
-    if 10 <= t < 22:            # swoosh arc circling the head
-        px = im.load(); a0 = (t - 10) * 1.6
+    if 10 <= t < 22:            # swoosh arc following the head roll
+        px = im.load(); a0 = 2.4 + (t - 10) * .55
         for k in range(7):
             a = a0 - k * .22; x = int(W // 2 + math.cos(a) * 11); y = int(GROUND - 31 + math.sin(a) * 4)
             if 0 <= x < W and 0 <= y < H: px[x, y] = SPARK2 if k < 3 else SPARK
@@ -212,7 +221,7 @@ big[0].save(O + 'adjo_emote.png', save_all=True, append_images=big[1:], duration
 pf = [f.convert('RGB').convert('P', palette=Image.ADAPTIVE) for f in big]
 pf[0].save(O + 'adjo_emote.gif', save_all=True, append_images=pf[1:], duration=85, loop=0)
 # key frames strip: idle, windup, pop, hold, frogs mid-hop, settle
-keys = [6, 8, 10, 12, 14, 24, 32, 41]
+keys = [6, 8, 11, 14, 17, 20, 24, 41]
 strip = Image.new('RGBA', (W * len(keys) * 4 + 10 * (len(keys) - 1), H * 4), (29, 27, 34, 255))
 for i, t in enumerate(keys): strip.alpha_composite(frames[t].resize((W * 4, H * 4), Image.NEAREST), (i * (W * 4 + 10), 0))
 strip.save(O + 'adjo_emote_frames.png')
