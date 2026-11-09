@@ -16,3 +16,8 @@
   - The pose: one arm thrust out with an open palm, the other hand raised by the hat, one knee up, and a cheeky grin.
   - Right after the pop he does a head roll like the reference video: the head dips down (hat over the eyes), swings right, rolls back with the chin up and a grin, swings left, then settles front with the grin. The hand stays thrust out the whole time.
   - Two little frogs pop in and hop side to side, crossing in front of him, then hop away. They replace the jellyfish for Adjo.
+- **Pets wander once in a while** (user's request): pets shouldn't just stay put. Each one rests most of the time, then now and then gets up, walks somewhere nearby with its walk animation, and settles again.
+  - **Cats** (in game now, but they only sit): walk between favorite spots (window, rug, cat bed, cat tower, food bowls) using their 4-frame side walk. Sometimes they come to you.
+  - **Sprocket:** mostly naps. Once in a while he gets up and limps slowly (the labored 3-leg walk) to the water bowl or over to you, then lies back down.
+  - **Casper:** the most active. He wanders more often and further, sometimes follows you for a bit, and sits when he stops.
+  - Petting or interacting interrupts the wander. Pets walk around furniture and never through it.
