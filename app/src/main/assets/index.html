@@ -333,14 +333,20 @@ function makeGirl(dir,f,o={}){
   }
   if(dir==='down'&&o.reach){const m=o.reach==='r'?(x=>x):(x=>15-x),Q=(x,y,w,h,c)=>{for(let j=0;j<h;j++)for(let i=0;i<w;i++)X(m(x+i),y+j+Y,c);};
     Q(12,10,2,3,GC.drS);Q(13,9,2,1,GC.dr);Q(14,8,2,1,GC.dr);Q(15,7,2,1,GC.trim);Q(16,5,2,2,GC.skin);X(m(17),4+Y,GC.skin);}
+  // tilt: brim dips on one side, cone leans the other way
+  const HT=(x,y,c)=>H(x,y+(x<2?1:x>12?-1:0),c);
   // witch hat: short wide cone whose top folds over and droops to one side, wide sagging brim
   const HAT=[[-5,3,8],[-4,1,10],[-3,-1,1],[-3,4,10],[-2,-2,0],[-2,4,11],[-1,-2,-1],[-1,3,11],[0,3,12]];
   for(const[y,a,z]of HAT)for(let x=a;x<=z;x++){let c=GC.dr;
     if(y===-5)c=x<a+3?GC.drL:GC.dr;else if(y===-4)c=x<3?GC.drS:x>8?GC.drD:GC.dr;
-    else if(x<=1)c=y===-1?GC.drD:x===a?GC.drL:GC.drS;else if(y===-3)c=GC.drD;else c=x<6?GC.drL:x===z?GC.drD:GC.dr;H(x,y,c);}
-  for(let x=3;x<=12;x++)H(x,1,GC.trim);
-  const sx=dir==='up'?6:9;H(sx,0,GOLD);H(sx-1,1,GOLD);H(sx+1,1,GOLD);H(sx,1,GOLD2);H(sx,2,GOLD2);
-  for(let x=-2;x<=17;x++)H(x,2,x<4?GC.drL:GC.dr);for(let x=-3;x<=18;x++)H(x,3,GC.drD);for(let x=-3;x<=0;x++)H(x,4,GC.drD);
+    else if(x<=1)c=y===-1?GC.drD:x===a?GC.drL:GC.drS;else if(y===-3)c=GC.drD;else c=x<6?GC.drL:x===z?GC.drD:GC.dr;HT(x,y,c);}
+  for(let x=3;x<=12;x++)HT(x,1,GC.trim);
+  const sx=dir==='up'?6:9;HT(sx,0,GOLD);HT(sx-1,1,GOLD);HT(sx+1,1,GOLD);HT(sx,1,GOLD2);HT(sx,2,GOLD2);
+  for(let x=-2;x<=17;x++)HT(x,2,x<4?GC.drL:GC.dr);for(let x=-3;x<=18;x++)HT(x,3,GC.drD);for(let x=-3;x<=0;x++)HT(x,4,GC.drD);
+  // close 1px holes left by the tilt in the hat area
+  {const A=(x,y)=>x>=0&&y>=0&&x<b.w&&y<b.h&&b.d[(y*b.w+x)*4+3]>0,G=(x,y)=>{const i=(y*b.w+x)*4;return[b.d[i],b.d[i+1],b.d[i+2]];};
+   const fill=[];for(let y=0;y<OY+5;y++)for(let x=0;x<b.w;x++)if(!A(x,y)){if(A(x-1,y)&&A(x+1,y))fill.push([x,y,G(x-1,y)]);else if(A(x,y-1)&&A(x,y+1))fill.push([x,y,G(x,y-1)]);}
+   for(const[x,y,c]of fill)sp(b,x,y,c);}
   return finishChar(b,o,[[GC.eT,GC.eB]],GC.skin,6);
 }
 function makeChicken(f){const b=buf(16,15),W=C('#f6f2ea'),Ws=C('#d4cdc0'),Rd=C('#d8473a'),Or=C('#e9a23b'),E=C('#2b2233');
