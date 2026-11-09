@@ -9,8 +9,9 @@ The user's dog: a three-legged Shih Tzu, white and gray, with **one front leg mi
 - **Look:** round fluffy head with a light forehead streak, long floppy dark ears, flat face with a short white muzzle and beard, curled white plume tail.
 - **3-legged gait:** the one front leg does a little hop each cycle, the front end bobs, and the back legs alternate.
 - **`sprocket_sheet.png` layout:**
-  - rows right / left / down / up: 4 walk frames each (32×26 cells)
+  - rows right / left / down / up: 6 walk frames each (32×26 cells): plant, push, hop, heavy landing, recover, pause
   - last row: idle, tail wag, blink, front blink
 - **Which side shows the sling:** facing left shows the scarf sling on the near shoulder with no leg; facing right shows his real front leg. Ears were made smaller after the user's feedback.
 - **Senior dog (about 11 years old):** graying, frosted face; white bushy eyebrows; droopy half-closed sleepy eyes; a gentler, slower 3-legged gait (smaller hop and bob; previews at 150 ms per frame).
 - **Forehead detail:** a white blaze running down the middle to the muzzle, fur-parting strands, and wispy tufts on top of the head (also on the back of the head).
+- **3-leg emphasis:** a labored 6-frame tripod gait. He plants, pushes off the back legs, hops on the one front leg, lands heavily (head and chest dip 2 px, dust puff under the paw), recovers, then pauses briefly. Movement lurches forward mostly on the hop (steps 1,1,5,3,1,0 px).
