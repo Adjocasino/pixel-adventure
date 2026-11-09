@@ -15,3 +15,4 @@ The user's dog: a three-legged Shih Tzu, white and gray, with **one front leg mi
 - **Senior dog (about 11 years old):** graying, frosted face; white bushy eyebrows; droopy half-closed sleepy eyes; a gentler, slower 3-legged gait (smaller hop and bob; previews at 150 ms per frame).
 - **Forehead detail:** a white blaze running down the middle to the muzzle, fur-parting strands, and wispy tufts on top of the head (also on the back of the head).
 - **3-leg emphasis:** a labored 6-frame tripod gait. He plants, pushes off the back legs, hops on the one front leg, lands heavily (head and chest dip 2 px, dust puff under the paw), recovers, then pauses briefly. Movement lurches forward mostly on the hop (steps 1,1,5,3,1,0 px).
+- **Side-profile ear:** a clear floppy ear on the side of the head (dark long hair, light front edge, wispy tip), drawn over the head so it reads.

@@ -52,9 +52,8 @@ def side(f, near_missing=True, idle=False, blink=False, wag=0):
         R(19 + fdx, 13 + bob, 3, G - 15 - bob - flift, K['w']); R(18 + fdx, G - 2 - flift, 4, 2, K['w']); X(18 + fdx, G - 1 - flift, K['wS'])
     # head: round fluffy Shih Tzu head, white forehead blaze, long floppy ears, short snout, beard
     hy = bob
-    ell(X, 22, 7 + hy, 5.2, 4.8, lambda x, y: K['gD'] if x < 19 else K['g'] if y < 6 + hy else K['gL'])
+    ell(X, 22, 7 + hy, 5.2, 4.8, lambda x, y: K['g'] if y < 6 + hy else K['gL'])
     R(21, 3 + hy, 3, 2, K['gX'])                                       # light streak on the forehead
-    ell(X, 19.8, 8.5 + hy, 1.7, 2.8, K['gD']); X(19, 11 + hy, K['g'])   # ear hanging down
     ell(X, 25, 9.5 + hy, 2.2, 2, K['w'])                               # short white muzzle (flat face)
     X(26, 8 + hy, K['nose']); X(27, 8 + hy, K['nose']); X(26, 9 + hy, K['nose'])
     ell(X, 24.5, 12 + hy, 2.4, 1.8, K['beard']); X(23, 13 + hy, K['beard']); X(25, 14 + hy, K['beard'])   # beard
@@ -66,6 +65,13 @@ def side(f, near_missing=True, idle=False, blink=False, wag=0):
     X(25, 3 + hy, K['wL']); X(25, 4 + hy, K['wL']); X(26, 5 + hy, K['w']); X(26, 6 + hy, K['w'])
     if blink: X(23, 7 + hy, K['gD']); X(24, 7 + hy, K['gD'])
     else: X(23, 6 + hy, K['gD']); X(24, 6 + hy, K['gD']); X(23, 7 + hy, K['eye']); X(24, 7 + hy, K['eye'])   # droopy, half-closed
+    # floppy ear on the side of the head: dark, long-haired, light front edge, wispy tip
+    EAR, EARD = C('#4a474a'), C('#363337')
+    for y, a, z in ((4, 19, 21), (5, 18, 21), (6, 18, 21), (7, 18, 21), (8, 18, 21), (9, 18, 21), (10, 18, 20), (11, 18, 20)):
+        for x in range(a, z + 1): X(x, y + hy, EARD if x == a else EAR)
+    for y in range(5, 11): X(21 if y < 10 else 20, y + hy, K['gL'])          # light front edge of the ear
+    X(19, 7 + hy, K['g']); X(20, 9 + hy, K['g'])                                # fur strands
+    X(18, 12 + hy, EAR); X(20, 12 + hy, EAR); X(19, 13 + hy, EARD)              # wispy tip
     # scarf: navy band around the neck + drape over the shoulder, white print
     for y in range(9, 14):
         for x in range(17, 21): X(x, y + hy, K['sc'] if (x + y) % 5 else K['scP'])
