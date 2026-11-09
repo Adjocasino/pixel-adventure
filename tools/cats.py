@@ -71,7 +71,7 @@ def head(b,cat,hx,hy,blink=False):
     mc=C('#f3e6d6') if k['mask'] else OUT
     m=k['mouth']
     if m=='w':
-        for (dx,dy) in((-2,1),(-1,2),(0,1),(1,1),(2,2),(3,1)):b.sp(nx+dx,ny+dy,mc)
+        for (dx,dy) in((-1,2),(0,1),(1,1),(2,2)):b.sp(nx+dx,ny+dy,mc)
     elif m=='flat':b.sp(nx,ny+2,mc);b.sp(nx+1,ny+2,mc)
     elif m=='pout':b.sp(nx-1,ny+3,mc);b.sp(nx,ny+2,mc);b.sp(nx+1,ny+2,mc);b.sp(nx+2,ny+3,mc)
     else:b.sp(nx-1,ny+1,mc);b.sp(nx,ny+2,mc);b.sp(nx+1,ny+2,mc);b.sp(nx+2,ny+1,mc)
