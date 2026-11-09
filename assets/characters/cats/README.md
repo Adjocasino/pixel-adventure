@@ -4,8 +4,8 @@
 
 | Cat | Look |
 |---|---|
-| **Precious** | Siamese: cream body `#ecdcc6`, dark-brown points/legs `#5b4033`, tail and ears `#4a3328`, dark face mask, white bib and paws, big blue eyes `#8fb6ff`, slim body (same build as the others), open blue eyes with a small cat mouth (ㅅ-shape under the nose) |
-| **Cotton** | Slim, all white, pink ears and nose, one blue eye `#5d8fe8` and one half-blue/half-yellow eye (`#5d8fe8`/`#c3cf55`), small cat mouth (ㅅ-shape under the nose) |
+| **Precious** | Siamese: cream body `#ecdcc6`, dark-brown points/legs `#5b4033`, tail and ears `#4a3328`, dark face mask, white bib and paws, big blue eyes `#8fb6ff`, slim body (same build as the others), open blue eyes with a **nose only** (no mouth line, like the user's reference sprites) |
+| **Cotton** | Slim, all white, pink ears and nose, one blue eye `#5d8fe8` and one half-blue/half-yellow eye (`#5d8fe8`/`#c3cf55`), **nose only** (no mouth line, like the user's reference sprites) |
 | **Collete** | Slim, all white, pink ears and nose, blue eyes `#6f93c4` under heavy half-closed lids, **mildly grumpy** (no angry brows), **straight face** (flat mouth) |
 
 - Outline: `#2b1d3a` (same as Flip Guy).
