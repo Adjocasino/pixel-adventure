@@ -1,4 +1,4 @@
-import math,sys
+import math,sys,os
 sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
 from farmer import P,B,C
 from PIL import Image
