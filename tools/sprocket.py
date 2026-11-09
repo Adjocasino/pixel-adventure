@@ -151,6 +151,44 @@ def back(f):
     return b.im
 
 
+
+def lie(state='sleep', tail=0):
+    """lying down napping (side view, facing right). state: sleep | peek | yawn | happy"""
+    b = B(36, 26, 2, 2); X, R = b.X, b.R
+    EAR, EARD = C('#4a474a'), C('#363337')
+    # tail wrapped by the hips, thumps up when he's happy
+    if tail: ell(X, 4, 12, 2.4, 2.2, K['w']); ell(X, 4.5, 11.5, 1.4, 1.2, K['wL'])
+    else: ell(X, 5, 17, 3, 2, K['w']); ell(X, 4.5, 16.5, 1.6, 1.2, K['wL'])
+    # body loaf: gray back, white belly, back legs tucked
+    ell(X, 13, 16, 9, 4, lambda x, y: K['w'] if y > 17 else K['gL'] if y > 14 else K['g'])
+    for x in range(7, 19, 3): X(x, 13 + (x % 2), K['gD'])
+    ell(X, 9, 19, 3.5, 1.8, K['w']); X(6, 20, K['wS'])
+    # the one front leg stretched forward, head resting on it
+    R(18, 18, 9, 2, K['w']); X(26, 19, K['wS'])
+    # scarf band
+    for y in range(12, 18): X(19, y, K['sc'] if y % 3 else K['scP']); X(20, y, K['scS'])
+    up = -3 if state in ('yawn', 'happy') else 0
+    hx, hy = 24, 14 + up
+    ell(X, hx, hy, 4.6, 3.8, lambda x, y: K['g'] if y < hy - 1 else K['gL'])
+    R(hx - 2, hy - 3, 4, 1, K['gX']); X(hx + 2, hy - 2, K['wL'])                       # frosted forehead
+    ell(X, hx + 3, hy + 2, 2.2, 1.8, K['w'])                                           # muzzle
+    X(hx + 4, hy + 1, K['nose']); X(hx + 5, hy + 1, K['nose'])
+    ell(X, hx + 2.5, hy + 4, 2.2, 1.2, K['beard'])
+    R(hx, hy - 2, 3, 1, K['wL'])                                                       # white brow
+    if state == 'sleep': R(hx + 1, hy, 2, 1, K['gD'])
+    elif state == 'peek': X(hx + 1, hy, K['gD']); X(hx + 2, hy - 1, K['gD']); X(hx + 2, hy, K['eye'])
+    elif state == 'yawn':
+        R(hx + 1, hy - 1, 2, 1, K['gD'])                                               # eyes squeezed shut
+        R(hx + 2, hy + 2, 4, 1, K['nose']); R(hx + 2, hy + 3, 4, 2, C('#7a3a44')); R(hx + 3, hy + 4, 2, 1, C('#f08c9c'))
+        X(hx + 2, hy + 5, K['beard']); X(hx + 5, hy + 5, K['beard'])
+    else: X(hx + 1, hy, K['gD']); X(hx + 2, hy - 1, K['gD']); X(hx + 3, hy, K['gD'])  # happy ^ eye
+    # floppy ear on top
+    for y in range(hy - 3, hy + 4):
+        for x in range(hx - 4, hx - 1): X(x, y, EARD if x == hx - 4 else EAR)
+    X(hx - 2, hy - 1, K['gL']); X(hx - 3, hy + 4, EARD)
+    b.outline(.4)
+    return b.im
+
 if __name__ == '__main__':
     FL = lambda im: im.transpose(Image.FLIP_LEFT_RIGHT)
     R_ = [side(f, near_missing=False) for f in range(6)]          # facing right: his real front leg is the near one
@@ -186,6 +224,48 @@ if __name__ == '__main__':
     for k in range(12): frames.append(scene(U_[k % 6], 48, H - 6 - 23))
     for k in range(12): frames.append(scene(IDLE[[0, 1, 0, 1, 0, 2][k % 6]], 44, H - 6 - 23))
     big = [f.resize((W * 5, H * 5), Image.NEAREST) for f in frames]
+    # ---------- interaction demo: napping -> wake-up yawn + tail thumps + heart; awake -> lean-in pet
+    from PIL import ImageDraw
+    W2, H2 = 96, 44; fr2 = []
+    def sc(spr, x, y, zz=0, heart=0, bang=False, dust=False):
+        im = Image.new('RGBA', (W2, H2), bg)
+        for i in range(W2): im.putpixel((i, H2 - 6), (70, 140, 95, 255))
+        im.alpha_composite(spr, (int(x), int(y))); d = ImageDraw.Draw(im)
+        if zz:      # floating z's
+            for k in range(2):
+                zx, zy = int(x + 30 + k * 4), int(y + 8 - ((zz + k * 4) % 8) - k * 3)
+                d.line((zx, zy, zx + 2, zy), fill='white'); d.point((zx + 1, zy + 1), fill='white'); d.line((zx, zy + 2, zx + 2, zy + 2), fill='white')
+        if heart:   # pink heart floating up
+            hx_, hy_ = int(x + 28), int(y + 6 - heart)
+            for (a_, b_) in ((0, 0), (1, 0), (3, 0), (4, 0), (0, 1), (1, 1), (2, 1), (3, 1), (4, 1), (1, 2), (2, 2), (3, 2), (2, 3)):
+                d.point((hx_ + a_, hy_ + b_), fill=(240, 106, 138, 255))
+            d.point((hx_ + 1, hy_), fill=(255, 210, 220, 255))
+        if bang: d.rectangle((x + 30, y - 2, x + 34, y + 4), fill='white', outline=(43, 29, 58)); d.line((x + 32, y - 1, x + 32, y + 1), fill=(200, 60, 60)); d.point((x + 32, y + 3), fill=(200, 60, 60))
+        if dust:
+            for dx_ in (-2, 2, 4): d.point((int(x + 4 + dx_), H2 - 7), fill=(217, 207, 180, 255))
+        fr2.append(im)
+    ly = H2 - 6 - 22
+    for k in range(8): sc(lie('sleep'), 30, ly, zz=k + 1)
+    for k in range(3): sc(lie('sleep'), 30, ly, bang=True)                    # you press A
+    for k in range(4): sc(lie('peek'), 30, ly)
+    for k in range(6): sc(lie('yawn'), 30, ly)
+    for k in range(8): sc(lie('happy', tail=k % 2), 30, ly, dust=k % 2 == 1)  # tail thump thump
+    for k in range(8): sc(lie('happy'), 30, ly, heart=k)
+    for k in range(6): sc(lie('sleep'), 30, ly, zz=k + 1)
+    # awake: lean into the pet
+    st = H2 - 6 - 23
+    R0 = side(0, near_missing=False, idle=True)
+    for k in range(3): sc(R0, 30, st, bang=True)
+    for k in range(12): sc(side(0, near_missing=False, idle=True, blink=True, wag=k % 2), 30 + (1 if (k // 3) % 2 else 0), st, heart=k if k > 3 else 0)   # leans into your hand, eyes shut, tail wagging
+    for k in range(4): sc(side(0, near_missing=False, idle=True, wag=k % 2), 30, st)
+    b2 = [f.resize((W2 * 5, H2 * 5), Image.NEAREST) for f in fr2]
+    b2[0].save(O + 'sprocket_interact.png', save_all=True, append_images=b2[1:], duration=150, loop=0)
+    p2 = [f.convert('RGB').convert('P', palette=Image.ADAPTIVE) for f in b2]
+    p2[0].save(O + 'sprocket_interact.gif', save_all=True, append_images=p2[1:], duration=150, loop=0)
+    ks = [3, 13, 17, 23, 31, 36, 50, 58]
+    strip = Image.new('RGBA', (len(ks) * W2 * 3, H2 * 3), bg)
+    for i, k in enumerate(ks): strip.alpha_composite(fr2[k].resize((W2 * 3, H2 * 3), Image.NEAREST), (i * W2 * 3, 0))
+    strip.save(O + 'sprocket_interact_frames.png')
     big[0].save(O + 'sprocket_walk.png', save_all=True, append_images=big[1:], duration=150, loop=0)
     pf = [f.convert('RGB').convert('P', palette=Image.ADAPTIVE) for f in big]
     pf[0].save(O + 'sprocket_walk.gif', save_all=True, append_images=pf[1:], duration=150, loop=0)

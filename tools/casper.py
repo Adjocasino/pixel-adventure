@@ -26,7 +26,10 @@ def head(X, R, hx, hy, mode, f, blink):
     ell(X, 25 + hx, 6 + hy, 4.1, 3.7, K['w'])
     R(26 + hx, 5 + hy, 5, 3, K['w']); R(26 + hx, 7 + hy, 5, 1, K['wS'])           # snout
     X(31 + hx, 5 + hy, K['nose']); X(31 + hx, 6 + hy, K['noseD']); X(30 + hx, 5 + hy, K['nose'])
-    R(23 + hx, 2 + hy, 3, 2, K['w']); R(25 + hx, 2 + hy, 2, 2, K['ear']); X(27 + hx, 3 + hy, K['earS']); X(26 + hx, 4 + hy, K['earS'])  # ear flops forward
+    # semi-floppy ear on the side of the head: white base, cream-tan flap folding down, darker tip
+    for y, x0, x1 in ((2, 22, 24), (3, 21, 24), (4, 21, 24), (5, 21, 23), (6, 22, 23)):
+        for x in range(x0, x1 + 1): X(x + hx, y + hy, K['w'] if y < 3 else K['ear'] if x > x0 else K['earS'])
+    X(24 + hx, 1 + hy, K['w']); X(23 + hx, 1 + hy, K['w']); X(22 + hx, 7 + hy, K['earS'])
     if blink: R(26 + hx, 4 + hy, 2, 1, K['rim'])
     else: X(27 + hx, 4 + hy, K['eye']); X(26 + hx, 4 + hy, K['eyeD']); X(27 + hx, 3 + hy, K['rim'])
     my = 8 + hy
