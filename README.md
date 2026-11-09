@@ -1,10 +1,12 @@
-# Pixel Adventure
+# Cottage Meadow
+
+_(formerly Pixel Adventure; the repo, package id `com.pixeladventure.game` and save key stay the same so updates install over the old app and keep saves)_
 
 A 16-bit style top-down sandbox (landscape). All art is generated in code. There are no image files.
 
 - The whole game is `app/src/main/assets/index.html` (HTML/CSS/JS, no libraries).
 - A thin Android WebView app wraps it, locked to landscape.
-- Every push to `main` builds a debug APK and publishes it as a GitHub Release named `build-<N>` (`PixelAdventure.apk`).
+- Every push to `main` builds a debug APK and publishes it as a GitHub Release named `build-<N>` (`CottageMeadow.apk`).
 
 ## Maps (sandbox, no story yet)
 
