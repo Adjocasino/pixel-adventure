@@ -292,7 +292,7 @@ const GC={skin:C('#f6d2b0'),skinS:C('#e3b08e'),hairK:C('#3c1a15'),hair:C('#7a433
 function makeGirl(dir,f,o={}){
   // witch Inad: 22x34 buffer (hat needs headroom). Character origin offset (3,8).
   const OX=o.ride?6:4,OY=7,b=buf(o.ride?28:24,o.ride?33:31),X=(x,y,c)=>sp(b,x+OX,y+OY,c),RR=(x,y,w,h,c)=>{for(let j=0;j<h;j++)for(let i=0;i<w;i++)X(x+i,y+j,c);};
-  const lift=f===1?1:f===3?2:0,Y=f%2?-1:0,GOLD=C('#f2d36b'),GOLD2=C('#c9a23a');
+  const lift=f===1?1:f===3?2:0,Y=f%2?-1:0,GOLD=C('#dcefff'),GOLD2=C('#8fb0e0');
   // legs
   if(o.ride){}
   else if(dir!=='side'){const leg=(lx,up)=>{RR(lx+1,19-up,2,2,GC.blk2);RR(lx,21-up,3,2,GC.blk);X(lx+2,21-up,GC.drD);};leg(4,lift===1?1:0);leg(9,lift===2?1:0);}
@@ -314,6 +314,12 @@ function makeGirl(dir,f,o={}){
   if(dir==='side'){for(let x=3;x<=11;x++){X(x,11+Y,GC.drD);X(x,12+Y,GC.drD);}for(let x=3;x<=10;x++)X(x,13+Y,GC.drL);X(11,12+Y,GOLD);}
   else{for(let x=3;x<=12;x++){X(x,11+Y,GC.drD);X(x,12+Y,x<5?GC.drS:GC.drD);}for(let x=2;x<=13;x++)X(x,13+Y,GC.drL);
     if(dir==='down'){X(7,12+Y,GOLD);X(8,12+Y,GOLD2);X(7,11+Y,GOLD2);}}
+  // open robe: blue outer robe hangs open over black inner clothes
+  {const bot=o.ride?17:19,IN=GC.blk,IN2=GC.blk2;
+   if(dir==='down'){for(let y=11;y<=bot;y++)for(let x=6;x<=9;x++){if(y===11&&(x===6||x===9))continue;X(x,y+Y,x===6||y===15?IN2:IN);}
+     for(let y=12;y<=bot;y++){X(5,y+Y,GC.trim);X(10,y+Y,GC.trim);}}
+   else if(dir==='side'){for(let y=12;y<=bot;y++){X(10,y+Y,y===15?IN2:IN);X(11,y+Y,IN);X(9,y+Y,GC.trim);}}
+   else{RR(4,15+Y,8,1,GC.dr);RR(4,15+Y,1,1,GC.drL);RR(11,15+Y,1,1,GC.drS);}}
   // head
   [[5,10],[4,11],[3,12],[3,12],[3,12],[3,12],[3,12],[4,11],[5,10]].forEach(([a,z],i)=>{for(let x=a;x<=z;x++)X(x,2+i+Y,x>10?GC.skinS:GC.skin);});
   const H=(x,y,c=GC.hair)=>X(x,y+Y,c);
