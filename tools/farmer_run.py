@@ -21,8 +21,11 @@ def head_side(b,hx,hy,f,air):
     R(10+hx,6+hy,2,1,P['frameD']);X(9+hx,7+hy,P['frame']);X(12+hx,7+hy,P['frame']);X(9+hx,8+hy,P['frame']);X(12+hx,8+hy,P['frame'])
     X(11+hx,7+hy,P['lens']);X(11+hx,8+hy,P['lens']);X(7+hx,7+hy,P['frameD']);X(8+hx,7+hy,P['frameD'])
     X(10+hx,7+hy,P['eye']);X(10+hx,8+hy,P['eye'])
-    # determined brow
-    X(10+hx,5+hy,P['hair']);
+    # strained brow + gritted teeth
+    X(10+hx,5+hy,P['hair']);X(11+hx,5+hy,P['hair']);X(12+hx,6+hy,P['hair'])
+    TD=C('#3a2226');TW=C('#f6f2ea')
+    X(9+hx,9+hy,TD);X(10+hx,9+hy,TD);X(11+hx,9+hy,TD);X(12+hx,9+hy,TD)
+    X(10+hx,10+hy,TW);X(11+hx,10+hy,TD);X(12+hx,10+hy,TW);X(9+hx,10+hy,TD)
     # hat lifts off on airborne frames
     hy2=hy-(1 if air else 0)
     for y,a,z in((-2,5,10),(-1,4,11),(0,4,11)):
@@ -40,8 +43,8 @@ def run_side(f,N=6,fx=True):
     L1,L2=4.5,4.5
     def leg(tt,col,colS,far):
         p=2*math.pi*tt
-        th=math.radians(10+60*math.cos(p))                 # thigh: up to 70° forward (high knee)
-        kb=math.radians(15+95*max(0,math.sin(p)))          # knee bends hard during the forward swing
+        th=math.radians(15+80*math.cos(p))                 # thigh: up to ~95° forward (very high knee)
+        kb=math.radians(20+110*max(0,math.sin(p))+40*max(0,math.cos(p)))  # tucked shin under the raised knee
         kx,ky=hip[0]+L1*math.sin(th),hip[1]+L1*math.cos(th)
         a2=th-kb;fx_,fy_=kx+L2*math.sin(a2),ky+L2*math.cos(a2)
         line(b,hip[0],hip[1],kx,ky,colS if far else col,3)
@@ -93,7 +96,7 @@ def run_front(d,f):
     knee=[1,0,2,0][f]   # 1: left knee up, 2: right knee up
     for lx,side in((4,1),(9,2)):
         if knee==side:
-            R(lx,18+Y,3,3,P['ov']);R(lx,20+Y,3,1,P['ovL']);R(lx,21+Y,3,2,P['boot']);R(lx,22+Y,3,1,P['bootS'])
+            R(lx,17+Y,3,2,P['ovL']);R(lx,19+Y,3,1,P['ov']);R(lx,20+Y,3,2,P['boot']);R(lx,21+Y,3,1,P['bootS'])
         else:
             R(lx,20,3,5,P['ov']);R(lx,20,1,5,P['ovL']);R(lx,25,3,1,P['ovL']);R(lx,26,3,3,P['boot']);R(lx,28,3,1,P['bootS'])
     R(4,12+Y,8,6,P['shirt']);R(4,18+Y,8,3,P['ov']);R(4,18+Y,1,3,P['ovL'])
@@ -119,6 +122,9 @@ def run_front(d,f):
             R(x0+1,6+Y,2,1,P['frameD']);X(x0,7+Y,P['frame']);X(x0+3,7+Y,P['frame']);X(x0,8+Y,P['frame']);X(x0+3,8+Y,P['frame'])
             X(x0+1,7+Y,P['lens']);X(x0+2,7+Y,P['lens']);X(x0+1,8+Y,P['lens']);X(x0+2,8+Y,P['lens'])
         X(7,7+Y,P['frameD']);X(8,7+Y,P['frameD']);X(5,7+Y,P['eye']);X(5,8+Y,P['eye']);X(10,7+Y,P['eye']);X(10,8+Y,P['eye'])
+        TD=C('#3a2226');TW=C('#f6f2ea')
+        for x in range(6,10):X(x,9+Y,TD);X(x,10+Y,TW)
+        X(5,10+Y,TD);X(10,10+Y,TD);X(8,10+Y,TD)
     else:
         for y in range(3,11):
             for x in range(3,13):X(x,y+Y,P['hair'])
