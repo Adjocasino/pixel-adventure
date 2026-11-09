@@ -291,20 +291,23 @@ const GC={skin:C('#f6d2b0'),skinS:C('#e3b08e'),hairK:C('#3c1a15'),hair:C('#7a433
   ice:C('#9cd1f8'),wh:C('#e6f6ff'),blk:C('#14121f'),blk2:C('#2a234d'),clip:C('#60c1ee')};
 function makeGirl(dir,f,o={}){
   // witch Inad: 22x34 buffer (hat needs headroom). Character origin offset (3,8).
-  const OX=4,OY=7,b=buf(24,33),X=(x,y,c)=>sp(b,x+OX,y+OY,c),RR=(x,y,w,h,c)=>{for(let j=0;j<h;j++)for(let i=0;i<w;i++)X(x+i,y+j,c);};
+  const OX=o.ride?6:4,OY=7,b=buf(o.ride?28:24,33),X=(x,y,c)=>sp(b,x+OX,y+OY,c),RR=(x,y,w,h,c)=>{for(let j=0;j<h;j++)for(let i=0;i<w;i++)X(x+i,y+j,c);};
   const lift=f===1?1:f===3?2:0,Y=f%2?-1:0,GOLD=C('#f2d36b'),GOLD2=C('#c9a23a');
   // legs
-  if(dir!=='side'){const leg=(lx,up)=>{RR(lx+1,19-up,2,2,GC.blk2);RR(lx,21-up,3,2,GC.blk);X(lx+2,21-up,GC.drD);};leg(4,lift===1?1:0);leg(9,lift===2?1:0);}
+  if(o.ride){}
+  else if(dir!=='side'){const leg=(lx,up)=>{RR(lx+1,19-up,2,2,GC.blk2);RR(lx,21-up,3,2,GC.blk);X(lx+2,21-up,GC.drD);};leg(4,lift===1?1:0);leg(9,lift===2?1:0);}
   else if(f%2){RR(4,19,2,2,GC.blk2);RR(3,21,3,2,GC.blk);RR(9,19,2,2,GC.blk2);RR(10,20,3,2,GC.blk);}
   else{RR(7,19,2,2,GC.blk2);RR(6,21,4,2,GC.blk);X(9,21,GC.drD);}
   // robe: long flared dress
-  for(let y=14;y<=19;y++){const w=y<17?0:1;for(let x=3-w;x<=12+w;x++)X(x,y+Y,x<=4-w?GC.drL:x>=11+w?GC.drS:GC.dr);}
-  for(let x=2;x<=13;x++)X(x,19+Y,GC.trim);for(const x of[4,7,10])X(x,20+Y,GC.trim);
+  if(o.ride){for(let y=14;y<=17;y++)for(let x=3;x<=12;x++)X(x,y+Y,x<=4?GC.drL:x>=11?GC.drS:GC.dr);}
+  else{for(let y=14;y<=19;y++){const w=y<17?0:1;for(let x=3-w;x<=12+w;x++)X(x,y+Y,x<=4-w?GC.drL:x>=11+w?GC.drS:GC.dr);}
+  for(let x=2;x<=13;x++)X(x,19+Y,GC.trim);for(const x of[4,7,10])X(x,20+Y,GC.trim);}
   if(dir!=='side'){X(6,17+Y,GC.drS);X(9,17+Y,GC.drS);X(6,18+Y,GC.drS);X(9,18+Y,GC.drS);}
   RR(4,12+Y,8,3,GC.dr);RR(4,12+Y,1,3,GC.drL);RR(11,12+Y,1,3,GC.drS);RR(4,15+Y,8,1,GC.blk);
   if(dir==='down'){X(7,15+Y,GOLD);X(8,15+Y,GOLD2);}
   // sleeves (slightly flared) + hands
-  if(dir==='side'){RR(7,13+Y,3,3,GC.drS);RR(6,15+Y,4,1,GC.trim);RR(7,16+Y,3,1,GC.skin);}
+  if(dir==='side'&&o.ride){RR(8,13+Y,3,2,GC.drS);RR(10,15+Y,2,1,GC.trim);RR(11,16+Y,2,1,GC.skin);}
+  else if(dir==='side'){RR(7,13+Y,3,3,GC.drS);RR(6,15+Y,4,1,GC.trim);RR(7,16+Y,3,1,GC.skin);}
   else{if(o.reach!=='l'){RR(2,12+Y,2,3,GC.dr);RR(1,15+Y,3,1,GC.trim);X(2,16+Y,GC.skin);X(3,16+Y,GC.skin);}
     if(o.reach!=='r'){RR(12,12+Y,2,3,GC.drS);RR(12,15+Y,3,1,GC.trim);X(12,16+Y,GC.skinS);X(13,16+Y,GC.skinS);}}
   // capelet
@@ -333,6 +336,20 @@ function makeGirl(dir,f,o={}){
   }
   if(dir==='down'&&o.reach){const m=o.reach==='r'?(x=>x):(x=>15-x),Q=(x,y,w,h,c)=>{for(let j=0;j<h;j++)for(let i=0;i<w;i++)X(m(x+i),y+j+Y,c);};
     Q(12,10,2,3,GC.drS);Q(13,9,2,1,GC.dr);Q(14,8,2,1,GC.dr);Q(15,7,2,1,GC.trim);Q(16,5,2,2,GC.skin);X(m(17),4+Y,GC.skin);}
+  if(o.ride){
+    // hair blown back
+    for(let y=6;y<=12;y++)H(1,y+((f+y)%3===0?1:0),y>10?GC.hairK:GC.hairM);for(let y=8;y<=11;y++)H(0,y+(f%2),GC.hairK);
+    // robe drapes below the broom, legs dangle in front
+    for(let y=19;y<=20;y++)for(let x=3;x<=8;x++)X(x,y+Y,x<5?GC.drL:GC.dr);for(let x=3;x<=8;x++)X(x,21+Y,GC.trim);
+    const sw=f%2;RR(9,19+Y,2,2,GC.blk2);RR(9+sw,21+Y,3,2,GC.blk);X(11+sw,21+Y,GC.drD);
+    // broom: handle + straw bristles with a tie band
+    const W1=C('#9a6838'),W2=C('#6e4626'),ST=P(['#9c6a26','#c9963a','#e0b85a','#f3d98a']),BAND=GC.trim;
+    for(let x=-1;x<=19;x++){X(x,17+Y,W1);X(x,18+Y,W2);}X(19,17+Y,W2);X(20,17+Y,W2);
+    const rows=[[15,-3],[16,-5],[17,-6],[18,-6],[19,-5],[20,-3]];
+    for(const[y,a]of rows)for(let x=a;x<=-1;x++){const v=((x+y+f*2)%3===0)?.25:((x*3+y)%4===0?.95:.6);X(x,y+Y,pick(ST,v,x+8,y));}
+    if(f%2){X(-6,16+Y,ST[1]);X(-7,18+Y,ST[2]);}else{X(-6,19+Y,ST[1]);X(-7,17+Y,ST[2]);}
+    for(let y=15;y<=20;y++)X(0,y+Y,BAND);
+  }
   // tilt: brim dips on one side, cone leans the other way
   const HT=(x,y,c)=>H(x,y+(x<2?1:x>12?-1:0),c);
   // witch hat: short wide cone whose top folds over and droops to one side, wide sagging brim
@@ -651,10 +668,12 @@ function input(){
 /* ---------------- game state ---------------- */
 function buildChar(fn){const o={};for(const d of['down','up','side'])o[d==='side'?'right':d]={walk:[0,1,2,3].map(f=>fn(d,f)),idle:[fn(d,0),fn(d,0,{breath:1}),fn(d,0,{blink:1})]};
   o.left={walk:o.right.walk.map(flipC),idle:o.right.idle.map(flipC)};return o;}
-const CHARS={kid:{name:'Kid',set:buildChar(makeHero)}};
+const CHARS={girl:{name:'Inad',set:buildChar(makeGirl)},kid:{name:'Kid',set:buildChar(makeHero)}};
+{const r=[0,1,2,3].map(f=>makeGirl('side',f,{ride:1}));CHARS.girl.ride={right:r,left:r.map(flipC)};
+ CHARS.girl.extra={reachR:makeGirl('down',0,{reach:'r',look:1}),reachL:makeGirl('down',0,{reach:'l',look:1}),look:makeGirl('down',0,{look:1})};}
 let map=null,T=0,fade=null,cam={x:0,y:0},parts=[],msgT=0;
-const pl={x:0,y:0,dir:'down',anim:0,act:0,moving:false,stepT:0,char:'kid',emote:0};
-try{const c=JSON.parse(localStorage.getItem('paSandbox')||'{}').char;if(CHARS[c])pl.char=c;}catch(e){}
+const pl={x:0,y:0,dir:'down',anim:0,act:0,moving:false,stepT:0,char:'girl',emote:0,faceX:'right',riding:false};
+try{const st=JSON.parse(localStorage.getItem('paSandbox')||'{}');if(st.charV===2&&CHARS[st.char])pl.char=st.char;}catch(e){}
 const shadowCache={};
 function shadowC(rx,ry){rx=Math.round(rx);ry=Math.round(ry);const k=rx+'x'+ry;if(shadowCache[k])return shadowCache[k];const c=document.createElement('canvas');c.width=rx*2+1;c.height=ry*2+1;const g=c.getContext('2d');g.fillStyle=SHADOW;
   for(let y=-ry;y<=ry;y++){const w=Math.round(rx*Math.sqrt(1-(y*y)/(ry*ry+.01)));g.fillRect(rx-w,y+ry,w*2+1,1);}return shadowCache[k]=c;}
@@ -667,7 +686,7 @@ function enter(id,tx,ty,dir,px,py){
   for(let i=0;i<20&&blocked(pl.x,pl.y);i++)pl.y+=4;
   cam.x=camTarget().x;cam.y=camTarget().y;showArea(map.name);setMusic(map.music);saveState();renderMenu();
 }
-function saveState(){try{localStorage.setItem('paSandbox',JSON.stringify({map:map&&map.id,x:pl.x,y:pl.y,dir:pl.dir,mute:MUTE,char:pl.char}));}catch(e){}}
+function saveState(){try{localStorage.setItem('paSandbox',JSON.stringify({map:map&&map.id,x:pl.x,y:pl.y,dir:pl.dir,mute:MUTE,char:pl.char,charV:2}));}catch(e){}}
 function travel(id,tx,ty,dir){if(fade)return;fade={t:0,d:16,mid:()=>enter(id,tx,ty,dir)};}
 
 /* ---------------- collision ---------------- */
@@ -717,12 +736,15 @@ function update(){
   else{
     if(inp.emo&&!pl.emote){pl.emote=1;sfx.blub();}
     if(inp.act)action();
-    const sp=inp.run?1.9:1.05,mag=Math.hypot(inp.x,inp.y);
+    const ride=!!(inp.run&&CHARS[pl.char].ride),sp=ride?2.3:inp.run?1.9:1.05,mag=Math.hypot(inp.x,inp.y);pl.riding=ride&&mag>0;
     if(mag>0&&pl.act===0){pl.dir=Math.abs(inp.x)>Math.abs(inp.y)*1.05?(inp.x<0?'left':'right'):(inp.y<0?'up':'down');
+      if(pl.dir==='left'||pl.dir==='right')pl.faceX=pl.dir;else if(Math.abs(inp.x)>.2)pl.faceX=inp.x<0?'left':'right';
       move(inp.x*sp,inp.y*sp);pl.anim+=sp*mag*.09;pl.moving=true;
-      if((pl.stepT+=sp*mag)>(inp.run?13:15)){pl.stepT=0;const W=map.w*TS;const t=map.tp[clamp(pl.y|0,0,map.h*TS-1)*W+clamp(pl.x|0,0,W-1)];sfx.step(t);
+      if(pl.riding&&T%3===0){const fx=pl.faceX==='right'?-1:1;parts.push({x:pl.x+fx*(11+Math.random()*4),y:pl.y+1,z:7+Math.random()*4,vx:fx*.3,vy:(Math.random()-.5)*.2,vz:.15,t:22,c:['#9cd1f8','#ffffff','#f2d36b'][Math.random()*3|0],bub:1});}
+      if(pl.riding){if((pl.stepT+=1)>20){pl.stepT=0;noise(.3,.05,900,400);}}
+      else if((pl.stepT+=sp*mag)>(inp.run?13:15)){pl.stepT=0;const W=map.w*TS;const t=map.tp[clamp(pl.y|0,0,map.h*TS-1)*W+clamp(pl.x|0,0,W-1)];sfx.step(t);
         if(inp.run&&(t===T_S||t===T_D))parts.push({x:pl.x,y:pl.y,z:0,vx:-DV[pl.dir][0]*.3,vy:0,vz:.4,t:16,c:t===T_S?'#e4cd95':'#9f774f',dust:1});}}
-    else{pl.moving=false;pl.anim=0;}
+    else{pl.moving=false;pl.anim=0;pl.riding=false;}
   }
   if(pl.emote&&++pl.emote>110)pl.emote=0;
   // exits
@@ -800,7 +822,7 @@ function render(){
   for(const o of map.objs){if(o.hidden)continue;const s=o.s;if(o.x-s.ox>cx+VW||o.x-s.ox+s.c.width<cx||o.y-s.oy>cy+VH+10||o.y-s.oy+s.c.height<cy-10)continue;vis.push(o);
     if(o.sh){const c=shadowC(o.sh[0],o.sh[1]);ctx.drawImage(c,Math.round(o.x-cx-c.width/2+(o.tree?3:1)),Math.round(o.y-cy-c.height/2+1));}}
   for(const o of map.objs)if(o.hidden&&o.cut&&o.x>cx-10&&o.x<cx+VW+10&&o.y>cy&&o.y<cy+VH+20){ctx.fillStyle='#2f6e4c';ctx.fillRect(o.x-cx-3,o.y-cy-2,7,2);ctx.fillStyle='#4f9a5a';ctx.fillRect(o.x-cx-2,o.y-cy-3,5,1);}
-  const ps=shadowC(6,2);ctx.drawImage(ps,Math.round(pl.x-cx-6),Math.round(pl.y-cy-1));
+  const ps=pl.riding?shadowC(9,2):shadowC(6,2);ctx.drawImage(ps,Math.round(pl.x-cx-ps.width/2),Math.round(pl.y-cy-1));
   for(const c of map.crit)if(c.k==='chick'){const s=shadowC(5,2);ctx.drawImage(s,Math.round(c.x-cx-5),Math.round(c.y-cy-2));}
   // ripples
   for(const p of parts)if(p.ring){const r=(40-p.t)/40*9;ctx.strokeStyle=`rgba(200,240,250,${p.t/60})`;ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(Math.round(p.x-cx),Math.round(p.y-cy),r+3,r*.45+1,0,0,7);ctx.stroke();}
@@ -836,9 +858,12 @@ function render(){
   if(fade){const a=fade.t<fade.d?fade.t/fade.d:2-fade.t/fade.d;ctx.fillStyle=`rgba(10,18,16,${clamp(a,0,1)})`;ctx.fillRect(0,0,VW,VH);}
 }
 function drawHero(cx,cy){
-  const set=CHARS[pl.char].set[pl.dir];let s;if(pl.moving)s=set.walk[Math.floor(pl.anim)%4];else{const ph=(T+40)%230;s=ph<7&&pl.dir!=='up'?set.idle[2]:set.idle[(T>>5)%2];}
+  const ch=CHARS[pl.char],set=ch.set[pl.dir];let s,lift=0;
+  if(pl.riding){s=ch.ride[pl.faceX][(T>>3)%4];lift=4+Math.round(Math.sin(T/8));}
+  else if(pl.emote&&ch.extra&&pl.dir==='down'&&!pl.moving){const e=pl.emote;s=e>=22&&e<36?ch.extra.reachR:e>=50&&e<64?ch.extra.reachL:e<92&&(T+40)%230>=7?ch.extra.look:set.idle[0];}
+  else if(pl.moving)s=set.walk[Math.floor(pl.anim)%4];else{const ph=(T+40)%230;s=ph<7&&pl.dir!=='up'?set.idle[2]:set.idle[(T>>5)%2];}
   const e=pl.emote,hop=e>=24&&e<34?Math.round(3*Math.sin((e-24)/10*Math.PI)):e>=52&&e<62?Math.round(3*Math.sin((e-52)/10*Math.PI)):0;
-  const x=Math.round(pl.x-cx-(s.width>>1)),y=Math.round(pl.y-cy-(s.height-1)-hop);
+  const x=Math.round(pl.x-cx-(s.width>>1)),y=Math.round(pl.y-cy-(s.height-1)-hop-lift);
   if(pl.act>0&&pl.dir==='up')drawSwing(cx,cy);
   ctx.drawImage(s,x,y);
   if(pl.act>0&&pl.dir!=='up')drawSwing(cx,cy);
