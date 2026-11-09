@@ -28,7 +28,7 @@ CATS={
  'cotton':dict(body=C('#ffffff'),bodyS=C('#e9e6ef'),point=C('#ffffff'),pointS=C('#e9e6ef'),paw=C('#ffffff'),tail=C('#ffffff'),face=C('#ffffff'),mask=None,
    ear=C('#ffffff'),earIn=C('#f4b6b0'),bib=None,eyes=[C('#5d8fe8'),(C('#5d8fe8'),C('#c3cf55'))],nose=C('#f4a6b4'),whisk=C('#a59cad'),thick=0,grumpy=0,mouth='smile'),
  'collete':dict(body=C('#ffffff'),bodyS=C('#e9e6ef'),point=C('#ffffff'),pointS=C('#e9e6ef'),paw=C('#ffffff'),tail=C('#ffffff'),face=C('#ffffff'),mask=None,
-   ear=C('#ffffff'),earIn=C('#e9a9a4'),bib=None,eyes=[C('#6f93c4'),C('#6f93c4')],nose=C('#f4a6b4'),whisk=C('#a59cad'),thick=0,grumpy=1,mouth='pout'),
+   ear=C('#ffffff'),earIn=C('#e9a9a4'),bib=None,eyes=[C('#6f93c4'),C('#6f93c4')],nose=C('#f4a6b4'),whisk=C('#a59cad'),thick=0,grumpy=1,mouth='flat'),
 }
 DARK=C('#1a1024');WH=C('#ffffff');SH2=C('#cfcadb')
 def head(b,cat,hx,hy,blink=False):
