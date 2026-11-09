@@ -20,4 +20,8 @@
   - **Cats** (in game now, but they only sit): walk between favorite spots (window, rug, cat bed, cat tower, food bowls) using their 4-frame side walk. Sometimes they come to you.
   - **Sprocket:** mostly naps. Once in a while he gets up and limps slowly (the labored 3-leg walk) to the water bowl or over to you, then lies back down.
   - **Casper:** the most active. He wanders more often and further, sometimes follows you for a bit, and sits when he stops.
+  - **Where they live:**
+    - **Cats stay indoors** and wander only inside the house (Home map).
+    - **Dogs live outside** in a small radius around the cottage in Willow Village: the front yard by the door, stepping stones and fence. They never leave that area.
+    - Sprocket naps by the front door; Casper roams the yard.
   - Petting or interacting interrupts the wander. Pets walk around furniture and never through it.
