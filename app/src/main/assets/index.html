@@ -319,7 +319,13 @@ function makeGirl(dir,f,o={}){
    if(dir==='down'){for(let y=11;y<=bot;y++)for(let x=6;x<=9;x++){if(y===11&&(x===6||x===9))continue;X(x,y+Y,x===6||y===15?IN2:IN);}
      for(let y=12;y<=bot;y++){X(5,y+Y,GC.trim);X(10,y+Y,GC.trim);}}
    else if(dir==='side'){for(let y=12;y<=bot;y++){X(10,y+Y,y===15?IN2:IN);X(11,y+Y,IN);X(9,y+Y,GC.trim);}}
-   else{RR(4,15+Y,8,1,GC.dr);RR(4,15+Y,1,1,GC.drL);RR(11,15+Y,1,1,GC.drS);}}
+   else{RR(4,15+Y,8,1,GC.dr);RR(4,15+Y,1,1,GC.drL);RR(11,15+Y,1,1,GC.drS);}
+   // chest details: little bow at the collar, ice-blue gem pendant, lacing down the inner top
+   {const GEM=C('#9cd1f8'),GEMH=C('#e6f6ff'),LACE=C('#3a3554');
+    if(dir==='down'){X(6,12+Y,GC.drL);X(9,12+Y,GC.drL);X(7,12+Y,GC.drS);X(8,12+Y,GC.drS);X(6,13+Y,GC.dr);X(9,13+Y,GC.dr);
+      X(7,13+Y,GC.drD);X(8,13+Y,GC.drD);X(7,14+Y,GEMH);X(8,14+Y,GEM);
+      if(!o.ride){for(let y=16;y<=18;y++)X(y%2?7:8,y+Y,LACE);}else{X(7,16+Y,LACE);X(8,17+Y,LACE);}}
+    else if(dir==='side'){X(10,12+Y,GC.drL);X(11,12+Y,GC.drS);X(11,13+Y,GC.dr);X(11,14+Y,GEM);for(let y=16;y<=bot;y+=2)X(11,y+Y,LACE);}}}
   // head
   [[5,10],[4,11],[3,12],[3,12],[3,12],[3,12],[3,12],[4,11],[5,10]].forEach(([a,z],i)=>{for(let x=a;x<=z;x++)X(x,2+i+Y,x>10?GC.skinS:GC.skin);});
   const H=(x,y,c=GC.hair)=>X(x,y+Y,c);
