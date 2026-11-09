@@ -285,8 +285,8 @@ function finishChar(b,o,pairs,skin){
   if(o.breath){for(let y=19;y>=1;y--)for(let x=0;x<b.w;x++){const p=g(x,y-1);if(p[3])sp(b,x,y,p);else if(y<=17){const i=(y*b.w+x)*4;b.d[i+3]=0;}}for(let x=0;x<b.w;x++)b.d[x*4+3]=0;}
   outline(b,.32);return cvs(b);
 }
-/* Aoi: straight shoulder-length hair, blue outfit with black accents */
-const GC={skin:C('#f6d2b0'),skinS:C('#e3b08e'),hairK:C('#2a1712'),hair:C('#5b3326'),hairM:C('#47271e'),hairL:C('#87503a'),sheen:C('#b9785a'),
+/* Inad: straight shoulder-length hair, blue outfit with black accents */
+const GC={skin:C('#f6d2b0'),skinS:C('#e3b08e'),hairK:C('#2e1310'),hair:C('#702e21'),hairM:C('#56221a'),hairL:C('#a64a33'),sheen:C('#d27b57'),
   eT:C('#1a1630'),eB:C('#42a3f1'),blush:C('#e8565c'),dr:C('#3c63ba'),drS:C('#2e3882'),drD:C('#2d2c6c'),drL:C('#42a3f1'),trim:C('#86caee'),
   ice:C('#9cd1f8'),wh:C('#e6f6ff'),blk:C('#14121f'),blk2:C('#2a234d'),clip:C('#60c1ee')};
 function makeGirl(dir,f,o={}){
