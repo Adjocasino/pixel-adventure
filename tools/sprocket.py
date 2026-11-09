@@ -52,7 +52,7 @@ def side(f, near_missing=True, idle=False, blink=False, wag=0):
     hy = bob
     ell(X, 22, 7 + hy, 5.2, 4.8, lambda x, y: K['gD'] if x < 19 else K['g'] if y < 6 + hy else K['gL'])
     R(21, 3 + hy, 3, 2, K['gX'])                                       # light streak on the forehead
-    ell(X, 19.5, 9 + hy, 2.2, 4, K['gD']); X(18, 12 + hy, K['g']); X(20, 13 + hy, K['g'])   # ear hanging down
+    ell(X, 19.8, 8.5 + hy, 1.7, 2.8, K['gD']); X(19, 11 + hy, K['g'])   # ear hanging down
     ell(X, 25, 9.5 + hy, 2.2, 2, K['w'])                               # short white muzzle (flat face)
     X(26, 8 + hy, K['nose']); X(27, 8 + hy, K['nose']); X(26, 9 + hy, K['nose'])
     ell(X, 24.5, 12 + hy, 2.4, 1.8, K['beard']); X(23, 13 + hy, K['beard']); X(25, 14 + hy, K['beard'])   # beard
@@ -87,7 +87,7 @@ def front(f, blink=False):
     hy = bob
     ell(X, 10, 7 + hy, 6.2, 5.3, lambda x, y: K['gL'] if 7 < x < 13 else K['g'])
     R(9, 3 + hy, 3, 3, K['gX'])                                        # forehead streak
-    ell(X, 3.8, 9 + hy, 1.9, 4, K['gD']); ell(X, 16.2, 9 + hy, 1.9, 4, K['gD'])   # floppy ears
+    ell(X, 4.4, 8.5 + hy, 1.5, 2.8, K['gD']); ell(X, 15.6, 8.5 + hy, 1.5, 2.8, K['gD'])   # floppy ears
     ell(X, 10, 10 + hy, 3.2, 2.2, K['w'])
     R(8, 8 + hy, 1, 1, K['wL']); R(12, 8 + hy, 1, 1, K['wL'])
     R(9, 9 + hy, 3, 1, K['nose']); X(10, 10 + hy, K['nose'])
@@ -112,7 +112,7 @@ def back(f):
     R(13, 14 + bob, 3, G - 15 - bob - lift, K['gD']); R(13, G - 2 - lift, 4, 2, K['wS'])      # far front leg (right)
     ell(X, 10, 13 + bob * .5, 6.5, 5, lambda x, y: K['gL'] if y > 13 else K['g'])
     ell(X, 10, 4.5 + bob, 5.5, 3.8, K['g'])                                   # back of the head
-    ell(X, 4.5, 6 + bob, 1.8, 3.6, K['gD']); ell(X, 15.5, 6 + bob, 1.8, 3.6, K['gD'])
+    ell(X, 5, 6 + bob, 1.4, 2.8, K['gD']); ell(X, 15, 6 + bob, 1.4, 2.8, K['gD'])
     # back legs, fluffy white
     R(5 + (bk > 0), G - 5, 3, 5, K['w']); R(12 - (bk < 0), G - 5, 3, 5, K['w'])
     R(4 + (bk > 0), G - 2, 4, 2, K['w']); R(12 - (bk < 0), G - 2, 4, 2, K['w'])
@@ -127,12 +127,13 @@ def back(f):
 
 
 if __name__ == '__main__':
-    R_ = [side(f) for f in range(4)]
-    L_ = [side(f, near_missing=False).transpose(Image.FLIP_LEFT_RIGHT) for f in range(4)]
-    D_ = [front(f) for f in range(4)]
-    U_ = [back(f) for f in range(4)]
-    IDLE = [side(0, idle=True), side(0, idle=True, wag=1), side(0, idle=True, blink=True)]
-    FI = [front(0), front(0, blink=True)]
+    FL = lambda im: im.transpose(Image.FLIP_LEFT_RIGHT)
+    R_ = [side(f, near_missing=False) for f in range(4)]          # facing right: his real front leg is the near one
+    L_ = [FL(side(f)) for f in range(4)]                          # facing left: sling on the near shoulder
+    D_ = [FL(front(f)) for f in range(4)]
+    U_ = [FL(back(f)) for f in range(4)]
+    IDLE = [FL(side(0, idle=True)), FL(side(0, idle=True, wag=1)), FL(side(0, idle=True, blink=True))]
+    FI = [FL(front(0)), FL(front(0, blink=True))]
     # raw sheet: rows right / left / down / up, 4 walk frames each (side 32x26, front/back 24x26), + idle row
     sh = Image.new('RGBA', (32 * 4, 26 * 5))
     for r, row in enumerate((R_, L_, D_, U_)):
@@ -162,6 +163,6 @@ if __name__ == '__main__':
     pf[0].save(O + 'sprocket_walk.gif', save_all=True, append_images=pf[1:], duration=110, loop=0)
     # size check next to Adjo
     far = Image.open(os.path.join(ROOT, 'assets/characters/farmer/farmer_sheet.png')).convert('RGBA').crop((22 * 4, 36, 22 * 5, 72))
-    cmp = Image.new('RGBA', (70, 44), bg); cmp.alpha_composite(far, (8, 4)); cmp.alpha_composite(R_[0], (30, 44 - 4 - 23 - 1))
+    cmp = Image.new('RGBA', (70, 44), bg); cmp.alpha_composite(far, (8, 4)); cmp.alpha_composite(L_[0], (30, 44 - 4 - 23 - 1))
     cmp.resize((70 * 8, 44 * 8), Image.NEAREST).convert('RGB').save(O + 'sprocket_with_adjo.png')
     print('ok')
