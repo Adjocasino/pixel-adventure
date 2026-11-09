@@ -2,7 +2,7 @@ from PIL import Image
 def C(h):return (int(h[1:3],16),int(h[3:5],16),int(h[5:7],16),255)
 P=dict(skin=C('#eec6a0'),skinS=C('#d8a982'),hair=C('#2b1e19'),hairL=C('#4a3529'),
  hat=C('#d2ad62'),hatL=C('#e6c67e'),hatS=C('#a98443'),hatD=C('#8a6a35'),band=C('#a8382e'),bandL=C('#c9493c'),
- frame=C('#575062'),frameD=C('#3a3442'),lens=C('#dcebf5'),eye=C('#2a1d22'),
+ frame=C('#7a7387'),frameD=C('#5c5568'),stitch=C('#8cc46c'),lens=C('#dcebf5'),eye=C('#2a1d22'),
  shirt=C('#7a5236'),shirtS=C('#5e3e28'),shirtL=C('#946645'),
  ov=C('#4f8a3c'),ovS=C('#3d6e2f'),ovL=C('#6aa84f'),ovD=C('#2f5824'),btn=C('#c9ccd4'),
  boot=C('#6b4226'),bootS=C('#4e2f1a'),bootL=C('#8a5a36'))
@@ -31,7 +31,7 @@ def farmer(d,f,o={}):
     if d!='side':
         for lx,up in((4,1 if lift==1 else 0),(9,1 if lift==2 else 0)):
             R(lx,22-up,3,4,P['ov']);R(lx,22-up,1,4,P['ovL']);R(lx,25-up,3,1,P['ovS'])
-            R(lx,26-up,3,3,P['boot']);X(lx,26-up,P['bootL']);R(lx,28-up,3,1,P['bootS'])
+            R(lx,25-up,3,1,P['ovL']);R(lx,26-up,3,3,P['boot']);X(lx,26-up,P['bootL']);R(lx,28-up,3,1,P['bootS'])
     else:
         if f%2:
             for lx,dy in((3,0),(9,-1)):R(lx,22,3,4,P['ov']);R(lx,25,3,1,P['ovS']);R(lx-1+(lx>5)*2-1,26+dy,4,3,P['boot']);R(lx-1+(lx>5)*2-1,28+dy,4,1,P['bootS'])
@@ -50,11 +50,21 @@ def farmer(d,f,o={}):
         for i in range(5):X(5+i,13+i+Y,P['ov']);X(10-i,13+i+Y,P['ovS'])
     else:
         R(8,14+Y,3,4,P['ov']);X(8,14+Y,P['ovL']);X(9,12+Y,P['ov']);X(9,13+Y,P['ov']);X(9,14+Y,P['btn'])
+    # outfit details: side pockets with stitching, center seam, rolled cuffs, collar
+    if d=='down':
+        for px in(4,10):R(px,18+Y,2,2,P['ovS']);X(px,18+Y,P['stitch']);X(px+1,18+Y,P['stitch'])
+        X(7,20+Y,P['ovS']);X(8,20+Y,P['ovS'])
+        X(6,12+Y,P['shirtL']);X(9,12+Y,P['shirtL'])
+        X(7,15+Y,P['stitch']);X(8,15+Y,P['stitch'])
+    elif d=='up':
+        for px in(5,9):R(px,19+Y,2,2,P['ovS']);X(px,19+Y,P['stitch']);X(px+1,19+Y,P['stitch'])
+    else:
+        R(5,18+Y,3,2,P['ovS']);X(5,18+Y,P['stitch']);X(6,18+Y,P['stitch']);X(7,18+Y,P['stitch'])
     # arms: short brown sleeves, thin skin forearms
     if d=='side':
         sw=[0,1,0,-1][f];R(6,12+Y,3,3,P['shirtS']);R(7+sw,15+Y,2,4,P['skin']);X(7+sw,18+Y,P['skinS'])
     else:
-        R(2,12+Y,2,3,P['shirt']);R(12,12+Y,2,3,P['shirtS'])
+        R(2,12+Y,2,3,P['shirt']);R(12,12+Y,2,3,P['shirtS']);R(2,14+Y,2,1,P['shirtL']);R(12,14+Y,2,1,P['shirt'])
         R(2,15+Y,2,4,P['skin']);R(12,15+Y,2,4,P['skinS'])
     # neck + head
     R(6,11+Y,4,1,P['skinS'])
@@ -69,9 +79,9 @@ def farmer(d,f,o={}):
         X(2,6+Y,P['skin']);X(2,7+Y,P['skinS']);X(13,6+Y,P['skinS']);X(13,7+Y,P['skinS'])   # ears stick out
         # square professor glasses, no mouth
         for x0 in(3,9):
-            R(x0,6+Y,4,1,P['frameD']);X(x0,7+Y,P['frame']);X(x0+3,7+Y,P['frame']);X(x0,8+Y,P['frame']);X(x0+3,8+Y,P['frame'])
+            R(x0+1,6+Y,2,1,P['frameD']);X(x0,7+Y,P['frame']);X(x0+3,7+Y,P['frame']);X(x0,8+Y,P['frame']);X(x0+3,8+Y,P['frame'])
             X(x0+1,7+Y,P['lens']);X(x0+2,7+Y,P['lens']);X(x0+1,8+Y,P['lens']);X(x0+2,8+Y,P['lens'])
-        X(7,6+Y,P['frameD']);X(8,6+Y,P['frameD'])
+        X(7,7+Y,P['frameD']);X(8,7+Y,P['frameD'])
         if o.get('blink'):X(5,8+Y,P['skinS']);X(10,8+Y,P['skinS'])
         else:X(5,7+Y,P['eye']);X(5,8+Y,P['eye']);X(10,7+Y,P['eye']);X(10,8+Y,P['eye'])
     elif d=='up':
@@ -84,8 +94,8 @@ def farmer(d,f,o={}):
             for x in range(3,7):H(x,y)
         H(9,5);H(11,5);H(12,5);H(4,5,P['hairL'])
         X(6,6+Y,P['skinS']);X(6,7+Y,P['skinS']);X(5,6+Y,P['skin']);X(5,7+Y,P['skinS'])   # ear
-        R(9,6+Y,4,1,P['frameD']);X(9,7+Y,P['frame']);X(12,7+Y,P['frame']);X(9,8+Y,P['frame']);X(12,8+Y,P['frame'])
-        X(11,7+Y,P['lens']);X(11,8+Y,P['lens']);X(7,6+Y,P['frameD']);X(8,6+Y,P['frameD'])
+        R(10,6+Y,2,1,P['frameD']);X(9,7+Y,P['frame']);X(12,7+Y,P['frame']);X(9,8+Y,P['frame']);X(12,8+Y,P['frame'])
+        X(11,7+Y,P['lens']);X(11,8+Y,P['lens']);X(7,7+Y,P['frameD']);X(8,7+Y,P['frameD'])
         X(10,8+Y,P['skinS']) if o.get('blink') else (X(10,7+Y,P['eye']),X(10,8+Y,P['eye']))
     # straw hat with red band
     for y,a,z in((-2,5,10),(-1,4,11),(0,4,11)):
