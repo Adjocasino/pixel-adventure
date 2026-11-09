@@ -24,9 +24,9 @@ class B:
 CATS={
  'precious':dict(body=C('#ecdcc6'),bodyS=C('#d8c3a6'),point=C('#5b4033'),pointS=C('#4a3328'),paw=C('#fbf7f1'),tail=C('#4a3328'),face=C('#e8d6bf'),
    mask=[C('#3a261c'),C('#4a3328'),C('#6e4e3a'),C('#a07e64')],ear=C('#4a3328'),earIn=C('#b88a7c'),bib=C('#fbf7f1'),eyes=[C('#8fb6ff'),C('#8fb6ff')],nose=C('#2b1d3a'),
-   whisk=C('#ffffff'),thick=0,grumpy=0,mouth='w',uwu=1),
+   whisk=C('#ffffff'),thick=0,grumpy=0,mouth='w',uwu=0),
  'cotton':dict(body=C('#ffffff'),bodyS=C('#e9e6ef'),point=C('#ffffff'),pointS=C('#e9e6ef'),paw=C('#ffffff'),tail=C('#ffffff'),face=C('#ffffff'),mask=None,
-   ear=C('#ffffff'),earIn=C('#f4b6b0'),bib=None,eyes=[C('#5d8fe8'),(C('#5d8fe8'),C('#c3cf55'))],nose=C('#f4a6b4'),whisk=C('#a59cad'),thick=0,grumpy=0,mouth='w',uwu=1),
+   ear=C('#ffffff'),earIn=C('#f4b6b0'),bib=None,eyes=[C('#5d8fe8'),(C('#5d8fe8'),C('#c3cf55'))],nose=C('#f4a6b4'),whisk=C('#a59cad'),thick=0,grumpy=0,mouth='w',uwu=0),
  'collete':dict(body=C('#ffffff'),bodyS=C('#e9e6ef'),point=C('#ffffff'),pointS=C('#e9e6ef'),paw=C('#ffffff'),tail=C('#ffffff'),face=C('#ffffff'),mask=None,
    ear=C('#ffffff'),earIn=C('#e9a9a4'),bib=None,eyes=[C('#6f93c4'),C('#6f93c4')],nose=C('#f4a6b4'),whisk=C('#a59cad'),thick=0,grumpy=1,mouth='flat'),
 }
