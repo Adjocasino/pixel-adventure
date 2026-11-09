@@ -24,9 +24,9 @@ class B:
 CATS={
  'precious':dict(body=C('#ecdcc6'),bodyS=C('#d8c3a6'),point=C('#5b4033'),pointS=C('#4a3328'),paw=C('#fbf7f1'),tail=C('#4a3328'),face=C('#e8d6bf'),
    mask=[C('#3a261c'),C('#4a3328'),C('#6e4e3a'),C('#a07e64')],ear=C('#4a3328'),earIn=C('#b88a7c'),bib=C('#fbf7f1'),eyes=[C('#8fb6ff'),C('#8fb6ff')],nose=C('#2b1d3a'),
-   whisk=C('#ffffff'),thick=0,grumpy=0,mouth='smile'),
+   whisk=C('#ffffff'),thick=0,grumpy=0,mouth='w',uwu=1),
  'cotton':dict(body=C('#ffffff'),bodyS=C('#e9e6ef'),point=C('#ffffff'),pointS=C('#e9e6ef'),paw=C('#ffffff'),tail=C('#ffffff'),face=C('#ffffff'),mask=None,
-   ear=C('#ffffff'),earIn=C('#f4b6b0'),bib=None,eyes=[C('#5d8fe8'),(C('#5d8fe8'),C('#c3cf55'))],nose=C('#f4a6b4'),whisk=C('#a59cad'),thick=0,grumpy=0,mouth='smile'),
+   ear=C('#ffffff'),earIn=C('#f4b6b0'),bib=None,eyes=[C('#5d8fe8'),(C('#5d8fe8'),C('#c3cf55'))],nose=C('#f4a6b4'),whisk=C('#a59cad'),thick=0,grumpy=0,mouth='w',uwu=1),
  'collete':dict(body=C('#ffffff'),bodyS=C('#e9e6ef'),point=C('#ffffff'),pointS=C('#e9e6ef'),paw=C('#ffffff'),tail=C('#ffffff'),face=C('#ffffff'),mask=None,
    ear=C('#ffffff'),earIn=C('#e9a9a4'),bib=None,eyes=[C('#6f93c4'),C('#6f93c4')],nose=C('#f4a6b4'),whisk=C('#a59cad'),thick=0,grumpy=1,mouth='flat'),
 }
@@ -49,7 +49,13 @@ def head(b,cat,hx,hy,blink=False):
     b.ell(hx,hy,6,5,f)
     # eyes
     ey=int(hy-1)
-    for i,ex in enumerate((int(hx-3),int(hx+1))):
+    if k.get('uwu'):
+        lc=k['eyes'][0] if k['mask'] else OUT
+        for x0 in(int(hx-4),int(hx+1)):
+            b.sp(x0,ey,lc);b.sp(x0+1,ey+1,lc);b.sp(x0+2,ey,lc)
+        bl=C('#f29aa8')
+        b.sp(int(hx-6),ey+2,bl);b.sp(int(hx-5),ey+2,bl);b.sp(int(hx+4),ey+2,bl);b.sp(int(hx+5),ey+2,bl)
+    for i,ex in enumerate(() if k.get('uwu') else (int(hx-3),int(hx+1))):
         col=k['eyes'][i]
         if blink:
             b.sp(ex,ey+1,OUT);b.sp(ex+1,ey+1,OUT);continue
@@ -64,7 +70,9 @@ def head(b,cat,hx,hy,blink=False):
     b.sp(nx,ny,k['nose']);b.sp(nx+1,ny,k['nose'])
     mc=C('#f3e6d6') if k['mask'] else OUT
     m=k['mouth']
-    if m=='flat':b.sp(nx,ny+2,mc);b.sp(nx+1,ny+2,mc)
+    if m=='w':
+        for (dx,dy) in((-2,1),(-1,2),(0,1),(1,1),(2,2),(3,1)):b.sp(nx+dx,ny+dy,mc)
+    elif m=='flat':b.sp(nx,ny+2,mc);b.sp(nx+1,ny+2,mc)
     elif m=='pout':b.sp(nx-1,ny+3,mc);b.sp(nx,ny+2,mc);b.sp(nx+1,ny+2,mc);b.sp(nx+2,ny+3,mc)
     else:b.sp(nx-1,ny+1,mc);b.sp(nx,ny+2,mc);b.sp(nx+1,ny+2,mc);b.sp(nx+2,ny+1,mc)
     # whiskers
