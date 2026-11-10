@@ -31,3 +31,4 @@
   - **Scoring:** Perfect 1 pt (±50 ms), Great 0.75 (±90 ms), Good 0.4 (±130 ms), Miss 0. The total points are the % score.
   - **Fish by result:** Iron <50%, Bronze 50%+, Silver 70%+, Platinum 85%+, Gold 95%+. This assumes the user's order, iron → bronze → silver → platinum → gold. It's a simple fish colored by rank.
   - **Result screen:** fish caught, %, Perfect/Great/Good/Miss counts, max combo. A = fish again, B = back to the dock.
+- **Music style rule (user's choice):** all fishing and game songs keep the **old-school 8-bit chiptune sound**. Use NES-style voices only: 2 square/pulse leads, a triangle bass and noise drums, generated in code. When the user gives a description or a reference song, the vibe (genre, tempo, energy, structure) is translated into 8-bit. Never copy a reference song's actual melody or hook.
