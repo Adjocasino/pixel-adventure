@@ -17,13 +17,17 @@ button.play{flex:0 0 auto;width:54px;height:54px;border-radius:50%;border:none;b
 .d{font-size:13px;color:#b9cdb4;margin-top:3px;line-height:1.4}
 .bar{height:6px;background:#1b2a22;border-radius:3px;margin-top:22px;overflow:hidden}
 .bar i{display:block;height:100%;width:0;background:#8fd88a}
+.oct{display:flex;gap:8px;margin:0 0 16px;flex-wrap:wrap}
+.oct button{border:2px solid #34503f;background:#25392e;color:#eef4ea;border-radius:20px;padding:8px 14px;font-size:14px;cursor:pointer}
+.oct button.sel{border-color:#8fd88a;background:#3d6b45}
 .foot{font-size:12px;color:#8aa58a;margin-top:10px}
 </style>
 </head>
 <body>
 <main>
   <h1>Willow Village song: piano version</h1>
-  <p class="sub">Same melody, bass and chords as the village song in the game, played three ways. Tap one to play; tap again to stop. It loops.</p>
+  <p class="sub">Same melody, bass and chords as the village song in the game, played three ways. Tap one to play; tap again to stop. It loops. Use the key buttons to move the piano lower (the current game version always stays the same).</p>
+  <div class="oct" id="oct"><button data-o="0">Original keys</button><button data-o="1" class="sel">Lower</button><button data-o="2">Much lower</button></div>
   <div class="card" data-v="game"><button class="play">▶</button><div><div class="t">1. Current (in the game now)</div><div class="d">Soft triangle melody, sine bass and a quiet square arpeggio.</div></div></div>
   <div class="card" data-v="piano"><button class="play">▶</button><div><div class="t">2. Solo piano</div><div class="d">Right hand plays the melody, left hand plays the bass and broken chords, with a little room echo. A touch slower and gentler.</div></div></div>
   <div class="card" data-v="pad"><button class="play">▶</button><div><div class="t">3. Piano + soft strings</div><div class="d">The same piano, with a warm string pad holding the chords underneath. Cozier, more "morning in the village".</div></div></div>
@@ -44,6 +48,7 @@ const LOOP=64;   // units per loop
 const CH=[['G2','D3','G3','B3'],['D3','A3','D4','F#4'],['C3','G3','C4','E4'],['A2','E3','A3','C4'],['G2','D3','G3','B3'],['E2','B2','E3','G3'],['C3','G3','C4','E4'],['G2','D3','G3','B3']].map(c=>c.map(midi));
 const CH2=[null,null,null,null,null,null,[['C3','G3','C4','E4'],['D3','A3','D4','F#4']].map(c=>c.map(midi)),null];   // bar 7 splits C | D like the bass
 
+let OCT=1;const MS=()=>[0,-12,-12][OCT],LS=()=>[0,0,-12][OCT];   // melody / left-hand shift in semitones
 let AC=null,out=null,rev=null,playing=null,timer=null,t0=0,nextLoop=0,loopLen=0;
 function init(){if(AC)return;AC=new (window.AudioContext||window.webkitAudioContext)();out=AC.createGain();out.gain.value=.8;out.connect(AC.destination);
   // simple room reverb from a generated impulse
@@ -75,12 +80,12 @@ function scheduleLoop(v,t){
     return;}
   const st=.25;loopLen=LOOP*st;
   // right hand: melody, gentle dynamics that rise into each phrase
-  {let x=t,u=0;MEL.forEach(([m,l],i)=>{const ph=(u%16)/16;if(m)piano(m,x,l*st,.34+.12*Math.sin(ph*Math.PI));x+=l*st;u+=l;});}
+  {let x=t,u=0;MEL.forEach(([m,l],i)=>{const ph=(u%16)/16;if(m)piano(m+MS(),x,l*st,(.34+.12*Math.sin(ph*Math.PI))*(OCT?1.15:1));x+=l*st;u+=l;});}
   // left hand: bass note on the bar, then a broken chord walking up
   for(let b=0;b<8;b++){const bt=t+b*8*st,parts=CH2[b]||[CH[b]];
-    parts.forEach((c,pi)=>{const span=8/parts.length,ct=bt+pi*span*st;piano(c[0],ct,span*st,.3);
-      const steps=span===8?[2,3,4,5,6]:[1,2,3];steps.forEach((s,k)=>piano(c[1+(k%3)],ct+s*st*(span===8?1:1.3),st*1.6,.12));});}
-  if(v==='pad')for(let b=0;b<8;b++)pad(CH[b].slice(1).map(m=>m+12),t+b*8*st,8*st,.035);
+    parts.forEach((c,pi)=>{const span=8/parts.length,ct=bt+pi*span*st;piano(c[0]+LS(),ct,span*st,OCT===2?.26:.3);
+      const steps=span===8?[2,3,4,5,6]:[1,2,3];steps.forEach((s,k)=>piano(c[1+(k%3)]+LS(),ct+s*st*(span===8?1:1.3),st*1.6,.12));});}
+  if(v==='pad')for(let b=0;b<8;b++)pad(CH[b].slice(1).map(m=>m+12+LS()+(OCT===1?-12:0)),t+b*8*st,8*st,.035);
 }
 function stopAll(){for(const n of live){try{n.stop();}catch(e){}}live.length=0;clearInterval(timer);timer=null;playing=null;
   document.querySelectorAll('.card').forEach(c=>{c.classList.remove('on');c.querySelector('button').textContent='▶';});document.getElementById('prog').style.width='0';}
@@ -89,6 +94,8 @@ function play(v){init();if(AC.state==='suspended')AC.resume();stopAll();playing=
     document.getElementById('prog').style.width=(((AC.currentTime-t0)%loopLen)/loopLen*100)+'%';
     if(live.length>4000)live.splice(0,2000);},100);
   const c=document.querySelector(`.card[data-v="${v}"]`);c.classList.add('on');c.querySelector('button').textContent='■';}
+document.querySelectorAll('#oct button').forEach(b=>b.addEventListener('click',()=>{OCT=+b.dataset.o;
+  document.querySelectorAll('#oct button').forEach(x=>x.classList.toggle('sel',x===b));if(playing&&playing!=='game')play(playing);}));
 document.querySelectorAll('.card').forEach(c=>c.addEventListener('click',()=>{const v=c.dataset.v;if(playing===v)stopAll();else play(v);}));
 </script>
 </body>
