@@ -32,3 +32,4 @@
   - **Fish by result:** Iron <50%, Bronze 50%+, Silver 70%+, Platinum 85%+, Gold 95%+. This assumes the user's order, iron → bronze → silver → platinum → gold. It's a simple fish colored by rank.
   - **Result screen:** fish caught, %, Perfect/Great/Good/Miss counts, max combo. A = fish again, B = back to the dock.
 - **Fishing minigame music (user's choice):** the fishing rhythm minigame keeps its **old-school 8-bit chiptune sound** (NES-style square leads, triangle bass and noise drums, generated in code). This applies only to this minigame; the rest of the game's music style isn't decided by this.
+- **Lake fish samples** (pictures only: `assets/fish/`, `tools/fish.py`): ten side-view fish with 2 swim frames each, for the fishing minigame's catches. Tilapia, Bangus, Hito, Dalag, Karpa, Tawilis, Ayungin, Gurami, Igat, Janitor fish. Which ones to use, and how they map to the Iron–Gold ranks, isn't decided yet.
