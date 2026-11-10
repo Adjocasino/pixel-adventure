@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cottage Meadow — Village Song: Piano Demo</title>
+<style>
+html,body{margin:0;min-height:100%;background:#1b2a22;color:#eef4ea;font-family:system-ui,sans-serif}
+main{max-width:560px;margin:0 auto;padding:28px 18px 40px}
+h1{font-size:22px;margin:0 0 4px}
+p.sub{margin:0 0 22px;color:#b9cdb4;font-size:14px;line-height:1.45}
+.card{background:#25392e;border:2px solid #34503f;border-radius:14px;padding:14px 16px;margin-bottom:12px;display:flex;align-items:center;gap:14px}
+.card.on{border-color:#8fd88a;background:#2c4636}
+button.play{flex:0 0 auto;width:54px;height:54px;border-radius:50%;border:none;background:#4fa85a;color:#fff;font-size:22px;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.35)}
+.card.on button.play{background:#d8873a}
+.t{font-weight:700;font-size:16px}
+.d{font-size:13px;color:#b9cdb4;margin-top:3px;line-height:1.4}
+.bar{height:6px;background:#1b2a22;border-radius:3px;margin-top:22px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:#8fd88a}
+.foot{font-size:12px;color:#8aa58a;margin-top:10px}
+</style>
+</head>
+<body>
+<main>
+  <h1>Willow Village song: piano version</h1>
+  <p class="sub">Same melody, bass and chords as the village song in the game, played three ways. Tap one to play; tap again to stop. It loops.</p>
+  <div class="card" data-v="game"><button class="play">▶</button><div><div class="t">1. Current (in the game now)</div><div class="d">Soft triangle melody, sine bass and a quiet square arpeggio.</div></div></div>
+  <div class="card" data-v="piano"><button class="play">▶</button><div><div class="t">2. Solo piano</div><div class="d">Right hand plays the melody, left hand plays the bass and broken chords, with a little room echo. A touch slower and gentler.</div></div></div>
+  <div class="card" data-v="pad"><button class="play">▶</button><div><div class="t">3. Piano + soft strings</div><div class="d">The same piano, with a warm string pad holding the chords underneath. Cozier, more "morning in the village".</div></div></div>
+  <div class="bar"><i id="prog"></i></div>
+  <div class="foot">Generated live in your browser from code; no audio files. Original melody from the game.</div>
+</main>
+<script>
+const NOTE={C:0,D:2,E:4,F:5,G:7,A:9,B:11};
+const midi=n=>{const m=/([A-G])(#?)(\d)/.exec(n);return NOTE[m[1]]+(m[2]?1:0)+(+m[3]+1)*12;};
+const hz=m=>440*Math.pow(2,(m-69)/12);
+const SQ=s=>s.trim().split(/\s+/).map(t=>{const[n,l]=t.split(':');return[n==='-'?0:midi(n),+l];});
+// the village ("day") song, exactly as in the game
+const MEL=SQ(`B4:2 D5:2 G5:4 F#5:2 E5:2 D5:4 C5:2 E5:2 A5:4 G5:2 F#5:2 E5:4 D5:2 G5:2 B5:3 A5:1 G5:2 E5:2 D5:4 C5:2 B4:2 A4:2 F#4:2 G4:8`);
+const BAS=SQ(`G2:8 D3:8 C3:8 A2:8 G2:8 E3:8 C3:4 D3:4 G2:8`);
+const ARP=SQ(`-:2 G4:2 B4:2 D5:2 -:2 E4:2 G4:2 C5:2 -:2 G4:2 B4:2 D5:2 -:2 D4:2 F#4:2 A4:2`);
+const LOOP=64;   // units per loop
+// chord per 8-unit bar (for the piano left hand + string pad)
+const CH=[['G2','D3','G3','B3'],['D3','A3','D4','F#4'],['C3','G3','C4','E4'],['A2','E3','A3','C4'],['G2','D3','G3','B3'],['E2','B2','E3','G3'],['C3','G3','C4','E4'],['G2','D3','G3','B3']].map(c=>c.map(midi));
+const CH2=[null,null,null,null,null,null,[['C3','G3','C4','E4'],['D3','A3','D4','F#4']].map(c=>c.map(midi)),null];   // bar 7 splits C | D like the bass
+
+let AC=null,out=null,rev=null,playing=null,timer=null,t0=0,nextLoop=0,loopLen=0;
+function init(){if(AC)return;AC=new (window.AudioContext||window.webkitAudioContext)();out=AC.createGain();out.gain.value=.8;out.connect(AC.destination);
+  // simple room reverb from a generated impulse
+  const len=AC.sampleRate*2.2,ir=AC.createBuffer(2,len,AC.sampleRate);
+  for(let ch=0;ch<2;ch++){const a=ir.getChannelData(ch);for(let i=0;i<len;i++)a[i]=(Math.random()*2-1)*Math.pow(1-i/len,3.2);}
+  rev=AC.createConvolver();rev.buffer=ir;const rg=AC.createGain();rg.gain.value=.32;rev.connect(rg);rg.connect(out);}
+const live=[];
+function track(n){live.push(n);return n;}
+// --- the game's voice (same as tone() in the game)
+function chip(m,t,d,type,v){const o=track(AC.createOscillator()),g=AC.createGain();o.type=type;o.frequency.value=hz(m);
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.01);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g);g.connect(out);o.start(t);o.stop(t+d+.05);}
+// --- piano voice: a few decaying partials + hammer click, brighter when louder, longer decay for low notes
+function piano(m,t,d,v){const f=hz(m),decay=Math.max(.9,3.2-(m-40)*.045),rel=Math.min(d+.25,decay);
+  const g=AC.createGain(),lp=AC.createBiquadFilter();lp.type='lowpass';lp.frequency.setValueAtTime(Math.min(9000,f*7+1500*v),t);lp.frequency.exponentialRampToValueAtTime(Math.max(600,f*2.2),t+decay*.6);lp.Q.value=.4;
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.006);g.gain.exponentialRampToValueAtTime(v*.35,t+.18);g.gain.exponentialRampToValueAtTime(.0008,t+rel+.35);
+  [[1,1],[2,.42],[3,.18],[4,.09],[5.02,.04]].forEach(([h,a],i)=>{const o=track(AC.createOscillator()),og=AC.createGain();o.type=i?'sine':'triangle';o.frequency.value=f*h*(1+(i?.0007*i:0));o.detune.value=(i%2?2:-2);og.gain.value=a;o.connect(og);og.connect(lp);o.start(t);o.stop(t+rel+.4);});
+  const nb=AC.createBuffer(1,AC.sampleRate*.03,AC.sampleRate),na=nb.getChannelData(0);for(let i=0;i<na.length;i++)na[i]=(Math.random()*2-1)*(1-i/na.length);
+  const ns=track(AC.createBufferSource()),nf=AC.createBiquadFilter(),ng=AC.createGain();ns.buffer=nb;nf.type='bandpass';nf.frequency.value=Math.min(6000,f*4);ng.gain.value=v*.12;ns.connect(nf);nf.connect(ng);ng.connect(lp);ns.start(t);
+  lp.connect(g);g.connect(out);g.connect(rev);}
+// --- warm string pad
+function pad(ms,t,d,v){const g=AC.createGain(),lp=AC.createBiquadFilter();lp.type='lowpass';lp.frequency.value=1400;
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.6);g.gain.setValueAtTime(v,t+d-.3);g.gain.linearRampToValueAtTime(0,t+d+.4);
+  for(const m of ms)for(const det of[-7,6]){const o=track(AC.createOscillator());o.type='sawtooth';o.frequency.value=hz(m);o.detune.value=det;o.connect(lp);o.start(t);o.stop(t+d+.5);}
+  lp.connect(g);g.connect(out);g.connect(rev);}
+
+function scheduleLoop(v,t){
+  if(v==='game'){const st=.22;loopLen=LOOP*st;
+    for(const[tr,type,vol]of[[MEL,'triangle',.45],[BAS,'sine',.45],[ARP,'square',.06]]){let x=t,u=0,i=0;while(u<LOOP){const[m,l]=tr[i%tr.length];if(m)chip(m,x,l*st*.95,type,vol);x+=l*st;u+=l;i++;}}
+    return;}
+  const st=.25;loopLen=LOOP*st;
+  // right hand: melody, gentle dynamics that rise into each phrase
+  {let x=t,u=0;MEL.forEach(([m,l],i)=>{const ph=(u%16)/16;if(m)piano(m,x,l*st,.34+.12*Math.sin(ph*Math.PI));x+=l*st;u+=l;});}
+  // left hand: bass note on the bar, then a broken chord walking up
+  for(let b=0;b<8;b++){const bt=t+b*8*st,parts=CH2[b]||[CH[b]];
+    parts.forEach((c,pi)=>{const span=8/parts.length,ct=bt+pi*span*st;piano(c[0],ct,span*st,.3);
+      const steps=span===8?[2,3,4,5,6]:[1,2,3];steps.forEach((s,k)=>piano(c[1+(k%3)],ct+s*st*(span===8?1:1.3),st*1.6,.12));});}
+  if(v==='pad')for(let b=0;b<8;b++)pad(CH[b].slice(1).map(m=>m+12),t+b*8*st,8*st,.035);
+}
+function stopAll(){for(const n of live){try{n.stop();}catch(e){}}live.length=0;clearInterval(timer);timer=null;playing=null;
+  document.querySelectorAll('.card').forEach(c=>{c.classList.remove('on');c.querySelector('button').textContent='▶';});document.getElementById('prog').style.width='0';}
+function play(v){init();if(AC.state==='suspended')AC.resume();stopAll();playing=v;t0=AC.currentTime+.08;scheduleLoop(v,t0);nextLoop=t0+loopLen;
+  timer=setInterval(()=>{if(AC.currentTime>nextLoop-1){scheduleLoop(v,nextLoop);nextLoop+=loopLen;}
+    document.getElementById('prog').style.width=(((AC.currentTime-t0)%loopLen)/loopLen*100)+'%';
+    if(live.length>4000)live.splice(0,2000);},100);
+  const c=document.querySelector(`.card[data-v="${v}"]`);c.classList.add('on');c.querySelector('button').textContent='■';}
+document.querySelectorAll('.card').forEach(c=>c.addEventListener('click',()=>{const v=c.dataset.v;if(playing===v)stopAll();else play(v);}));
+</script>
+</body>
+</html>
