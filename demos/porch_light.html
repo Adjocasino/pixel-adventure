@@ -24,7 +24,7 @@ button.play{flex:0 0 auto;width:54px;height:54px;border-radius:50%;border:none;b
   <p class="sub">Sitting on the porch with your wife, looking out over the meadow, just enjoying life. A warm major key with a slow, rocking-chair sway (6/8). Loops. Tap to play, tap again to stop.</p>
   <div class="card" data-v="piano"><button class="play">▶</button><div><div class="t">1. Solo piano</div><div class="d">A simple, hummable melody over gently rocking chords.</div></div></div>
   <div class="card" data-v="porch"><button class="play">▶</button><div><div class="t">2. Porch version</div><div class="d">The piano with a soft warm pad and birds in the meadow. From the second time around, a soft flute joins in harmony, like a second person humming along.</div></div></div>
-  <div class="card" data-v="harp"><button class="play">▶</button><div><div class="t">3. Porch version with harp</div><div class="d">Harp takes over the strings: rolling harp arpeggios instead of the pad, a little harp sweep leading into each new section, plus the piano melody, the humming flute and the birds.</div></div></div>
+  <div class="card" data-v="harp"><button class="play">▶</button><div><div class="t">3. Piano + harp</div><div class="d">Just two instruments: the piano plays the melody and a low bass note, and the harp rolls up through the chords, with a little harp sweep leading into each new section.</div></div></div>
   <div class="bar"><i id="prog"></i></div>
   <div class="foot">F major, about 72 BPM, 6/8. Chords: Fmaj7 · Am7 · B♭maj7 · C ... Dm7 · Am7 · B♭maj7 · F · Gm7 · Am7 · B♭maj7 · C7. Melody and chords are original. Generated live in your browser.</div>
 </main>
@@ -86,13 +86,12 @@ function bird(t){const f=2600+Math.random()*1400,n=2+(Math.random()*3|0);for(let
 function scheduleLoop(v,t){loopLen=LOOP*ST;const n=loopN++;
   const hum=()=>(Math.random()-.5)*.018;
   {let x=t,u=0;MEL.forEach(([m,l])=>{const ph=(u%24)/24;if(m){piano(m,x+hum(),Math.max(l*ST,.45),.3+.08*Math.sin(ph*Math.PI)+Math.random()*.03);
-      if(v!=='piano'&&n>0&&l>=3)flute(third(m),x+.02,l*ST*.95,.05);}x+=l*ST;u+=l;});}
+      if(v==='porch'&&n>0&&l>=3)flute(third(m),x+.02,l*ST*.95,.05);}x+=l*ST;u+=l;});}
   for(let b=0;b<BARS;b++){const bt=t+b*6*ST,c=CH[b];
     piano(c[0],bt+hum(),6*ST,.24);
     if(v==='harp'){[[0,1],[1,2],[2,3],[3,1],[4,2],[5,3]].forEach(([s,k],i)=>harp(c[k]+(i<3?12:24),bt+s*ST+hum(),.07+Math.random()*.02));
       if(b===7||b===15)gliss(bt+3*ST,midi('F4'),9,ST/3,.06);}
     else [[1,1],[2,2],[3,3],[4,2],[5,1]].forEach(([s,k])=>piano(c[k],bt+s*ST+hum(),2.2*ST,.08+Math.random()*.025));}
-  if(v==='harp')for(let i=0;i<4;i++)bird(t+Math.random()*loopLen);
   if(v==='porch'){for(let b=0;b<BARS;b++)pad(CH[b].slice(1).map(m=>m+12),t+b*6*ST,6*ST,.022);
     for(let i=0;i<4;i++)bird(t+Math.random()*loopLen);}
 }
