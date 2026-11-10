@@ -35,29 +35,33 @@ let NB=null;function nz(t,d,v,hp){if(!NB){NB=AC.createBuffer(1,AC.sampleRate*.5,
   const s=AC.createBufferSource(),f=AC.createBiquadFilter(),g=AC.createGain();s.buffer=NB;f.type='highpass';f.frequency.value=hp;g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0008,t+d);s.connect(f);f.connect(g);g.connect(master);s.start(t);s.stop(t+d+.02);}
 const hz=n=>440*Math.pow(2,(n-69)/12);
 
-// ---------------- chart: 120 BPM, exactly 100 notes ----------------
-const BPM=120,BEAT=60/BPM,SL=BEAT/2,BAR=BEAT*4,INTRO=2;      // 8th-note slots, 2 bars of intro
+// ---------------- chart: 120 → 200 BPM ramp, exactly 100 notes ----------------
+const BPM0=120,BPM1=200,INTRO=2;      // tempo ramps from 120 to 200 BPM across the song; 8th-note slots; 2 bars of intro at 120
 const PAT=['a.b.a.b.','aab.a.bb','X.a.b.a.','a.a.bba.','b.X.b.aa','abab a..'.replace(' ','.'),'X...X...','a.b.abab','b.b.a.a.','aba.bab.','X.ab.Xa.','abbaabba'];
 function rng(s){return()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;};}
-function buildChart(seed){const r=rng(seed),notes=[];let bar=0,count=0;
-  while(count<100){const pool=bar<3?[0,6,8]:bar<8?[0,1,2,3,4,8,10]:[1,2,4,5,7,9,10,11];const p=PAT[pool[(r()*pool.length)|0]];
-    for(let s=0;s<8&&count<100;s++){const c=p[s],t=(INTRO+bar)*BAR+s*SL;
-      if(c==='a'||c==='b'){notes.push({t,lane:c});count++;}
-      else if(c==='X'){if(count<=98){notes.push({t,lane:'b',dbl:1});notes.push({t,lane:'a',dbl:1});count+=2;}else{notes.push({t,lane:'a'});count++;}}}
-    bar++;}
-  return{notes,bars:bar};}
+function buildChart(seed){const r=rng(seed),pats=[];let count=0;
+  while(count<100){const bar=pats.length,pool=bar<3?[0,6,8]:bar<8?[0,1,2,3,4,8,10]:[1,2,4,5,7,9,10,11];const p=PAT[pool[(r()*pool.length)|0]];
+    const ev=[];for(let s=0;s<8&&count<100;s++){const c=p[s];if(c==='a'||c==='b'){ev.push([s,c]);count++;}
+      else if(c==='X'){if(count<=98){ev.push([s,'X']);count+=2;}else{ev.push([s,'a']);count++;}}}
+    pats.push(ev);}
+  const nb=pats.length,total=INTRO+nb+1,bpm=[],start=[];let t=0;
+  for(let b=0;b<total;b++){const i=b-INTRO,k=nb>1?Math.min(1,Math.max(0,i/(nb-1))):0;bpm[b]=b<INTRO?BPM0:Math.round(BPM0+(BPM1-BPM0)*k);start[b]=t;t+=4*60/bpm[b];}
+  const notes=[];pats.forEach((ev,i)=>{const b=INTRO+i,sl=30/bpm[b];for(const[sx,c]of ev){const tt=start[b]+sx*sl;
+    if(c==='X'){notes.push({t:tt,lane:'b',dbl:1,bar:b});notes.push({t:tt,lane:'a',dbl:1,bar:b});}else notes.push({t:tt,lane:c,bar:b});}});
+  return{notes,bars:nb,bpm,start,total,end:t,introEnd:start[INTRO]};}
+function bpmAt(tn){if(!chart)return BPM0;let b=0;while(b+1<chart.total&&chart.start[b+1]<=tn)b++;return chart.bpm[b];}
 
-// ---------------- music: chiptune at 120 BPM, melody follows the chart ----------------
+// ---------------- music: chiptune following the tempo ramp, melody follows the chart ----------------
 const PROG=[[48,52,55],[45,48,52],[41,45,48],[43,47,50]];      // C Am F G
 const SCALE=[0,2,4,7,9];
-function scheduleSong(t0,chart){const total=INTRO+chart.bars+1;
-  for(let b=0;b<total;b++){const bt=t0+b*BAR,ch=PROG[b%4];
+function scheduleSong(t0,chart){const total=chart.total;
+  for(let b=0;b<total;b++){const bt=t0+chart.start[b],ch=PROG[b%4],BEAT=60/chart.bpm[b],SL=BEAT/2;
     for(let q=0;q<4;q++){const t=bt+q*BEAT;osc('sine',150,t,.12,.9,45);if(q%2)nz(t,.09,.35,1500);}
     for(let e=0;e<8;e++){const t=bt+e*SL;nz(t,.025,b<INTRO?.12:.08,7000);if(b>=INTRO)osc('sawtooth',hz(ch[e%3]-12),t,.1,.06);}
     if(b<INTRO){osc('square',hz(72),bt,.08,.12);osc('square',hz(72),bt+BEAT,.08,.08);osc('square',hz(72),bt+BEAT*2,.08,.08);osc('square',hz(79),bt+BEAT*3,.12,.14);}}
-  chart.notes.forEach((n,i)=>{const b=Math.floor((n.t)/BAR)%4,root=PROG[b][0]+24,deg=SCALE[(i*3+(n.lane===TOP?2:0))%5];
+  chart.notes.forEach((n,i)=>{const b=n.bar%4,root=PROG[b][0]+24,deg=SCALE[(i*3+(n.lane===TOP?2:0))%5];
     osc('square',hz(root+deg+(n.lane===TOP?12:0)),t0+n.t,.09,.09);});
-  return t0+total*BAR;}
+  return t0+chart.end;}
 function hitSfx(j){if(!AC)return;const t=AC.currentTime;if(j==='miss'){nz(t,.06,.15,200);return;}osc('triangle',j==='perfect'?1320:j==='great'?990:760,t,.05,.18);}
 
 // ---------------- game state ----------------
@@ -117,7 +121,7 @@ function drawDock(){sky(80,T);water(80,T);
   if(ADJO.complete)ctx.drawImage(ADJO,180,48);                                                 // Adjo at the end of the dock
   const bob=Math.round(Math.sin(T/8));R(205,48+bob,14,12,'#fff');R(206,49+bob,12,10,'#fff');txt('A',212,54+bob,'#2f7a3a',8,'center','#fff');R(210,60+bob,4,2,'#fff');
   txt('MIRROR LAKE — FISHING SPOT',W/2,12,'#fff',8);txt('Press A to cast your line',W/2,150,'#fff6c8',8);
-  txt('120 BPM rhythm fishing · 100 notes · A = top lane, B = bottom lane',W/2,164,'#cfe6f2',6);}
+  txt('120 → 200 BPM rhythm fishing · 100 notes · A = top lane, B = bottom lane',W/2,164,'#cfe6f2',6);}
 function drawPlay(){const tn=now();
   sky(84,T);water(84,T);R(0,84,W,1,'#d8f4ff');
   // lanes
@@ -140,11 +144,12 @@ function drawPlay(){const tn=now();
   fx=fx.filter(f=>++f.t<16);for(const f of fx){const r=6+f.t;ctx.strokeStyle=f.j==='perfect'?`rgba(255,240,150,${1-f.t/16})`:`rgba(200,240,255,${1-f.t/16})`;ctx.beginPath();ctx.arc(f.x,f.y,r,0,7);ctx.stroke();}
   // HUD
   const pct=score;R(0,0,W,13,'rgba(10,20,30,.55)');txt(`${pct.toFixed(1)}%`,W-6,7,'#fff6c8',8,'right');txt('FISHING',6,7,'#cfe6f2',8,'left');
-  const prog=Math.max(0,Math.min(1,tn/(endT-BAR)));R(70,5,180,3,'rgba(255,255,255,.2)');R(70,5,180*prog,3,'#9ae0ff');
-  if(tn<INTRO*BAR){const k=Math.ceil((INTRO*BAR-tn)/BEAT);if(tn>0)txt(k>4?'READY':String(Math.min(4,k)),W/2,44,'#fff',16);}
+  const prog=Math.max(0,Math.min(1,tn/(chart.start[chart.total-1])));R(70,5,180,3,'rgba(255,255,255,.2)');R(70,5,180*prog,3,'#9ae0ff');
+  if(tn<chart.introEnd){const k=Math.ceil((chart.introEnd-tn)/(60/BPM0));if(tn>0)txt(k>4?'READY':String(Math.min(4,k)),W/2,44,'#fff',16);}
+  { const bp=bpmAt(Math.max(0,tn));txt(`${bp} BPM`,W/2,22,bp>=180?'#ff9a7a':bp>=150?'#ffe07a':'#cfe6f2',7); }
   if(combo>=3)txt(`${combo} COMBO`,W/2+40,96,'#fff',10);
   if(judg&&T-judg.t<24){const c={perfect:'#ffe07a',great:'#9ae0ff',good:'#b6f0a0',miss:'#ff8a8a'}[judg.j];txt(judg.j.toUpperCase(),HITX+30,LANEY[judg.lane]-18-(T-judg.t)/4,c,8);}
-  if(tn>endT-BAR*0.5)finish();}
+  if(tn>chart.start[chart.total-1]+0.3)finish();}
 function drawResult(){const r=result,k=Math.min(1,T/30);sky(84,T);water(84,T);R(0,0,W,H,'rgba(10,16,28,.55)');
   txt('YOU CAUGHT A',W/2,22,'#cfe6f2',8);txt(`${r.rank.n} FISH!`,W/2,36,r.rank.c[1],14);
   const fy=82-Math.sin(Math.min(1,T/40)*Math.PI)*0+Math.round(Math.sin(T/10)*2);fish(W/2,fy,r.rank.c,4*k,1,T);
