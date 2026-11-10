@@ -33,3 +33,11 @@
   - **Result screen:** fish caught, %, Perfect/Great/Good/Miss counts, max combo. A = fish again, B = back to the dock.
 - **Fishing minigame music (user's choice):** the fishing rhythm minigame keeps its **old-school 8-bit chiptune sound** (NES-style square leads, triangle bass and noise drums, generated in code). This applies only to this minigame; the rest of the game's music style isn't decided by this.
 - **Lake fish samples** (pictures only: `assets/fish/`, `tools/fish.py`): ten side-view fish with 2 swim frames each, for the fishing minigame's catches. Tilapia, Bangus, Hito, Dalag, Karpa, Tawilis, Ayungin, Gurami, Igat, Janitor fish. Which ones to use, and how they map to the Iron–Gold ranks, isn't decided yet.
+- **Fish catch chart (user's design):** the score picks the fish pair, then where you land inside that pair's band picks its quality tier (Iron → Gold, five equal steps). One of the two fish is chosen at random.
+  | Score band | Fish | Iron | Bronze | Silver | Platinum | Gold |
+  |---|---|---|---|---|---|---|
+  | 0–49% | Janitor fish / Ayungin | 0–9 | 10–19 | 20–29 | 30–39 | 40–49 |
+  | 50–69% | Tilapia / Tawilis | 50–53 | 54–57 | 58–61 | 62–65 | 66–69 |
+  | 70–84% | Hito / Gurami | 70–72 | 73–75 | 76–78 | 79–81 | 82–84 |
+  | 85–94% | Dalag / Bangus | 85–86 | 87–88 | 89–90 | 91–92 | 93–94 |
+  | 95–100% | Karpa / Igat | 95 | 96 | 97 | 98–99 | 100 (perfect run only) |
