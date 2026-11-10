@@ -24,10 +24,10 @@
 - **Mirror Lake fishing: a rhythm minigame (Muse Dash style)**. Demo: `demos/fishing_rhythm.html`, also published as an artifact.
   - **Getting in:** a sparkling fishing spot at the end of the dock. Press A there and a ripple wipe opens a new fishing screen.
   - **Two lanes:**
-    - top lane = **B** (leaping orange fish)
-    - bottom lane = **A** (blue bubble fish)
+    - top lane = **A** (leaping orange fish; keys J/X/↑/Space)
+    - bottom lane = **B** (blue bubble fish; keys F/Z/↓)
     - double notes = press both at once
-  - **Song and chart:** 240 BPM chiptune; the melody follows the notes. 2 bars of count-in, then **exactly 100 notes** that get harder bar by bar.
+  - **Song and chart:** **120 BPM** chiptune (changed from 240 at the user's request); the melody follows the notes. 2 bars of count-in, then **exactly 100 notes** that get harder bar by bar.
   - **Scoring:** Perfect 1 pt (±50 ms), Great 0.75 (±90 ms), Good 0.4 (±130 ms), Miss 0. The total points are the % score.
   - **Fish by result:** Iron <50%, Bronze 50%+, Silver 70%+, Platinum 85%+, Gold 95%+. This assumes the user's order, iron → bronze → silver → platinum → gold. It's a simple fish colored by rank.
   - **Result screen:** fish caught, %, Perfect/Great/Good/Miss counts, max combo. A = fish again, B = back to the dock.
