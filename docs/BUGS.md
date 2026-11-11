@@ -51,11 +51,11 @@
   rotten fruit (−points, breaks combo), bee (1 s stun), durian (−1 heart), bird poop (covers part of the screen), pebble (knocks a fruit out of the basket).
 - Good items: golden mango (double points for 5 s).
 - Hearts: the user likes the heart system. Solo: 3 hearts.
-- **Demo:** `demos/fruit_catch.html` (single player only). Adjo carries a bilao basket on his hat.
-  Scoring in the demo: mango +10, guava +15, calamansi +25 (small, fast), golden mango +50 and ×2 for 5 s, heart fruit +1 heart (+30 if full).
-  Combo: 10/20/30/40 in a row = ×1.5/×2/×2.5/×3. A good fruit hitting the ground breaks the combo (no point loss).
-  Rotten −20, pebble −15, bee 1 s stun, poop splat 3 s, durian −1 heart. Speed and bad-item share ramp up over 2 minutes.
-  Titles: Sprout, Picker 500, Farmer 1500, Orchard Keeper 3000, Mango Master 5000.
+- **Demo v2 (physics):** `demos/fruit_catch.html`, built from `tools/fruit_catch_src.html` by `tools/build_fruit_demo.py`. Adjo pose art: `tools/adjo_bilao.py` (sprint with arms up holding the bilao like a tray, plus a standing arms-up idle).
+  Fruit lands in a physics bilao: piles, rolls, bounces; jerky moves spill it; heavier load = slower Adjo.
+  Points only when banked in a crate (both edges; the bilao tips in). Load multiplier: +0.15 per extra fruit (max x3); golden mango doubles the dump; rotten banked = -25 each.
+  Fruit values: mango 10, guava 15, calamansi 25, golden 50. Heart fruit +1 heart on landing. Durian -1 heart and flings the pile. Bee stun, poop splat, pebble heavy/bouncy.
+  2-minute round, wind gusts after 40 s, fruit storm in the last 15 s. Titles: Sprout, Picker 400, Farmer 1200, Orchard Keeper 2500, Mango Master 4000.
 
 ### MULTIPLAYER: only build when the user says "include in the multiplayer"
 - Planned connection: **LAN only** (phone hotspot or same Wi-Fi). No internet server.
