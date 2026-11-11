@@ -72,7 +72,7 @@
 ### MULTIPLAYER: only build when the user says "include in the multiplayer"
 - Planned connection: **LAN only** (phone hotspot or same Wi-Fi). No internet server.
   Tech note: a WebView page can't open LAN sockets by itself, so the Android side needs a small native bridge (local socket/WebSocket server + discovery) that the page talks to.
-- Fruit catch modes: versus (shared tree, steal catches), co-op (shared goal), vs CPU (Inad or the kid).
+- Fruit catch modes: versus (shared tree, steal catches), co-op (shared goal), vs CPU (Inad).
 - Versus items: chili (sends the next bad item to the opponent's side), slingshot (knock a fruit off the other player's path).
 - **No game over in co-op: downed + revive (CPR).**
   - At 0 hearts a player is downed instead of the game ending.
