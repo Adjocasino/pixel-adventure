@@ -34,6 +34,7 @@ ul{margin:6px 0 0;padding-left:20px;color:#b9cdb4;font-size:13.5px;line-height:1
 <ul>
   <li><b>Banking:</b> run to a crate at either edge and the bilao tips everything in. Fruit only scores when it lands in a crate.</li>
   <li><b>Load multiplier:</b> each extra fruit in one dump adds ×0.15 (5 fruit = ×1.6, 10 = ×2.35, 14+ = ×3). A golden mango in the load doubles the whole dump.</li>
+  <li><b>Weight:</b> the more you carry, the slower Adjo runs and turns (down to half speed). Watch the weight bar.</li>
   <li><b>Balance:</b> real gravity: fruit only gets in over the rim, rolls and settles by friction, and can slosh out on hard turns. Fruit hitting the outside of the bilao bounces off. A heavier bilao makes Adjo slower.</li>
   <li>Spilled or missed fruit just bruises on the ground: no points, no penalty.</li>
   <li><b>Chaos ramps up:</b> faster and more stuff falls, wind gusts start after 40 seconds, and the last 15 seconds are a fruit storm.</li>
@@ -71,11 +72,14 @@ const S={
  bee2:spr(['.........','.uu...uu.','.kakakak.','kakakakae','kakakakae','.kakakak.','...k.k...']),
  bird1:spr(['..kk......','.kssk.....','kssssk.kkk','.kssssskok','..ksssskk.','...k..k...']),
  bird2:spr(['..........','.kkkkk....','kssssskkkk','.kssssskok','..kSSSskk.','...k..k...']),
+ banana:spr(['.......kb.','......kyk.','.....kyyk.','k...kyYyk.','kykkyYyyk.','.kyyyyyok.','..kooook..','...kkkk...']),
+ peel:spr(['k........k','yk......ky','.yk.kk.ky.','..kyYYyk..','...kkkk...']),
  heartUI:spr(['.hh.hh.','hHhhhhh','hhhhhhh','.hhhhh.','..hhh..','...h...']),
  heartOff:spr(['.ss.ss.','ssssSss','sssssss','.sssss.','..sss..','...s...']),
 };
 /* r = physics radius, m = mass, e = bounciness, v = fall speed factor */
 const T={
+ banana:{s:'banana',pts:20,r:4,m:1,e:.15,v:1.05,fruit:1,name:'Banana',txt:'20 points. If it hits the ground it leaves a peel: run over it and Adjo slips and slides'},
  mango:{s:'mango',pts:10,r:4,m:1,e:.25,v:1,fruit:1,name:'Mango',txt:'10 points when banked'},
  guava:{s:'guava',pts:15,r:3.6,m:1,e:.3,v:1.1,fruit:1,name:'Guava (bayabas)',txt:'15 points when banked'},
  cala:{s:'cala',pts:25,r:2.5,m:.5,e:.45,v:1.45,fruit:1,name:'Calamansi',txt:'25 points: small, fast and bouncy, rolls out easily'},
@@ -136,6 +140,7 @@ const SFX={
  hurt(){const t=AC.currentTime;bl(60,t,.12,'square',.15);bl(55,t+.12,.12,'square',.15);bl(48,t+.24,.3,'square',.15,null,-5);},
  tweet(){const t=AC.currentTime;[0,.14].forEach(d=>bl(93,t+d,.09,'sine',.12,null,5));},
  splat(){const t=AC.currentTime;nz(t,.25,.3,400);bl(45,t,.2,'square',.08,null,-10);},
+ slip(){const t=AC.currentTime;bl(70,t,.35,'square',.1,null,14);nz(t,.3,.12,3000);},
  spill(){const t=AC.currentTime;bl(67,t,.1,'triangle',.12,null,-7);},
  wind(){const t=AC.currentTime;nz(t,1.6,.18,500,null,'bandpass');},
  over(){const t=AC.currentTime;[67,64,60,55,48].forEach((m,i)=>bl(m,t+i*.16,.22,'square',.12));},
@@ -158,13 +163,13 @@ const RIM=23;
 let G,state='title',last=0,paused=false,best=0;try{best=+localStorage.getItem('fruitBest2')||0;}catch(e){}
 function reset(){G={x:W/2,vx:0,face:1,dist:0,hearts:3,score:0,time:0,banked:0,spilled:0,bestLoad:0,
   bx:W/2,by:GROUND-37,bvx:0,bvy:0,th:0,thv:0,lead:0,lift:0,bodies:[],flyers:[],fx:[],pops:[],birds:[],dep:null,
-  spawnT:.6,stun:0,splat:0,splats:[],shake:0,blink:0,wind:0,windT:40,windDir:1,windWarn:0};}
+  spawnT:.6,stun:0,slip:0,slipDir:1,dip:0,peels:[],splat:0,splats:[],shake:0,blink:0,wind:0,windT:40,windDir:1,windWarn:0};}
 reset();
 function diff(){return Math.min(1,G.time/ROUND);}
 function storm(){return G.time>ROUND-15;}
 function pickType(){const d=diff(),badP=.18+.22*d,r=Math.random();
   if(r<badP){const opts=d<.12?['rotten','rotten','pebble']:['rotten','rotten','bee','durian','pebble','pebble','poop'];return opts[Math.random()*opts.length|0];}
-  const g=Math.random();if(g<.04)return 'gold';if(g<.07&&G.hearts<3)return 'heart';if(g<.24+.1*d)return 'cala';if(g<.55)return 'guava';return 'mango';}
+  const g=Math.random();if(g<.04)return 'gold';if(g<.07&&G.hearts<3)return 'heart';if(g<.17)return 'banana';if(g<.31+.1*d)return 'cala';if(g<.55)return 'guava';return 'mango';}
 function spawn(){const k=pickType();
   if(k==='poop'){G.birds.push({x:-12,y:30+Math.random()*12,dropX:40+Math.random()*(W-80),dropped:0,f:0});SFX.tweet();return;}
   const x=34+Math.random()*(W-68),t=T[k];
@@ -238,22 +243,27 @@ function update(dt){G.time+=dt;const d=diff();
   if(G.time>=ROUND){endGame(true);return;}
   // load = how heavy the bilao is
   let load=0,inCount=0;for(const b of G.bodies)if(b.inB){load+=b.m;inCount++;}
-  const maxV=150*(1-.35*Math.min(1,load/14));
+  const wt=Math.min(1,load/12);G.wt=wt;
+  const maxV=150*(1-.5*wt);               // heavier bilao = slower and slower to turn
   // movement (acceleration-based: jerky moves slosh the bilao)
   let want=0;if(keys['arrowleft']||keys['a'])want=-1;if(keys['arrowright']||keys['d'])want=1;
   let tv=0;
-  if(G.stun>0)G.stun-=dt;
+  // banana peel: running over one makes Adjo slip and slide out of control
+  if(G.slip<=0&&Math.abs(G.vx)>25)for(const pl of G.peels)if(!pl.used&&Math.abs(pl.x-G.x)<6){pl.used=1;G.slip=.75;G.slipDir=G.vx<0?-1:1;G.dip=5;SFX.slip();pop(G.x-12,GROUND-50,'WHOA!','#fff0a0');}
+  if(G.slip>0){G.slip-=dt;G.vx=G.slipDir*Math.max(60,190*G.slip/.75);G.x+=G.vx*dt;G.ax=0;}
+  else if(G.stun>0)G.stun-=dt;
   else if(touchX!==null){tv=Math.max(-maxV,Math.min(maxV,(touchX-G.x)*7));if(Math.abs(touchX-G.x)<1.5)tv=0;}
   else tv=want*maxV;
-  const acc=CFG.acc*dt,pv=G.vx;G.vx+=Math.max(-acc,Math.min(acc,tv-G.vx));G.x+=G.vx*dt;G.ax=(G.vx-pv)/dt;
+  if(G.slip<=0){const acc=CFG.acc*(1-.45*wt)*dt,pv=G.vx;G.vx+=Math.max(-acc,Math.min(acc,tv-G.vx));G.x+=G.vx*dt;G.ax=(G.vx-pv)/dt;}
   if(G.x<38){G.x=38;G.vx=Math.max(0,G.vx);}if(G.x>W-38){G.x=W-38;G.vx=Math.min(0,G.vx);}
   G.dist+=Math.abs(G.vx)*dt;
-  for(const k of['splat','shake','blink'])if(G[k]>0)G[k]-=dt;
+  for(const k of['splat','shake','blink'])if(G[k]>0)G[k]-=dt;G.dip=Math.max(0,G.dip-dt*14);
+  for(const pl of G.peels)pl.t-=dt;G.peels=G.peels.filter(pl=>pl.t>0&&!pl.used);
   // bilao follows the hands (stiff spring), tips toward a crate when Adjo is at the edge
   // the bilao follows a smooth anchor (not the per-frame hands), so starting/stopping never jolts it
   const moving=Math.abs(G.vx)>14,dir=G.vx<0?-1:1;
   G.lead+=((moving?dir*3:0)-G.lead)*Math.min(1,dt*2);G.lift=0;
-  const nbx=G.x+G.lead,nby=GROUND-36;const pbv=G.bvx;G.bvx=(nbx-G.bx)/dt;G.bvy=(nby-G.by)/dt;G.bx=nbx;G.by=nby;G.bax=(G.bax||0)*.5+.5*(G.bvx-pbv)/dt;
+  const nbx=G.x+G.lead,nby=GROUND-36+G.dip;const pbv=G.bvx;G.bvx=(nbx-G.bx)/dt;G.bvy=(nby-G.by)/dt;G.bx=nbx;G.by=nby;G.bax=(G.bax||0)*.5+.5*(G.bvx-pbv)/dt;
   let thT=Math.max(-.9,Math.min(.9,Math.atan2(G.bax||0,GRAV)))*CFG.tilt;
   if(G.x<44)thT=-1.3;else if(G.x>W-44)thT=1.3;
   G.thv+=((thT-G.th)*400-G.thv*35)*dt;G.th+=G.thv*dt;
@@ -300,6 +310,7 @@ function update(dt){G.time+=dt;const d=diff();
     if(inCrate&&b.wasIn){b.dead=1;deposit(b);continue;}
     if(b.y+b.r>=GROUND){b.dead=1;
       if(b.k==='durian')SFX.thud();
+      if(b.k==='banana'&&b.x>26&&b.x<W-26){G.peels.push({x:b.x,t:12});pop(b.x-8,GROUND-12,'peel!','#fff0a0');}
       if(T[b.k].fruit&&b.wasIn){G.spilled++;SFX.spill();pop(b.x-8,GROUND-12,'spilled','#ffb0a0');}
       burst(b.x,GROUND-1,T[b.k].fruit?'#ffd36a':'#9b7650',4);}}
   G.bodies=G.bodies.filter(b=>!b.dead);
@@ -321,7 +332,9 @@ function tally(){const it=G.dep.items,x=G.dep.x;G.dep=null;
 /* ---------- draw ---------- */
 function drawAdjo(p){if(!adjo.complete||(G.blink>0&&((G.blink*12)|0)%2))return;
   const m=p.m,top=GROUND+1-m.ground,left=Math.round(G.x-(p.left?(m.w-1-p.bodyC):p.bodyC));
+  if(G.slip>0){ctx.save();ctx.translate(G.x,GROUND);ctx.rotate(-G.slipDir*.35);ctx.translate(-G.x,-GROUND);}
   ctx.drawImage(p.left&&adjoL?adjoL:adjo,m.x,0,m.w,m.h,left,top,m.w,m.h);
+  if(G.slip>0){ctx.restore();ctx.fillStyle='#d9c79a';for(let i=0;i<3;i++)ctx.fillRect(Math.round(G.x-G.slipDir*(6+i*4)),GROUND-1-(i%2),2,1);}
   if(G.stun>0){for(let i=0;i<3;i++){const a=G.time*6+i*2.1;ctx.fillStyle='#fff6a0';ctx.fillRect(Math.round(G.x+Math.cos(a)*9),Math.round(top+8+Math.sin(a)*3),2,2);}}}
 function drawBowl(){ctx.save();ctx.translate(G.bx,G.by);ctx.rotate(G.th);
   // underside
@@ -345,6 +358,7 @@ function txt(s,x,y,col,size,al){ctx.font=`bold ${size||8}px monospace`;ctx.textA
 function draw(){ctx.save();if(G.shake>0)ctx.translate(Math.round((Math.random()-.5)*4),Math.round((Math.random()-.5)*3));
   ctx.drawImage(bg,0,0);
   if(state!=='title'){txt('CRATE',12,GROUND-20,'#fff0a0',6,'center');txt('CRATE',W-12,GROUND-20,'#fff0a0',6,'center');}
+  for(const pl of G.peels)if(pl.t>2||((pl.t*8)|0)%2)ctx.drawImage(S.peel,Math.round(pl.x-5),GROUND-4);
   for(const b of G.birds)ctx.drawImage(((b.f*8)|0)%2?S.bird1:S.bird2,Math.round(b.x),Math.round(b.y));
   if(state!=='title'){const p=pose();drawAdjo(p);drawBowl();}
   for(const b of G.bodies)drawBody(b);
@@ -362,6 +376,9 @@ function draw(){ctx.save();if(G.shake>0)ctx.translate(Math.round((Math.random()-
     const left=Math.max(0,ROUND-G.time);txt(`${(left/60|0)}:${String(left%60|0).padStart(2,'0')}`,W/2,13,storm()?'#ff9aa0':'#fff',9,'center');
     let n=0,sum=0;for(const b of G.bodies)if(b.inB&&T[b.k].fruit){n++;sum+=T[b.k].pts;}
     if(n)txt(`bilao: ${n} fruit  x${Math.min(3,1+.15*(n-1)).toFixed(2)}`,6,34,'#ffffff',7);
+    {const w=G.wt||0;txt('weight',6,45,'#ffffff',6);ctx.fillStyle='#1a1a1a';ctx.fillRect(32,40,42,6);
+     ctx.fillStyle=w<.5?'#8fd88a':w<.8?'#f2c56b':'#ff7a6a';ctx.fillRect(33,41,Math.round(40*w),4);
+     if(w>.8)txt('HEAVY',78,45,'#ff9aa0',6);}
     if(G.windWarn||G.wind>0)txt(G.windDir>0?'WIND  >>>':'<<<  WIND',W/2,26,'#d8f0ff',8,'center');
     if(storm())txt('FRUIT STORM!',W/2,38,'#ffd36a',9,'center');}
   if(state==='title'){ctx.fillStyle='rgba(10,20,15,.55)';ctx.fillRect(0,0,W,H);txt('FRUIT CATCH',W/2,62,'#fff0a0',16,'center');
