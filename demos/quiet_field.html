@@ -28,6 +28,8 @@ button.play{flex:0 0 auto;width:54px;height:54px;border-radius:50%;border:none;b
   <div class="oct" id="oct"><button data-o="0" class="sel">Normal keys</button><button data-o="1">Lower</button></div>
   <div class="card" data-v="piano"><button class="play">▶</button><div><div class="t">1. Solo piano</div><div class="d">Sparse right-hand melody over slow rolling left-hand chords, with room echo.</div></div></div>
   <div class="card" data-v="pad"><button class="play">▶</button><div><div class="t">2. Piano + soft pad</div><div class="d">The same piano with a quiet, warm pad underneath, for a dreamier, wide-open feel.</div></div></div>
+  <div class="card" data-v="harplow"><button class="play">▶</button><div><div class="t">3. Piano + low harp</div><div class="d">The piano keeps the melody and the low root note. A deep, warm harp rolls through the chords underneath, with a sweep at the end of each section.</div></div></div>
+  <div class="card" data-v="harpmid"><button class="play">▶</button><div><div class="t">4. Piano + mid harp</div><div class="d">The same, with the harp an octave higher: brighter and clearer, sitting between the piano's bass and melody.</div></div></div>
   <div class="bar"><i id="prog"></i></div>
   <div class="foot">Chords: Em · Cmaj7 · G · D · Em · Cmaj7 · Am · B7 | C · G · D · Em · C · G · Am · B7. Melody and chords are original; only the key and tempo match the reference. Generated live in your browser.</div>
 </main>
@@ -70,12 +72,22 @@ function pad(ms,t,d,v){const g=AC.createGain(),lp=AC.createBiquadFilter();lp.typ
   for(const m of ms)for(const det of[-7,6]){const o=track(AC.createOscillator());o.type='sawtooth';o.frequency.value=hz(m);o.detune.value=det;o.connect(lp);o.start(t);o.stop(t+d+.5);}
   lp.connect(g);g.connect(out);g.connect(rev);}
 
+function harp(m,t,v){const f=hz(m),dec=Math.max(1.2,3.4-(m-48)*.04),g=AC.createGain(),lp=AC.createBiquadFilter();
+  lp.type='lowpass';lp.frequency.setValueAtTime(Math.min(10000,f*9),t);lp.frequency.exponentialRampToValueAtTime(Math.max(700,f*2.5),t+.5);
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.004);g.gain.exponentialRampToValueAtTime(.0006,t+dec);
+  [[1,1],[2,.5],[3,.22],[4,.1],[6,.04]].forEach(([h,a])=>{const o=track(AC.createOscillator()),og=AC.createGain();o.type='sine';o.frequency.value=f*h;og.gain.value=a;o.connect(og);og.connect(lp);o.start(t);o.stop(t+dec+.05);});
+  lp.connect(g);g.connect(out);g.connect(rev);}
+const EMIN=[4,6,7,9,11,0,2];
+function gliss(t,from,n,dt,v){let m=from;for(let i=0;i<n;i++){harp(m,t+i*dt,v*(.7+.3*i/n));do{m++;}while(!EMIN.includes(m%12));}}
 function scheduleLoop(v,t){loopLen=LOOP*ST;
   const hum=()=>(Math.random()-.5)*.02;
   {let x=t,u=0;MEL.forEach(([m,l])=>{const ph=(u%32)/32;if(m)piano(m+SH(),x+hum(),Math.max(l*ST,.5),.3+.1*Math.sin(ph*Math.PI)+(Math.random()*.04));x+=l*ST;u+=l;});}
   for(let b=0;b<BARS;b++){const bt=t+b*8*ST,c=CH[b];
     piano(c[0]+SH()*.0,bt+hum(),8*ST,.26);                       // low root, held through the bar
-    [[2,1],[4,2],[5,3],[6,2]].forEach(([s,k])=>piano(c[k]+SH()*0,bt+s*ST+hum(),3*ST,.09+Math.random()*.03));}
+    if(v==='harplow'||v==='harpmid'){const up=v==='harpmid'?12:0;
+      [[1,1],[2,2],[3,3],[4,2],[5,1],[6,2]].forEach(([s,k])=>harp(c[k]+up,bt+s*ST+hum(),.1+Math.random()*.02));
+      if(b===7||b===15)gliss(bt+4*ST,midi('E2')+(up?36:24),8,ST/2.5,.075);}
+    else [[2,1],[4,2],[5,3],[6,2]].forEach(([s,k])=>piano(c[k]+SH()*0,bt+s*ST+hum(),3*ST,.09+Math.random()*.03));}
   if(v==='pad')for(let b=0;b<BARS;b++)pad(CH[b].slice(1).map(m=>m+12),t+b*8*ST,8*ST,.03);
 }
 function stopAll(){for(const n of live){try{n.stop();}catch(e){}}live.length=0;clearInterval(timer);timer=null;playing=null;
