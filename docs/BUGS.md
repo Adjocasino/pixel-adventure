@@ -60,9 +60,9 @@
   Fruit values: mango 10, guava 15, calamansi 25, golden 50. Heart fruit +1 heart on landing. Durian -1 heart and flings the pile. Bee stun, poop splat, pebble heavy/bouncy.
   2-minute round, wind gusts after 40 s, fruit storm in the last 15 s. Titles: Sprout, Picker 400, Farmer 1200, Orchard Keeper 2500, Mango Master 4000.
 
+- Demo also has (user asked): **watermelon** (80 pts, mass 6 = half the weight bar) and **crow** (from 20 s: CAW, flies in, swoops at the bilao with a ground shadow, steals the top fruit).
 #### Fruit catch: approved for the game (APK), not the demo (wait for "go")
-- **Watermelon:** heavy, worth a lot; nearly fills the weight bar, so Adjo is slow until it's banked.
-- **Crow:** swoops low across the screen and grabs the top fruit off the pile (warning: caw sound + shadow sweep).
+- **Watermelon** and **crow** (as in the demo).
 - **Tilt control:** tilt the phone (or hold a button) to tilt the bilao yourself and balance the pile.
 
 ### MULTIPLAYER: only build when the user says "include in the multiplayer"
@@ -75,3 +75,6 @@
   - The teammate revives them by alternating A and B on a steady beat at about 100–120 BPM (real CPR pace, the "Stayin' Alive" tempo). Beat shown on screen, 8-bit metronome tune of our own, not the real song.
   - While reviving, the reviver can't move and items keep falling, so they can get hit too.
   - Open questions: how many good beats to revive; whether a miss resets or only slows progress; whether the revived player comes back with 1 heart; game over only if both are downed at once.
+- **Fruit catch co-op (user picks):**
+  - **Bonk rescue:** when a buko stuns your partner, stand next to them to steady their bilao so the pile doesn't spill.
+  - **Pour to teammate** (instead of "pass the bilao"): hold a button to tilt your own bilao and pour fruit into your teammate's bilao (or a crate). Same tilt control as the APK tilt feature.
