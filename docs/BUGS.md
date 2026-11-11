@@ -60,6 +60,11 @@
   Fruit values: mango 10, guava 15, calamansi 25, golden 50. Heart fruit +1 heart on landing. Durian -1 heart and flings the pile. Bee stun, poop splat, pebble heavy/bouncy.
   2-minute round, wind gusts after 40 s, fruit storm in the last 15 s. Titles: Sprout, Picker 400, Farmer 1200, Orchard Keeper 2500, Mango Master 4000.
 
+#### Fruit catch: approved for the game (APK), not the demo (wait for "go")
+- **Watermelon:** heavy, worth a lot; nearly fills the weight bar, so Adjo is slow until it's banked.
+- **Crow:** swoops low across the screen and grabs the top fruit off the pile (warning: caw sound + shadow sweep).
+- **Tilt control:** tilt the phone (or hold a button) to tilt the bilao yourself and balance the pile.
+
 ### MULTIPLAYER: only build when the user says "include in the multiplayer"
 - Planned connection: **LAN only** (phone hotspot or same Wi-Fi). No internet server.
   Tech note: a WebView page can't open LAN sockets by itself, so the Android side needs a small native bridge (local socket/WebSocket server + discovery) that the page talks to.
