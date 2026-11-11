@@ -74,6 +74,7 @@ const S={
  bird2:spr(['..........','.kkkkk....','kssssskkkk','.kssssskok','..kSSSskk.','...k..k...']),
  banana:spr(['.......kb.','......kyk.','.....kyyk.','k...kyYyk.','kykkyYyyk.','.kyyyyyok.','..kooook..','...kkkk...']),
  peel:spr(['k........k','yk......ky','.yk.kk.ky.','..kyYYyk..','...kkkk...']),
+ buko:spr(['....kkkkkk....','..kkGgggGgkk..','.kGggcgggggGk.','.kgcLcgggggGk.','kgcLLcggggggGk','kggccgggggggGk','kgggggggggggGk','kgggggggggggGk','kGgggggggggGGk','.kGgggggggGGk.','.kGGggggGGGGk.','..kkGGGGGGkk..','....kkkkkk....']),
  heartUI:spr(['.hh.hh.','hHhhhhh','hhhhhhh','.hhhhh.','..hhh..','...h...']),
  heartOff:spr(['.ss.ss.','ssssSss','sssssss','.sssss.','..sss..','...s...']),
 };
@@ -88,6 +89,7 @@ const T={
  rotten:{s:'rotten',r:4,m:1.1,e:.1,v:1,bad:1,name:'Rotten mango',txt:'Squishy, barely bounces. −25 if you bank it, so tip it out first. Warning: flies'},
  bee:{s:'bee1',r:4,v:.8,bad:1,nophys:1,name:'Bee',txt:'Stuns Adjo for 1 second if it touches him or the bilao. Warning: buzz, wobbly flight'},
  durian:{s:'durian',r:6,m:5,e:.15,v:1.55,bad:1,name:'Durian',txt:'−1 heart and slams the bilao, flinging fruit out. Heavy if it stays in. Warning: shadow'},
+ buko:{s:'buko',r:7,m:8,e:.2,v:1.7,bad:1,name:'Buko (young coconut)',txt:'MAX DAMAGE: −2 hearts, stuns Adjo and launches the whole pile. Warning: the leaves shake and rustle above it, then a big shadow'},
  pebble:{s:'pebble',r:2.6,m:3,e:.45,v:1.3,bad:1,name:'Pebble',txt:'Heavy and bouncy: knocks fruit around and weighs the bilao down. Warning: shadow'},
  poop:{s:'poop',r:2,v:1.2,bad:1,nophys:1,name:'Bird poop',txt:'Splats part of the screen for 3 seconds. Warning: a bird calls and flies over first'},
 };
@@ -140,6 +142,8 @@ const SFX={
  hurt(){const t=AC.currentTime;bl(60,t,.12,'square',.15);bl(55,t+.12,.12,'square',.15);bl(48,t+.24,.3,'square',.15,null,-5);},
  tweet(){const t=AC.currentTime;[0,.14].forEach(d=>bl(93,t+d,.09,'sine',.12,null,5));},
  splat(){const t=AC.currentTime;nz(t,.25,.3,400);bl(45,t,.2,'square',.08,null,-10);},
+ rustle(){const t=AC.currentTime;for(let i=0;i<5;i++)nz(t+i*.18,.15,.12,2500,null,'bandpass');},
+ bonk(){const t=AC.currentTime;bl(36,t,.5,'triangle',.6,null,-12);bl(48,t,.15,'square',.2,null,-12);nz(t,.3,.3,500);for(let i=0;i<3;i++)bl(88-i*5,t+.25+i*.08,.08,'square',.06);},
  slip(){const t=AC.currentTime;bl(70,t,.35,'square',.1,null,14);nz(t,.3,.12,3000);},
  spill(){const t=AC.currentTime;bl(67,t,.1,'triangle',.12,null,-7);},
  wind(){const t=AC.currentTime;nz(t,1.6,.18,500,null,'bandpass');},
@@ -163,14 +167,16 @@ const RIM=23;
 let G,state='title',last=0,paused=false,best=0;try{best=+localStorage.getItem('fruitBest2')||0;}catch(e){}
 function reset(){G={x:W/2,vx:0,face:1,dist:0,hearts:3,score:0,time:0,banked:0,spilled:0,bestLoad:0,
   bx:W/2,by:GROUND-37,bvx:0,bvy:0,th:0,thv:0,lead:0,lift:0,bodies:[],flyers:[],fx:[],pops:[],birds:[],dep:null,
-  spawnT:.6,stun:0,slip:0,slipDir:1,dip:0,peels:[],splat:0,splats:[],shake:0,blink:0,wind:0,windT:40,windDir:1,windWarn:0};}
+  spawnT:.6,stun:0,slip:0,warns:[],slipDir:1,dip:0,peels:[],splat:0,splats:[],shake:0,blink:0,wind:0,windT:40,windDir:1,windWarn:0};}
 reset();
 function diff(){return Math.min(1,G.time/ROUND);}
 function storm(){return G.time>ROUND-15;}
 function pickType(){const d=diff(),badP=.18+.22*d,r=Math.random();
+  if(r<badP&&G.time>25&&Math.random()<.06+.06*d)return 'buko';
   if(r<badP){const opts=d<.12?['rotten','rotten','pebble']:['rotten','rotten','bee','durian','pebble','pebble','poop'];return opts[Math.random()*opts.length|0];}
   const g=Math.random();if(g<.04)return 'gold';if(g<.07&&G.hearts<3)return 'heart';if(g<.17)return 'banana';if(g<.31+.1*d)return 'cala';if(g<.55)return 'guava';return 'mango';}
 function spawn(){const k=pickType();
+  if(k==='buko'){G.warns.push({x:44+Math.random()*(W-88),t:1.1});SFX.rustle();return;}
   if(k==='poop'){G.birds.push({x:-12,y:30+Math.random()*12,dropX:40+Math.random()*(W-80),dropped:0,f:0});SFX.tweet();return;}
   const x=34+Math.random()*(W-68),t=T[k];
   if(t.nophys){G.flyers.push({k,x,y:CANOPY-4,bx:x,ph:Math.random()*6});if(k==='bee')SFX.buzz();return;}
@@ -232,11 +238,15 @@ function collidePairs(){const B=G.bodies;for(let i=0;i<B.length;i++)for(let j=i+
   const rv=(b.vx-a.vx)*nx+(b.vy-a.vy)*ny;if(rv<0){const e=Math.min(a.e,b.e),jj=-(1+e)*rv/im;a.vx-=jj*nx/a.m;a.vy-=jj*ny/a.m;b.vx+=jj*nx/b.m;b.vy+=jj*ny/b.m;
     const tx=-ny,ty=nx,vt=(b.vx-a.vx)*tx+(b.vy-a.vy)*ty,jt=Math.max(-.3*jj,Math.min(.3*jj,-vt/im));a.vx-=jt*tx/a.m;a.vy-=jt*ty/a.m;b.vx+=jt*tx/b.m;b.vy+=jt*ty/b.m;
     const pile=a.touched||b.touched;
-    if(pile&&(a.k==='durian'||b.k==='durian'))durianHit(a.k==='durian'?a:b);
+    if(pile&&(HEAVY[a.k]||HEAVY[b.k]))durianHit(HEAVY[a.k]?a:b);
     if(pile){a.touched=b.touched=1;a.free=b.free=0;}}}}
-function durianHit(d){if(d.hurt)return;d.hurt=1;G.hearts--;G.shake=.4;G.blink=1.2;SFX.hurt();pop(d.x-6,d.y-10,'−1 ♥','#ff6a6a');burst(d.x,d.y,'#7fbf3a',10);
-  for(const b of G.bodies)if(b!==d&&inBowl(b)){b.vy-=70+Math.random()*80;b.vx+=(Math.random()-.5)*120;}
-  G.bvy+=60;if(G.hearts<=0)endGame(false);}
+const HEAVY={durian:1,buko:1};
+function durianHit(d){if(d.hurt)return;d.hurt=1;const big=d.k==='buko';
+  G.hearts-=big?2:1;G.shake=big?.9:.4;G.blink=big?1.8:1.2;if(big){G.stun=1.2;SFX.bonk();}else SFX.hurt();
+  pop(d.x-8,d.y-12,big?'−2 ♥  BONK!':'−1 ♥','#ff6a6a');burst(d.x,d.y,big?'#8a6a35':'#7fbf3a',big?18:10);
+  for(const b of G.bodies)if(b!==d&&inBowl(b)){const sg=b.x<d.x?-1:1;b.vy-=big?220+Math.random()*120:70+Math.random()*80;b.vx+=big?sg*(140+Math.random()*120):(Math.random()-.5)*120;}
+  d.vy=-(big?160:0)+d.vy*.2;d.vx=(Math.random()-.5)*(big?140:0)+d.vx;   // the buko bounces off hard
+  if(G.hearts<=0){G.hearts=0;endGame(false);}}
 
 /* ---------- update ---------- */
 function update(dt){G.time+=dt;const d=diff();
@@ -275,6 +285,8 @@ function update(dt){G.time+=dt;const d=diff();
   G.spawnT-=dt;if(G.spawnT<=0){spawn();G.spawnT=storm()?.18+Math.random()*.1:(.7-.42*d)*(.7+Math.random()*.6);}
   for(const b of G.birds){b.x+=75*dt;b.f+=dt;if(!b.dropped&&b.x>=b.dropX){b.dropped=1;G.flyers.push({k:'poop',x:b.x,y:b.y+5,bx:b.x,ph:0});}}
   G.birds=G.birds.filter(b=>b.x<W+20);
+  for(const w of G.warns){w.t-=dt;if(w.t<=0){w.done=1;const t=T.buko;G.bodies.push({k:'buko',x:w.x,y:CANOPY-4,vx:0,vy:20,r:t.r,m:t.m,e:t.e,ang:0,free:1,inB:0,wasIn:0,touched:0});}}
+  G.warns=G.warns.filter(w=>!w.done);
   // non-physics flyers (bee, poop): hit Adjo or the bilao
   const fall=40+45*d;
   for(const f of G.flyers){f.ph+=dt;f.y+=fall*T[f.k].v*dt;if(f.k==='bee')f.x=Math.max(2,Math.min(W-11,f.bx+Math.sin(f.ph*3)*18+(wf*f.ph*.3)));
@@ -293,7 +305,7 @@ function update(dt){G.time+=dt;const d=diff();
       b.x+=b.vx*h;b.y+=b.vy*h;}
     collidePairs();
     for(const b of G.bodies){if(collideBowl(b)){
-        if(!b.touched&&b.k==='durian')durianHit(b);
+        if(!b.touched&&HEAVY[b.k])durianHit(b);
         b.touched=1;b.free=0;}
       if(b.x<b.r){b.x=b.r;b.vx=Math.abs(b.vx)*.5;}if(b.x>W-b.r){b.x=W-b.r;b.vx=-Math.abs(b.vx)*.5;}}
   }
@@ -309,7 +321,7 @@ function update(dt){G.time+=dt;const d=diff();
     const inCrate=(b.x<24||b.x>W-24)&&b.y+b.r>GROUND-16&&b.y<GROUND;
     if(inCrate&&b.wasIn){b.dead=1;deposit(b);continue;}
     if(b.y+b.r>=GROUND){b.dead=1;
-      if(b.k==='durian')SFX.thud();
+      if(HEAVY[b.k]){SFX.thud();if(b.k==='buko'){G.shake=Math.max(G.shake,.25);burst(b.x,GROUND-1,'#8a6a35',10);}}
       if(b.k==='banana'&&b.x>26&&b.x<W-26){G.peels.push({x:b.x,t:12});pop(b.x-8,GROUND-12,'peel!','#fff0a0');}
       if(T[b.k].fruit&&b.wasIn){G.spilled++;SFX.spill();pop(b.x-8,GROUND-12,'spilled','#ffb0a0');}
       burst(b.x,GROUND-1,T[b.k].fruit?'#ffd36a':'#9b7650',4);}}
@@ -349,7 +361,7 @@ function drawBowl(){ctx.save();ctx.translate(G.bx,G.by);ctx.rotate(G.th);
 function drawSprite(sp,x,y,ang){if(!ang){ctx.drawImage(sp,Math.round(x-sp.width/2),Math.round(y-sp.height/2));return;}
   ctx.save();ctx.translate(Math.round(x),Math.round(y));ctx.rotate(Math.round(ang*4)/4);ctx.drawImage(sp,-sp.width/2|0,-sp.height/2|0);ctx.restore();}
 function drawBody(b){const t=T[b.k],sp=S[t.s];
-  if((b.k==='durian'||b.k==='pebble')&&b.free){const p=Math.max(0,Math.min(1,(b.y-CANOPY)/(GROUND-CANOPY))),w=Math.round(3+p*(sp.width+2));
+  if((HEAVY[b.k]||b.k==='pebble')&&b.free){const p=Math.max(0,Math.min(1,(b.y-CANOPY)/(GROUND-CANOPY))),w=Math.round(3+p*(sp.width+2));
     ctx.fillStyle='rgba(30,40,20,'+(.25+.35*p)+')';ctx.fillRect(Math.round(b.x-w/2),GROUND-1,w,2);}
   drawSprite(sp,b.x,b.y,t.fruit||b.k==='rotten'?b.ang:0);
   if(b.k==='rotten'){for(let i=0;i<3;i++){const a=G.time*9+i*2.1+b.x;ctx.fillStyle='#1c1c1c';ctx.fillRect(Math.round(b.x+Math.cos(a)*7),Math.round(b.y+Math.sin(a*1.3)*5),1,1);}}
@@ -367,6 +379,9 @@ function draw(){ctx.save();if(G.shake>0)ctx.translate(Math.round((Math.random()-
   // wind streaks
   if(G.wind>0){ctx.fillStyle='rgba(255,255,255,.7)';for(let i=0;i<14;i++){const yy=(i*37+((G.time*60)|0)*0)%120+30,xx=((i*71+G.time*260*G.windDir)%W+W)%W;ctx.fillRect(Math.round(xx),yy,10,1);}}
   ctx.drawImage(canopy,0,-6);
+  for(const w of G.warns){const j=Math.round(Math.sin(G.time*60)*1.5);ctx.fillStyle='#2f6b2e';ctx.fillRect(Math.round(w.x-10+j),30,20,5);ctx.fillStyle='#5aa04a';
+    for(let i=0;i<5;i++){const fy=32+((G.time*40+i*9)%30),fx=w.x-8+((i*7)%16)+Math.sin(G.time*8+i)*2;ctx.fillRect(Math.round(fx),Math.round(fy),2,1);}
+    txt('!',w.x,46,'#ff6a6a',10,'center');}
   for(const p of G.pops)txt(p.txt,Math.round(p.x),Math.round(p.y-p.t*14),p.col,7);
   if(G.splat>0){const a=Math.min(1,G.splat/.8);ctx.fillStyle=`rgba(245,245,235,${.92*a})`;
     for(const s of G.splats){for(let j=-s.r;j<=s.r;j+=2)for(let i=-s.r;i<=s.r;i+=2)if(i*i+j*j<=s.r*s.r*(.7+.3*Math.sin(i*.7+j*.5)))ctx.fillRect(s.x+i,s.y+j,2,2);}}
