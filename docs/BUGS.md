@@ -52,7 +52,7 @@
 - Good items: golden mango (double points for 5 s).
 - Hearts: the user likes the heart system. Solo: 3 hearts.
 - **Demo v2 (physics):** `demos/fruit_catch.html`, built from `tools/fruit_catch_src.html` by `tools/build_fruit_demo.py`. Adjo pose art: `tools/adjo_bilao.py` (sprint with arms up holding the bilao like a tray, plus a standing arms-up idle).
-  Fruit lands in a physics bilao: piles, rolls, bounces; jerky moves spill it; heavier load = slower Adjo.
+  Fruit lands in a physics bilao and piles up. v3 (user feedback): no sliding run (Adjo stops right away), the bilao follows a smooth anchor (no jolt when starting/stopping), fruit settles once inside, deeper/wider bilao. Normal moves don't spill; spills come from durian, wind, overfilling. Heavier load = slower Adjo. User likes the wind.
   Points only when banked in a crate (both edges; the bilao tips in). Load multiplier: +0.15 per extra fruit (max x3); golden mango doubles the dump; rotten banked = -25 each.
   Fruit values: mango 10, guava 15, calamansi 25, golden 50. Heart fruit +1 heart on landing. Durian -1 heart and flings the pile. Bee stun, poop splat, pebble heavy/bouncy.
   2-minute round, wind gusts after 40 s, fruit storm in the last 15 s. Titles: Sprout, Picker 400, Farmer 1200, Orchard Keeper 2500, Mango Master 4000.
