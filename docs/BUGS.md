@@ -41,3 +41,24 @@
   | 70–84% | Hito / Gurami | 70–72 | 73–75 | 76–78 | 79–81 | 82–84 |
   | 85–94% | Dalag / Bangus | 85–86 | 87–88 | 89–90 | 91–92 | 93–94 |
   | 95–100% | Karpa / Igat | 95 | 96 | 97 | 98–99 | 100 (perfect run only) |
+
+## Idea list (not built; wait for the user's "go")
+
+### Fruit catch minigame (inspired by the old PS2 loading-screen catch game; all art and music our own)
+- Adjo with a basket under a fruit tree, moving left/right to catch falling fruit. Could be a loading screen, an orchard minigame, or both (not decided).
+- 8-bit music (minigame rule).
+- Bad items, each with a warning (sound, color, shadow or odd path):
+  rotten fruit (−points, breaks combo), bee (1 s stun), durian (−1 heart), bird poop (covers part of the screen), pebble (knocks a fruit out of the basket).
+- Good items: golden mango (double points for 5 s).
+- Hearts: the user likes the heart system. Solo: 3 hearts.
+
+### MULTIPLAYER: only build when the user says "include in the multiplayer"
+- Planned connection: **LAN only** (phone hotspot or same Wi-Fi). No internet server.
+  Tech note: a WebView page can't open LAN sockets by itself, so the Android side needs a small native bridge (local socket/WebSocket server + discovery) that the page talks to.
+- Fruit catch modes: versus (shared tree, steal catches), co-op (shared goal), vs CPU (Inad or the kid).
+- Versus items: chili (sends the next bad item to the opponent's side), slingshot (knock a fruit off the other player's path).
+- **No game over in co-op: downed + revive (CPR).**
+  - At 0 hearts a player is downed instead of the game ending.
+  - The teammate revives them by alternating A and B on a steady beat at about 100–120 BPM (real CPR pace, the "Stayin' Alive" tempo). Beat shown on screen, 8-bit metronome tune of our own, not the real song.
+  - While reviving, the reviver can't move and items keep falling, so they can get hit too.
+  - Open questions: how many good beats to revive; whether a miss resets or only slows progress; whether the revived player comes back with 1 heart; game over only if both are downed at once.
