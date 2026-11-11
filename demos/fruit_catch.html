@@ -34,7 +34,7 @@ ul{margin:6px 0 0;padding-left:20px;color:#b9cdb4;font-size:13.5px;line-height:1
 <ul>
   <li><b>Banking:</b> run to a crate at either edge and the bilao tips everything in. Fruit only scores when it lands in a crate.</li>
   <li><b>Load multiplier:</b> each extra fruit in one dump adds ×0.15 (5 fruit = ×1.6, 10 = ×2.35, 14+ = ×3). A golden mango in the load doubles the whole dump.</li>
-  <li><b>Balance:</b> fruit settles in the bilao. Very fast turns can still slosh a piece over the rim, and an overfull pile spills. A heavier bilao makes Adjo slower.</li>
+  <li><b>Balance:</b> real gravity: fruit only gets in over the rim, rolls and settles by friction, and can slosh out on hard turns. Fruit hitting the outside of the bilao bounces off. A heavier bilao makes Adjo slower.</li>
   <li>Spilled or missed fruit just bruises on the ground: no points, no penalty.</li>
   <li><b>Chaos ramps up:</b> faster and more stuff falls, wind gusts start after 40 seconds, and the last 15 seconds are a fruit storm.</li>
   <li>Titles: Sprout → Picker (400) → Farmer (1200) → Orchard Keeper (2500) → Mango Master (4000).</li>
@@ -43,7 +43,8 @@ ul{margin:6px 0 0;padding-left:20px;color:#b9cdb4;font-size:13.5px;line-height:1
 <script>
 const ADJO_SRC='data:image/png;base64,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';
 const ADJO_META=[{"x": 0, "w": 38, "h": 46, "ground": 43, "hx": 28.5, "hy": 3}, {"x": 38, "w": 38, "h": 46, "ground": 43, "hx": 28.5, "hy": 1}, {"x": 76, "w": 38, "h": 46, "ground": 43, "hx": 28.5, "hy": 1}, {"x": 114, "w": 38, "h": 46, "ground": 43, "hx": 28.5, "hy": 3}, {"x": 152, "w": 38, "h": 46, "ground": 43, "hx": 28.5, "hy": 1}, {"x": 190, "w": 38, "h": 46, "ground": 43, "hx": 28.5, "hy": 1}, {"x": 228, "w": 26, "h": 36, "ground": 36, "hx": 13, "hy": 1}, {"x": 254, "w": 26, "h": 36, "ground": 36, "hx": 13, "hy": 2}];
-const W=320,H=180,GROUND=166,CANOPY=26,ROUND=120;
+let GRAV=1200;const W=320,H=180,GROUND=166,CANOPY=26,ROUND=120;
+const CFG={acc:900,tilt:0,mu:.3,sub:8};
 const cv=document.getElementById('cv'),ctx=cv.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.setTransform(3,0,0,3,0,0);
 const adjo=new Image();adjo.src=ADJO_SRC;let adjoL=null;
 adjo.onload=()=>{adjoL=document.createElement('canvas');adjoL.width=adjo.width;adjoL.height=adjo.height;const x=adjoL.getContext('2d');
@@ -150,8 +151,8 @@ function music(){if(!AC||!musicOn)return;const bpm=140+30*Math.min(1,G.time/ROUN
   mNext+=st;mStep++;}}
 
 /* ---------- bilao shape (local coords: bottom centre = 0,0, y down) ---------- */
-const BOWL=[[-22,-11],[-20,-7.5],[-17,-4.5],[-12,-2],[-6,-.5],[0,0],[6,-.5],[12,-2],[17,-4.5],[20,-7.5],[22,-11]];
-const RIM=22;
+const BOWL=[[-23,-15],[-22,-11],[-20,-7.5],[-17,-4.5],[-12,-2],[-6,-.5],[0,0],[6,-.5],[12,-2],[17,-4.5],[20,-7.5],[22,-11],[23,-15]];
+const RIM=23;
 
 /* ---------- game state ---------- */
 let G,state='title',last=0,paused=false,best=0;try{best=+localStorage.getItem('fruitBest2')||0;}catch(e){}
@@ -197,31 +198,34 @@ function handPos(p){const m=p.m,top=GROUND+1-m.ground;let off=m.hx-p.bodyC;if(p.
 
 /* ---------- physics ---------- */
 function bowlLocal(b){const c=Math.cos(G.th),s=Math.sin(G.th),dx=b.x-G.bx,dy=b.y-G.by;return [dx*c+dy*s,-dx*s+dy*c];}
+/* the bilao is a solid two-sided shell (capsule segments), no snapping: fruit only gets in over the rim */
+const SHELL=1.4;
+function surfY(lx){for(let i=1;i<BOWL.length;i++){const [ax,ay]=BOWL[i-1],[bx2,by2]=BOWL[i];if(lx>=ax&&lx<=bx2)return ay+(by2-ay)*(lx-ax)/(bx2-ax);}return -99;}
 function collideBowl(b){const c=Math.cos(G.th),s=Math.sin(G.th);let [lx,ly]=bowlLocal(b),hit=false;
-  if(Math.abs(lx)>RIM+b.r+2||ly>b.r+4||ly<-30)return false;
-  for(let i=0;i<BOWL.length-1;i++){const [ax,ay]=BOWL[i],[bx2,by2]=BOWL[i+1],ex=bx2-ax,ey=by2-ay,L2=ex*ex+ey*ey;
-    let t=((lx-ax)*ex+(ly-ay)*ey)/L2;t=Math.max(0,Math.min(1,t));const px=ax+ex*t,py=ay+ey*t;let nx=lx-px,ny=ly-py,d=Math.hypot(nx,ny);
-    const L=Math.sqrt(L2);let sn_x=ey/L,sn_y=-ex/L;            // surface normal pointing up/inward
-    if(sn_y>0){sn_x=-sn_x;sn_y=-sn_y;}
-    const above=nx*sn_x+ny*sn_y>0;
-    if(d<b.r||(!above&&d<b.r+3&&Math.abs(lx)<RIM)){
-      if(!above||d<1e-4){nx=sn_x;ny=sn_y;d=-d;}else{nx/=d;ny/=d;}
-      const pen=b.r-d;lx+=nx*pen;ly+=ny*pen;
-      // to world
-      const wnx=nx*c-ny*s,wny=nx*s+ny*c;
-      const rvx=b.vx-G.bvx,rvy=b.vy-G.bvy,vn=rvx*wnx+rvy*wny;
-      if(vn<0){let tx=rvx-vn*wnx,ty=rvy-vn*wny;const fr=Math.abs(G.th)>.3?0:.12;
-        const e=b.wasIn?.05:b.e*.6,nvx=tx*(1-fr)-e*vn*wnx,nvy=ty*(1-fr)-e*vn*wny;
-        if(-vn>40)b.bump=1;
-        b.vx=nvx+G.bvx;b.vy=nvy+G.bvy;}
-      hit=true;}}
+  if(Math.abs(lx)>RIM+b.r+4||ly>b.r+6||ly<-20-b.r)return false;
+  for(let i=0;i<BOWL.length-1;i++){
+    const ax=BOWL[i][0],ay=BOWL[i][1]+SHELL,bx2=BOWL[i+1][0],by2=BOWL[i+1][1]+SHELL,ex=bx2-ax,ey=by2-ay,L2=ex*ex+ey*ey;
+    let t=((lx-ax)*ex+(ly-ay)*ey)/L2;t=Math.max(0,Math.min(1,t));
+    let nx=lx-(ax+ex*t),ny=ly-(ay+ey*t);const d=Math.hypot(nx,ny),R=b.r+SHELL;
+    if(d>=R||d<1e-5)continue;
+    nx/=d;ny/=d;lx+=nx*(R-d);ly+=ny*(R-d);
+    const wnx=nx*c-ny*s,wny=nx*s+ny*c;
+    const rvx=b.vx-G.bvx,rvy=b.vy-G.bvy,vn=rvx*wnx+rvy*wny;
+    if(vn<0){
+      const jn=-(1+b.e)*vn;let tx=rvx-vn*wnx,ty=rvy-vn*wny;const vt=Math.hypot(tx,ty);
+      const mu=Math.abs(G.th)>.3?.04:CFG.mu,jt=Math.min(vt,mu*jn);          // Coulomb friction
+      if(vt>1e-6){tx-=tx/vt*jt;ty-=ty/vt*jt;}
+      if(-vn>40)b.bump=1;
+      b.vx=G.bvx+tx-b.e*vn*wnx;b.vy=G.bvy+ty-b.e*vn*wny;}
+    hit=true;}
   if(hit){b.x=G.bx+lx*c-ly*s;b.y=G.by+lx*s+ly*c;}
   return hit;}
-function inBowl(b){const [lx,ly]=bowlLocal(b);return Math.abs(lx)<RIM-1&&ly<2&&ly>-34&&b.touched;}
+function inBowl(b){const [lx,ly]=bowlLocal(b);return b.touched&&Math.abs(lx)<RIM&&ly<surfY(lx)&&ly>-34;}
 function collidePairs(){const B=G.bodies;for(let i=0;i<B.length;i++)for(let j=i+1;j<B.length;j++){const a=B[i],b=B[j],dx=b.x-a.x,dy=b.y-a.y,rr=a.r+b.r,d2=dx*dx+dy*dy;
   if(d2>=rr*rr||d2<1e-6)continue;const d=Math.sqrt(d2),nx=dx/d,ny=dy/d,pen=rr-d,im=1/a.m+1/b.m;
   a.x-=nx*pen*(1/a.m)/im;a.y-=ny*pen*(1/a.m)/im;b.x+=nx*pen*(1/b.m)/im;b.y+=ny*pen*(1/b.m)/im;
-  const rv=(b.vx-a.vx)*nx+(b.vy-a.vy)*ny;if(rv<0){const e=(a.wasIn&&b.wasIn)?.02:Math.min(a.e,b.e),jj=-(1+e)*rv/im;a.vx-=jj*nx/a.m;a.vy-=jj*ny/a.m;b.vx+=jj*nx/b.m;b.vy+=jj*ny/b.m;
+  const rv=(b.vx-a.vx)*nx+(b.vy-a.vy)*ny;if(rv<0){const e=Math.min(a.e,b.e),jj=-(1+e)*rv/im;a.vx-=jj*nx/a.m;a.vy-=jj*ny/a.m;b.vx+=jj*nx/b.m;b.vy+=jj*ny/b.m;
+    const tx=-ny,ty=nx,vt=(b.vx-a.vx)*tx+(b.vy-a.vy)*ty,jt=Math.max(-.3*jj,Math.min(.3*jj,-vt/im));a.vx-=jt*tx/a.m;a.vy-=jt*ty/a.m;b.vx+=jt*tx/b.m;b.vy+=jt*ty/b.m;
     const pile=a.touched||b.touched;
     if(pile&&(a.k==='durian'||b.k==='durian'))durianHit(a.k==='durian'?a:b);
     if(pile){a.touched=b.touched=1;a.free=b.free=0;}}}}
@@ -241,18 +245,18 @@ function update(dt){G.time+=dt;const d=diff();
   if(G.stun>0)G.stun-=dt;
   else if(touchX!==null){tv=Math.max(-maxV,Math.min(maxV,(touchX-G.x)*7));if(Math.abs(touchX-G.x)<1.5)tv=0;}
   else tv=want*maxV;
-  const acc=1500*dt;G.vx+=Math.max(-acc,Math.min(acc,tv-G.vx));G.x+=G.vx*dt;
-  if(G.x<30){G.x=30;G.vx=Math.max(0,G.vx);}if(G.x>W-30){G.x=W-30;G.vx=Math.min(0,G.vx);}
+  const acc=CFG.acc*dt,pv=G.vx;G.vx+=Math.max(-acc,Math.min(acc,tv-G.vx));G.x+=G.vx*dt;G.ax=(G.vx-pv)/dt;
+  if(G.x<38){G.x=38;G.vx=Math.max(0,G.vx);}if(G.x>W-38){G.x=W-38;G.vx=Math.min(0,G.vx);}
   G.dist+=Math.abs(G.vx)*dt;
   for(const k of['splat','shake','blink'])if(G[k]>0)G[k]-=dt;
   // bilao follows the hands (stiff spring), tips toward a crate when Adjo is at the edge
   // the bilao follows a smooth anchor (not the per-frame hands), so starting/stopping never jolts it
   const moving=Math.abs(G.vx)>14,dir=G.vx<0?-1:1;
-  G.lead+=((moving?dir*5:0)-G.lead)*Math.min(1,dt*3);G.lift+=((moving?4:0)-G.lift)*Math.min(1,dt*3);
-  const nbx=G.x+G.lead,nby=GROUND-37-G.lift;G.bvx=(nbx-G.bx)/dt;G.bvy=(nby-G.by)/dt;G.bx=nbx;G.by=nby;
-  let thT=0;
-  if(G.x<38)thT=-1.1;else if(G.x>W-38)thT=1.1;
-  G.thv+=((thT-G.th)*60-G.thv*12)*dt;G.th+=G.thv*dt;
+  G.lead+=((moving?dir*3:0)-G.lead)*Math.min(1,dt*2);G.lift=0;
+  const nbx=G.x+G.lead,nby=GROUND-36;const pbv=G.bvx;G.bvx=(nbx-G.bx)/dt;G.bvy=(nby-G.by)/dt;G.bx=nbx;G.by=nby;G.bax=(G.bax||0)*.5+.5*(G.bvx-pbv)/dt;
+  let thT=Math.max(-.9,Math.min(.9,Math.atan2(G.bax||0,GRAV)))*CFG.tilt;
+  if(G.x<44)thT=-1.3;else if(G.x>W-44)thT=1.3;
+  G.thv+=((thT-G.th)*400-G.thv*35)*dt;G.th+=G.thv*dt;
   // wind gusts after 40 s
   if(G.time>G.windT-1.2&&!G.windWarn&&G.wind<=0){G.windWarn=1;G.windDir=Math.random()<.5?-1:1;}
   if(G.time>G.windT){G.wind=3;G.windWarn=0;G.windT=G.time+10+Math.random()*8-6*d;SFX.wind();}
@@ -271,11 +275,10 @@ function update(dt){G.time+=dt;const d=diff();
     if(f.y>GROUND)f.done=1;}
   G.flyers=G.flyers.filter(f=>!f.done);
   // physics bodies, in sub-steps
-  const N=4,h=dt/N;
+  const N=CFG.sub,h=dt/N;
   for(let s=0;s<N;s++){
     for(const b of G.bodies){
-      b.vy+=300*h;b.vx+=wf*h*(b.inB?.35:1);
-      if(b.inB&&b.k!=='durian'&&Math.abs(G.th)<.3){const k=Math.exp(-8*h);b.vx=G.bvx+(b.vx-G.bvx)*k;const ry=b.vy-G.bvy;if(ry<0)b.vy=G.bvy+ry*Math.exp(-8*h);}
+      b.vy+=GRAV*h;b.vx+=wf*h*(b.inB?.35:1);
       if(b.free){const cap=(55+60*d)*T[b.k].v*(storm()?1.2:1);if(b.vy>cap)b.vy=cap;}
       b.x+=b.vx*h;b.y+=b.vy*h;}
     collidePairs();
@@ -322,13 +325,13 @@ function drawAdjo(p){if(!adjo.complete||(G.blink>0&&((G.blink*12)|0)%2))return;
   if(G.stun>0){for(let i=0;i<3;i++){const a=G.time*6+i*2.1;ctx.fillStyle='#fff6a0';ctx.fillRect(Math.round(G.x+Math.cos(a)*9),Math.round(top+8+Math.sin(a)*3),2,2);}}}
 function drawBowl(){ctx.save();ctx.translate(G.bx,G.by);ctx.rotate(G.th);
   // underside
-  ctx.fillStyle='#2a1d14';ctx.beginPath();ctx.moveTo(-23,-11.5);BOWL.forEach(([x,y])=>ctx.lineTo(x*1.05,y+3.2));ctx.lineTo(23,-11.5);
+  ctx.fillStyle='#2a1d14';ctx.beginPath();ctx.moveTo(-24,-15.5);BOWL.forEach(([x,y])=>ctx.lineTo(x*1.05,y+3.2));ctx.lineTo(24,-15.5);
   for(let i=BOWL.length-1;i>=0;i--)ctx.lineTo(BOWL[i][0],BOWL[i][1]);ctx.closePath();ctx.fill();
-  ctx.fillStyle='#8a5a2b';ctx.beginPath();ctx.moveTo(-22,-10.6);BOWL.forEach(([x,y])=>ctx.lineTo(x,y+2.2));ctx.lineTo(22,-10.6);
+  ctx.fillStyle='#8a5a2b';ctx.beginPath();ctx.moveTo(-23,-14.6);BOWL.forEach(([x,y])=>ctx.lineTo(x,y+2.2));ctx.lineTo(23,-14.6);
   for(let i=BOWL.length-1;i>=0;i--)ctx.lineTo(BOWL[i][0],BOWL[i][1]+.4);ctx.closePath();ctx.fill();
   // weave
   ctx.fillStyle='#e0b876';for(let x=-20;x<=20;x+=3){const y=BOWL.reduce((a,p,i)=>i&&x<=p[0]&&x>=BOWL[i-1][0]?BOWL[i-1][1]+(p[1]-BOWL[i-1][1])*(x-BOWL[i-1][0])/(p[0]-BOWL[i-1][0]):a,0);ctx.fillRect(x,y+.4,1.5,1.2);}
-  ctx.fillStyle='#b98a4c';ctx.fillRect(-23,-12,3,2);ctx.fillRect(20,-12,3,2);
+  ctx.fillStyle='#b98a4c';ctx.fillRect(-24,-16,3,2);ctx.fillRect(21,-16,3,2);
   ctx.restore();}
 function drawSprite(sp,x,y,ang){if(!ang){ctx.drawImage(sp,Math.round(x-sp.width/2),Math.round(y-sp.height/2));return;}
   ctx.save();ctx.translate(Math.round(x),Math.round(y));ctx.rotate(Math.round(ang*4)/4);ctx.drawImage(sp,-sp.width/2|0,-sp.height/2|0);ctx.restore();}
@@ -372,7 +375,7 @@ function draw(){ctx.save();if(G.shake>0)ctx.translate(Math.round((Math.random()-
 }
 function loop(ts){const dt=Math.min(.033,(ts-last)/1000||0);last=ts;if(state==='play'&&!paused){update(dt);music();}draw();requestAnimationFrame(loop);}
 requestAnimationFrame(loop);
-window.__fc={get G(){return G},start,drop:(k,x)=>{const t=T[k];G.bodies.push({k,x:x??G.bx,y:CANOPY,vx:0,vy:0,r:t.r,m:t.m,e:t.e,ang:0,free:1,hitT:0,inB:0,wasIn:0,touched:0});},
+window.__fc={CFG,setG:g=>{GRAV=g},get G(){return G},start,drop:(k,x)=>{const t=T[k];G.bodies.push({k,x:x??G.bx,y:CANOPY,vx:0,vy:0,r:t.r,m:t.m,e:t.e,ang:0,free:1,hitT:0,inB:0,wasIn:0,touched:0});},
   noSpawn:()=>{G.spawnT=1e9;}};
 </script>
 </body>
