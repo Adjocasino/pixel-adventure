@@ -44,6 +44,10 @@
 
 ## Idea list (not built; wait for the user's "go")
 
+### General (wait for "go")
+- **Minigames use the player's chosen avatar** (Adjo, Inad, ...). The demos only use Adjo as a stand-in. Each avatar needs its own minigame poses (for Fruit Catch: bilao-carry sprint + arms-up idle, like `tools/adjo_bilao.py`).
+- **Remove the kid** character from the game (and from anything that references it, e.g. vs CPU ideas).
+
 ### Fruit catch minigame (inspired by the old PS2 loading-screen catch game; all art and music our own)
 - Adjo with a basket under a fruit tree, moving left/right to catch falling fruit. Could be a loading screen, an orchard minigame, or both (not decided).
 - 8-bit music (minigame rule).
