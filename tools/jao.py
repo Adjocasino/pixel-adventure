@@ -11,8 +11,8 @@ OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'assets', '
 os.makedirs(OUT, exist_ok=True)
 Q = dict(skin=C('#c98e62'), skinS=C('#a8714a'), skinL=C('#dba67a'), wr=C('#8e5a3a'),
          hair=C('#1a1414'), hairL=C('#3a3236'), hairS=C('#0e0a0a'),
-         sw=C('#8a3a3a'), swS=C('#6e2c2c'), swL=C('#a85050'), swR=C('#5a2222'), shorts=C('#8a7a5a'), shortsS=C('#6e6046'),
-         slip=C('#3f6fb5'), slipS=C('#2f568f'), vape=C('#b9bfc8'), vapeL=C('#e8edf3'), vapeD=C('#7d838c'),
+         sw=C('#f2efe8'), swS=C('#d2cdc2'), swL=C('#ffffff'), swR=C('#c2bcae'), col=C('#e6e2d8'), shorts=C('#2a2a32'), shortsS=C('#17171c'),
+         shoe=C('#f6f6f2'), shoeS=C('#cfcfc8'), sole=C('#9a9a94'), vape=C('#8f96a0'), vapeL=C('#d8dee6'), vapeD=C('#5d636c'),
          glow=C('#9cd1f8'), eye=C('#241a16'), mouth=C('#6a3a2a'))
 
 def jao(pose):
@@ -22,7 +22,7 @@ def jao(pose):
     # legs + tsinelas
     for lx in (4, 9):
         R(lx, 24, 3, 3, Q['skin']); X(lx + 2, 25, Q['skinS'])
-        R(lx - 1, 27, 5, 2, Q['slip']); R(lx - 1, 28, 5, 1, Q['slipS']); X(lx + 1, 27, Q['skinL'])
+        R(lx - 1, 26, 5, 2, Q['shoe']); X(lx + 3, 26, Q['shoeS']); R(lx - 1, 28, 5, 1, Q['sole']); X(lx, 26, Q['shoeS'])
     # shorts
     R(3, 18 + Y, 10, 6, Q['shorts']); R(3, 23 + Y, 4, 1, Q['shortsS']); R(9, 23 + Y, 4, 1, Q['shortsS'])
     for y in range(19, 24): X(7 + (1 if y > 20 else 0), y + Y, Q['shortsS'])          # leg split
@@ -32,7 +32,11 @@ def jao(pose):
         w = 1 if 14 <= y <= 17 else 0
         R(3 - w, y + Y, 10 + 2 * w, 1, Q['sw']); X(12 + w, y + Y, Q['swS']); X(3 - w, y + Y, Q['swL'])
     R(3, 18 + Y, 10, 1, Q['swR'])                                              # ribbed hem
-    R(6, 11 + Y, 4, 1, Q['swR']); X(5, 11 + Y, Q['swS']); X(10, 11 + Y, Q['swS'])     # crew neck
+    R(6, 11 + Y, 4, 1, Q['skin'])                                              # neck opening
+    for (x, y) in ((5, 11), (6, 12), (4, 11)): X(x, y + Y, Q['col'])           # left collar point
+    for (x, y) in ((10, 11), (9, 12), (11, 11)): X(x, y + Y, Q['col'])         # right collar point
+    X(5, 12 + Y, Q['swR']); X(10, 12 + Y, Q['swR'])                            # collar shadow
+    X(7, 12 + Y, Q['skin']); X(8, 12 + Y, Q['skin']); X(7, 13 + Y, Q['swR']); X(8, 13 + Y, Q['swS'])   # small placket
     for (x, y) in ((5, 14), (9, 13), (6, 16), (10, 16)): X(x, y + Y, Q['swS'])  # knit texture
     # left arm hanging (sleeve + cuff + hand)
     R(1, 12 + Y, 2, 6, Q['sw']); X(1, 13 + Y, Q['swL']); R(1, 18 + Y, 2, 1, Q['swR']); R(1, 19 + Y, 2, 2, Q['skin'])
