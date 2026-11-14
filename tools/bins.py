@@ -1,20 +1,21 @@
-"""Animal seller NPC draft (picture only). Same height as Jao, but standing straight.
+"""Bins, the animal seller (NPC draft (picture only). Same height as Jao, but standing straight.
 Black sleeveless shirt (cut-off sleeves, not a tank top), short hair with a curly front, big oval glasses, square jaw.
 Frames: idle, breath, blink, push (hand up), push2 (finger pushes the glasses up).
-Output: assets/characters/animal_seller/seller_frames.png, seller_loop.gif (with Jao beside him for height)."""
+Output: assets/characters/animal_seller/bins_frames.png, bins_loop.gif (with Jao beside him for height)."""
 import os, sys
 from PIL import Image, ImageDraw
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from farmer import B, C
 from jao import jao
+from turon import turon
 
-OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'assets', 'characters', 'animal_seller')
+OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'assets', 'characters', 'bins')
 os.makedirs(OUT, exist_ok=True)
 Q = dict(skin=C('#d9a07a'), skinS=C('#b87e5a'), skinL=C('#ebb894'), eye=C('#241a16'),
          hair=C('#2b1e19'), hairL=C('#4a3529'), hairS=C('#1a120e'),
          shirt=C('#26262c'), shirtS=C('#16161a'), shirtL=C('#3a3a44'),
-         jean=C('#3f5f8f'), jeanS=C('#2f4870'), jeanL=C('#5576a8'),
-         boot=C('#6b4226'), bootS=C('#4e2f1a'), bootL=C('#8a5a36'),
+         sh=C('#5a5e66'), shS=C('#43464d'), shL=C('#71757e'),
+         shoe=C('#a82a5a'), shoeS=C('#7e1c42'), shoeL=C('#cf4a7c'), sole=C('#f2efe8'), lace=C('#f2efe8'),
          frame=C('#2a2226'), lens=C('#cfe3ef'), lensL=C('#f2fafe'), mouth=C('#8a4a3a'))
 
 def seller(pose):
@@ -23,9 +24,12 @@ def seller(pose):
     Y = -1 if pose == 'breath' else 0
     # boots + jeans
     for lx in (3, 9):
-        R(lx, 25, 4, 3, Q['boot']); X(lx, 25, Q['bootL']); R(lx, 28, 4, 1, Q['bootS'])
-        R(lx, 19, 4, 6, Q['jean']); X(lx, 20, Q['jeanL']); X(lx + 3, 22, Q['jeanS'])
-    R(3, 18 + Y, 10, 2, Q['jean']); X(8, 19, Q['jeanS'])
+        R(lx, 23, 4, 1, Q['skin']); R(lx + 1, 23, 2, 1, Q['skin']); X(lx + 3, 23, Q['skinS'])           # calves
+        R(lx, 24, 4, 4, Q['shoe']); X(lx, 24, Q['shoeL']); X(lx + 3, 25, Q['shoeS'])                 # high-tops
+        X(lx + 1, 25, Q['lace']); X(lx + 2, 26, Q['lace']); R(lx, 24, 4, 1, Q['shoeS'])
+        R(lx - (1 if lx == 3 else 0), 28, 5, 1, Q['sole'])
+        R(lx, 19, 4, 4, Q['sh']); X(lx, 20, Q['shL']); X(lx + 3, 21, Q['shS'])                       # shorts legs
+    R(3, 18 + Y, 10, 2, Q['sh']); X(8, 19, Q['shS'])
     R(3, 18 + Y, 10, 1, C('#5a3a22'))                                            # belt
     X(7, 18 + Y, C('#c9b24a')); X(8, 18 + Y, C('#c9b24a'))                       # buckle
     # black sleeveless shirt: covers the shoulders (cut-off sleeves), arms bare
@@ -53,11 +57,15 @@ def seller(pose):
     X(2, 5 + Y, Q['skin']); X(13, 5 + Y, Q['skinS'])                              # ears
     # hair: short sides, small curly front
     R(3, -2 + Y, 10, 2, Q['hair']); R(2, -1 + Y, 1, 4, Q['hair']); R(13, -1 + Y, 1, 4, Q['hair'])
+    R(4, -3 + Y, 8, 1, Q['hair']); X(2, -2 + Y, Q['hair']); X(13, -2 + Y, Q['hair'])               # rounded top
+    for (x, y) in ((4, -3), (5, -2), (7, -3), (8, -2), (10, -3), (11, -2), (3, -1), (12, 0)): X(x, y + Y, Q['hairL'])   # curl loops
+    for (x, y) in ((5, -3), (8, -3), (11, -3), (4, -1), (9, -1), (13, -1)): X(x, y + Y, Q['hairS'])               # curl shadows
     # one big curl falling on the forehead (a 'C' loop) + a smaller one
     for (x, y) in ((6, 0), (5, 1), (5, 2), (6, 3), (7, 3), (7, 0)): X(x, y + Y, Q['hair'])
     X(6, 1 + Y, Q['skin']); X(6, 2 + Y, Q['skin'])                              # forehead showing inside the curl
-    for (x, y) in ((9, 0), (10, 1), (9, 1)): X(x, y + Y, Q['hair'])
-    for (x, y) in ((5, -1), (8, -2), (10, -1), (7, 0)): X(x, y + Y, Q['hairL'])
+    for (x, y) in ((9, 0), (10, 1), (10, 2), (9, 2), (11, 1)): X(x, y + Y, Q['hair'])   # second curl
+    X(10, 1 + Y, Q['skin']); X(4, 1 + Y, Q['hair']); X(4, 2 + Y, Q['hair'])
+    for (x, y) in ((6, -1), (7, 0)): X(x, y + Y, Q['hairL'])
     # big oval glasses
     for x0 in (3, 8):
         for (x, y) in ((1, 0), (2, 0), (3, 0), (0, 1), (4, 1), (0, 2), (4, 2), (1, 3), (2, 3), (3, 3)): X(x0 + x, 3 + y + Y + gy, Q['frame'])
@@ -76,16 +84,18 @@ def main():
     sh = Image.new('RGBA', (len(poses) * 28 + 30, 42), C('#d9c49a'))
     for i, p in enumerate(poses): sh.alpha_composite(S[p], (i * 28 + 2, 2))
     sh.alpha_composite(jao('idle'), (len(poses) * 28 + 4, 2))                     # Jao for height
-    sh.resize((sh.width * 8, sh.height * 8), Image.NEAREST).save(os.path.join(OUT, 'seller_frames.png'))
+    sh.resize((sh.width * 8, sh.height * 8), Image.NEAREST).save(os.path.join(OUT, 'bins_frames.png'))
     tl = ['idle'] * 8 + ['breath'] * 6 + ['idle'] * 4 + ['blink'] * 2 + ['idle'] * 8 + ['breath'] * 6 + ['push'] * 2 + ['push2'] * 5 + ['push'] * 2 + ['idle'] * 6 + ['blink'] * 2 + ['idle'] * 4
     J = ['idle'] * 10 + ['breath'] * 10
+    TU = ['idle'] * 6 + ['breath'] * 6 + ['wag', 'idle'] * 3 + ['idle'] * 4 + ['blink'] * 2 + ['idle'] * 4 + ['breath'] * 6
     frames = []
     for t, p in enumerate(tl):
-        im = Image.new('RGBA', (64, 48), C('#d9c49a')); d = ImageDraw.Draw(im)
-        for x, sp in ((6, S[p]), (34, jao(J[t % len(J)]))):
-            d.ellipse([x + 4, 44, x + 20, 47], fill=(150, 125, 85, 255)); im.alpha_composite(sp, (x, 46 - 37))
-        frames.append(im.resize((64 * 7, 48 * 7), Image.NEAREST).convert('RGB'))
-    frames[0].save(os.path.join(OUT, 'seller_loop.gif'), save_all=True, append_images=frames[1:], duration=120, loop=0)
+        im = Image.new('RGBA', (84, 48), C('#d9c49a')); d = ImageDraw.Draw(im)
+        for x, sp, w in ((6, S[p], 16), (54, jao(J[t % len(J)]), 16)):
+            d.ellipse([x + 4, 44, x + 4 + w, 47], fill=(150, 125, 85, 255)); im.alpha_composite(sp, (x, 46 - 37))
+        d.ellipse([28, 44, 46, 47], fill=(150, 125, 85, 255)); im.alpha_composite(turon(TU[t % len(TU)]), (25, 46 - 24 + 1))
+        frames.append(im.resize((84 * 6, 48 * 6), Image.NEAREST).convert('RGB'))
+    frames[0].save(os.path.join(OUT, 'bins_loop.gif'), save_all=True, append_images=frames[1:], duration=120, loop=0)
     print('ok', len(frames))
 
 if __name__ == '__main__':
