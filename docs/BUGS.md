@@ -75,7 +75,7 @@
 - **Not the seller.** The stalls handle buying/selling. Jao just hangs around the market and gives a random "dumb philosophy" quote when you talk to him, and says a line after you close a sell menu.
 - **Quotes are not fish-related.** Internet-style fake-deep lines plus real wisdom that sounds dumb. Original lines only (not copied memes).
 - Draft sprite: `assets/characters/jao/jao_draft.gif`, `jao_frames.png` (`tools/jao.py`): idle, breath, raise, inhale, exhale.
-- Status: waiting for the user's OK on the look and the quote style; then write 20+ quotes.
+- Quotes: `docs/JAO_QUOTES.md` (25 talk lines + 6 after-sell lines, draft). Loop preview: `assets/characters/jao/jao_loop.gif`.
 
 ### Fruit catch minigame (inspired by the old PS2 loading-screen catch game; all art and music our own)
 - Adjo with a basket under a fruit tree, moving left/right to catch falling fruit. Could be a loading screen, an orchard minigame, or both (not decided).

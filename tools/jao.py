@@ -132,5 +132,32 @@ def main():
     frames[0].save(os.path.join(OUT, 'jao_draft.gif'), save_all=True, append_images=frames[1:], duration=120, loop=0)
     print('ok', len(frames))
 
+def closeup():
+    """clean loop: only Jao and the smoke, big, seamless timing"""
+    poses = ['idle', 'breath', 'raise', 'inhale', 'exhale']; S = {p: jao(p) for p in poses}
+    W2, H2, K2 = 84, 84, 6; gx, gy = 26, 80
+    tl = ['idle'] * 5 + ['breath'] * 5 + ['idle'] * 5 + ['breath'] * 5 + ['raise'] * 3 + ['inhale'] * 10 + ['raise'] * 2 + ['exhale'] * 5 + ['idle'] * 5 + ['breath'] * 5 + ['idle'] * 5 + ['breath'] * 5
+    frames = []; puffs = []
+    for warm in (0, 1):                       # run twice, keep the 2nd pass so the haze is already there (seamless loop)
+        for t, p in enumerate(tl):
+            im = Image.new('RGBA', (W2, H2), C('#d9c49a')); d = ImageDraw.Draw(im)
+            d.ellipse([gx + 3, gy - 1, gx + 19, gy + 2], fill=(150, 125, 85, 255))
+            im.alpha_composite(S[p], (gx, gy - 37))
+            if p == 'exhale' and tl[t - 1] != 'exhale':
+                for k in range(14): puffs.append([gx + 11 + k * .9, gy - 28 + (k % 3), 2 + k * .35, 0, 46])
+            tip = (gx + 15, gy - 17) if p in ('idle', 'breath', 'exhale') else (gx + 16, gy - 21)
+            if t % 2 == 0: puffs.append([tip[0], tip[1], .8, 0, 26])
+            if t % 5 == 0: puffs.append([gx + 6 + (t * 7) % 14, gy - 40 + (t % 3), 3.5, 0, 60])
+            g = Image.new('RGBA', im.size); gd = ImageDraw.Draw(g)
+            for pf in puffs:
+                life = pf[4]; pf[3] += 1; pf[0] += .45 + math.sin(pf[3] * .3 + pf[2]) * .35; pf[1] -= .45; pf[2] += .22
+                a = int(max(0, 170 * (1 - pf[3] / life)))
+                gd.ellipse([pf[0] - pf[2], pf[1] - pf[2], pf[0] + pf[2], pf[1] + pf[2]], fill=(232, 236, 244, a))
+            puffs[:] = [pf for pf in puffs if pf[3] < pf[4]]
+            im.alpha_composite(g)
+            if warm: frames.append(im.resize((W2 * K2, H2 * K2), Image.NEAREST).convert('RGB'))
+    frames[0].save(os.path.join(OUT, 'jao_loop.gif'), save_all=True, append_images=frames[1:], duration=120, loop=0)
+    print('loop', len(frames))
+
 if __name__ == '__main__':
-    main()
+    main(); closeup()
