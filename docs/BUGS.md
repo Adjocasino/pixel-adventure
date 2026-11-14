@@ -62,8 +62,18 @@
 
 ### General (wait for "go")
 - **Minigames use the player's chosen avatar** (Adjo, Inad, ...). The demos only use Adjo as a stand-in. Each avatar needs its own minigame poses (for Fruit Catch: bilao-carry sprint + arms-up idle, like `tools/adjo_bilao.py`).
-- **App icon: option B (Meadow cottage)** chosen by the user: `assets/icon_options/icon_B_meadow.png` (from `tools/app_icon.py`). Set it as the launcher icon on "go".
+- **App icon: option B (Meadow cottage)**, updated to **B2** with a bit of orange wood (door, sills, small wooden fence + dirt path): `assets/icon_options/icon_B2_meadow_wood.png` (`B2=1 python3 tools/app_icon.py`). Set it as the launcher icon on "go".
 - **Remove the kid** character from the game (and from anything that references it, e.g. vs CPU ideas).
+
+### Market map + two stores (proposed, wait for "go")
+- All 5 maps are in use; the free spot is **west of Willow Village** (no west exit yet). Proposed new map: **Palengke (market)**.
+- **Fish stall:** sell fish caught in the Mirror Lake minigame (price by fish + tier).
+- **Animal shop:** buy animals for the Barn Ranch; on buying, a prompt asks you to name the animal.
+
+### Fish seller NPC (concept, user's idea)
+- An old man with a full head of thick black hair. He holds a short aluminum vape stick and now and then inhales and puffs out a cloud of vapor.
+- Talking to him gives a random "dumb philosophy" line: internet-style fake-deep quotes, and some real wisdom that sounds dumb. Lines must be original (not copied memes).
+- Status: 5 sample lines sent to the user for a direction check; then write 20+.
 
 ### Fruit catch minigame (inspired by the old PS2 loading-screen catch game; all art and music our own)
 - Adjo with a basket under a fruit tree, moving left/right to catch falling fruit. Could be a loading screen, an orchard minigame, or both (not decided).

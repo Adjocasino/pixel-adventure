@@ -122,23 +122,44 @@ def option_C():
     smoke(im, (200, 205, 230, 200))
     return im
 
+def option_B2():
+    """MEADOW + a bit of wood orange: orange timber frame, door, sills and a little wooden fence"""
+    im = option_B(); d = ImageDraw.Draw(im); px = im.load()
+    WO, WOL, WOD = C('#d0803c'), C('#e8a058'), C('#9a5a28')
+    # re-colour the timber frame, door and sills to warm orange wood
+    for y in range(N):
+        for x in range(N):
+            c = px[x, y]
+            if c == C('#8a5a30'): px[x, y] = WO          # beams + sills
+            elif c == C('#7a4a2a'): px[x, y] = WOD       # door
+            elif c == C('#9a6a40'): px[x, y] = WOL       # door highlight
+    # little wooden fence in front of the grass
+    for x in range(2, 30):
+        if x in range(13, 19): continue                  # gap at the door path
+        d.point((x, 27), fill=WO if x % 3 else WOD)
+        if x % 3 == 0: d.line([(x, 26), (x, 29)], fill=WOD); d.point((x, 25), fill=WOL)
+    d.line([(2, 28), (12, 28)], fill=WO); d.line([(19, 28), (29, 28)], fill=WO)
+    d.line([(14, 26), (17, 26)], fill=C('#e0c08a')); d.rectangle([14, 27, 17, 31], fill=C('#e0c08a'))   # dirt path
+    return im
+
 def finish(im):
     m = rounded_mask(N, 6); out = Image.new('RGBA', (N, N)); out.paste(im, (0, 0), m); return out
 
 if __name__ == '__main__':
     opts = {'A_wood': option_A(), 'B_meadow': option_B(), 'C_night': option_C()}
+    if os.environ.get('B2'): opts = {'B_meadow': option_B(), 'B2_meadow_wood': option_B2()}
     big = {}
     for k, im in opts.items():
         im = finish(im); b = im.resize((512, 512), Image.NEAREST); b.save(os.path.join(OUT, f'icon_{k}.png')); big[k] = (im, b)
     # comparison sheet: big + launcher-size previews (48 and 96 px) on a phone-like background
-    sheet = Image.new('RGBA', (3 * 300 + 40, 470), C('#2b2f36')); d = ImageDraw.Draw(sheet)
+    sheet = Image.new('RGBA', (len(opts) * 300 + 40, 470), C('#2b2f36')); d = ImageDraw.Draw(sheet)
     from PIL import ImageFont
-    names = {'A_wood': 'A  Wood', 'B_meadow': 'B  Meadow', 'C_night': 'C  Night'}
+    names = {'A_wood': 'A  Wood', 'B_meadow': 'B  Meadow', 'C_night': 'C  Night', 'B2_meadow_wood': 'B2  Meadow + wood'}
     for i, k in enumerate(opts):
         im, b = big[k]; x = 20 + i * 300
         sheet.alpha_composite(b.resize((256, 256), Image.NEAREST), (x + 12, 20))
         sheet.alpha_composite(im.resize((96, 96), Image.NEAREST), (x + 40, 300))
         sheet.alpha_composite(im.resize((48, 48), Image.NEAREST), (x + 170, 324))
         d.text((x + 140, 420), names[k], font=ImageFont.load_default(size=22), fill=(255, 255, 255), anchor='ma')
-    sheet.save(os.path.join(OUT, 'icon_options.png'))
+    sheet.save(os.path.join(OUT, 'icon_B_vs_B2.png' if os.environ.get('B2') else 'icon_options.png'))
     print('ok')
