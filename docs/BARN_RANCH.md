@@ -64,7 +64,7 @@ Next step after that: add the **bees** as the second station to test a very diff
 - **Names:** when you buy an animal at the market (future), a prompt asks you to **name it**. The 2 starting chickens are **Ginger** and **Rocky**.
 - **Products depend on points**, and products **stack** in the inventory.
 
-## 8. Scoring (proposed: hybrid, waiting for the user's OK)
+## 8. Scoring: hybrid (APPROVED by the user, 2026-11-14)
 - Each task gets a score in % (how well/fast it was done).
 - Products drop from tasks right away and stack (each egg collected = +1 egg).
 - Each item's **quality** comes from that task's %: bronze / silver / gold (like the fish tiers).
@@ -72,7 +72,32 @@ Next step after that: add the **bees** as the second station to test a very diff
 - Inventory stacks per product and quality, e.g. "Egg x12", "Golden egg x1".
 - Alternatives considered: per-task only (can farm one easy task) and overall-only (delayed, abstract feedback).
 
-## 9. Open questions
+## 9. Layout (proposed)
+```
+ BARN INTERIOR (base level, about 20x12 tiles)
+ +--------------+-------------------+------------------+
+ | N1  N2  N3   | ladder  HAY  TOOLS| [goat]   [pig]   |
+ | (nest boxes) | (hay loft, later) |                  |
+ |              |                   | [cow]    [sheep] |
+ | roost bar    | CLIPBOARD (start) |   locked stalls  |
+ | FEEDER WATER |                   |   "For sale"     |
+ | ~~ low fence~| PUMP        CORN  |                  |
+ |  chick area  | (water)     (bin) |  back door -->   |
+ |              |                   |  yard (later)    |
+ | EGG CRATE    |      [ DOOR ]     |                  |
+ +--------------+-------------------+------------------+
+```
+- **Left wing = coop** (base): nest boxes on the back wall, roost bar, feeder + waterer behind a low fence with a gate.
+- **Middle = shared work area:** water pump and corn bin on opposite sides (refills mean running across).
+- **Egg crate** by the coop: eggs count when dropped in the crate (like banking in Fruit Catch). Eggs left in the nest too long cool down (lower quality).
+- **Clipboard** on the middle wall starts the shift ("Tend the animals?" Start / Not now).
+- **Barn door = escape route:** a runaway chicken heads for the door; if it gets out it is gone for the rest of the shift.
+- **Right wing = locked stalls** with "For sale" signs (goat, pig, carabao/cow, sheep).
+- **Hay loft** (ladder) unlocks with goat/cow. **Back door to the yard** unlocks duck pond, apiary + flowers, rabbit hutch, goose, tilapia pond.
+- **Outside the barn:** a sign by the door toggles Timed panic / Relaxed (future); a bell or notice board shows "Ginger is hungry!".
+- Stations are far apart on purpose: more animals = longer routes = more panic.
+
+## 10. Open questions
 - Animal personalities (beyond names)?
 - Do products also feed into cooking/market in the main game, or only coins?
 - Multiplayer: later, only when the user says "include in the multiplayer".
