@@ -11,7 +11,7 @@ OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'assets', '
 os.makedirs(OUT, exist_ok=True)
 Q = dict(skin=C('#c98e62'), skinS=C('#a8714a'), skinL=C('#dba67a'), wr=C('#8e5a3a'),
          hair=C('#1a1414'), hairL=C('#3a3236'), hairS=C('#0e0a0a'),
-         sando=C('#f2efe6'), sandoS=C('#d6d1c2'), shorts=C('#8a7a5a'), shortsS=C('#6e6046'),
+         sw=C('#8a3a3a'), swS=C('#6e2c2c'), swL=C('#a85050'), swR=C('#5a2222'), shorts=C('#8a7a5a'), shortsS=C('#6e6046'),
          slip=C('#3f6fb5'), slipS=C('#2f568f'), vape=C('#b9bfc8'), vapeL=C('#e8edf3'), vapeD=C('#7d838c'),
          glow=C('#9cd1f8'), eye=C('#241a16'), mouth=C('#6a3a2a'))
 
@@ -21,27 +21,30 @@ def jao(pose):
     Y = -1 if pose == 'breath' else 0
     # legs + tsinelas
     for lx in (4, 9):
-        R(lx, 22, 3, 5, Q['skin']); X(lx + 2, 23, Q['skinS']); X(lx + 2, 25, Q['skinS'])
+        R(lx, 24, 3, 3, Q['skin']); X(lx + 2, 25, Q['skinS'])
         R(lx - 1, 27, 5, 2, Q['slip']); R(lx - 1, 28, 5, 1, Q['slipS']); X(lx + 1, 27, Q['skinL'])
     # shorts
-    R(3, 18 + Y, 10, 4, Q['shorts']); R(3, 21 + Y, 4, 1, Q['shortsS']); R(9, 21 + Y, 4, 1, Q['shortsS']); X(8, 19 + Y, Q['shortsS'])
+    R(3, 18 + Y, 10, 6, Q['shorts']); R(3, 23 + Y, 4, 1, Q['shortsS']); R(9, 23 + Y, 4, 1, Q['shortsS'])
+    for y in range(19, 24): X(7 + (1 if y > 20 else 0), y + Y, Q['shortsS'])          # leg split
+    X(3, 20 + Y, Q['shortsS']); X(12, 20 + Y, Q['shortsS'])
     # sando (tank top) with a small belly
     for y in range(11, 19):
         w = 1 if 14 <= y <= 17 else 0
-        R(3 - w, y + Y, 10 + 2 * w, 1, Q['sando']); X(12 + w, y + Y, Q['sandoS'])
-    R(3, 11 + Y, 2, 2, Q['skin']); R(11, 11 + Y, 2, 2, Q['skin'])            # shoulders (sando straps)
-    R(5, 11 + Y, 6, 1, Q['skin']); X(7, 12 + Y, Q['skin']); X(8, 12 + Y, Q['skin'])   # neckline
-    # left arm hanging
-    R(1, 12 + Y, 2, 7, Q['skin']); X(2, 13 + Y, Q['skinS']); R(1, 19 + Y, 2, 2, Q['skinS'])
+        R(3 - w, y + Y, 10 + 2 * w, 1, Q['sw']); X(12 + w, y + Y, Q['swS']); X(3 - w, y + Y, Q['swL'])
+    R(3, 18 + Y, 10, 1, Q['swR'])                                              # ribbed hem
+    R(6, 11 + Y, 4, 1, Q['swR']); X(5, 11 + Y, Q['swS']); X(10, 11 + Y, Q['swS'])     # crew neck
+    for (x, y) in ((5, 14), (9, 13), (6, 16), (10, 16)): X(x, y + Y, Q['swS'])  # knit texture
+    # left arm hanging (sleeve + cuff + hand)
+    R(1, 12 + Y, 2, 6, Q['sw']); X(1, 13 + Y, Q['swL']); R(1, 18 + Y, 2, 1, Q['swR']); R(1, 19 + Y, 2, 2, Q['skin'])
     # right arm + vape (by pose)
     if pose in ('idle', 'breath', 'exhale'):
-        R(13, 12 + Y, 2, 4, Q['skin']); R(11, 15 + Y, 3, 2, Q['skin']); X(13, 16 + Y, Q['skinS'])     # forearm bent to chest
+        R(13, 12 + Y, 2, 4, Q['sw']); R(12, 15 + Y, 2, 2, Q['sw']); X(14, 15 + Y, Q['swS']); R(11, 15 + Y, 1, 2, Q['skin'])   # sleeve bent to chest, hand
         R(11, 12 + Y, 1, 4, Q['vape']); X(11, 12 + Y, Q['vapeL']); X(11, 15 + Y, Q['vapeD'])           # stick held upright
     elif pose == 'raise':
-        R(13, 12 + Y, 2, 3, Q['skin']); R(12, 10 + Y, 2, 3, Q['skin'])
+        R(13, 12 + Y, 2, 3, Q['sw']); R(12, 10 + Y, 2, 2, Q['sw']); X(12, 12 + Y, Q['skin'])
         R(11, 9 + Y, 1, 3, Q['vape']); X(11, 9 + Y, Q['vapeL'])
     else:  # inhale: hand at the mouth, stick across the lips
-        R(13, 12 + Y, 2, 2, Q['skin']); R(11, 9 + Y, 3, 3, Q['skin']); X(13, 11 + Y, Q['skinS'])
+        R(13, 12 + Y, 2, 2, Q['sw']); R(12, 10 + Y, 2, 2, Q['sw']); R(11, 9 + Y, 2, 1, Q['skin'])
         R(8, 8 + Y, 4, 1, Q['vape']); X(11, 8 + Y, Q['vapeD']); X(8, 8 + Y, Q['vapeL'])
         X(12, 8 + Y, Q['glow'])
     # head
@@ -64,9 +67,8 @@ def jao(pose):
         X(5, 6 + Y, Q['eye']); X(6, 6 + Y, C('#f4ece0')); X(9, 6 + Y, Q['eye']); X(10, 6 + Y, C('#f4ece0'))
     X(4, 6 + Y, Q['wr']); X(11, 6 + Y, Q['wr'])                              # crow's feet
     X(7, 7 + Y, Q['skinS'])                                                  # nose
-    R(6, 7 + Y, 4, 1, Q['hair']); X(5, 8 + Y, Q['hair']); X(10, 8 + Y, Q['hair'])   # mustache
-    if pose == 'exhale': X(7, 8 + Y, Q['mouth']); X(8, 8 + Y, Q['mouth']); X(7, 9 + Y, Q['mouth'])
-    else: X(7, 8 + Y, Q['wr']); X(8, 8 + Y, Q['wr'])
+    if pose == 'exhale': X(7, 8 + Y, Q['mouth']); X(8, 8 + Y, Q['mouth']); X(7, 9 + Y, Q['mouth']); X(8, 9 + Y, Q['mouth'])
+    else: R(6, 8 + Y, 4, 1, Q['mouth'])
     X(5, 9 + Y, Q['wr']); X(10, 9 + Y, Q['wr'])                              # smile lines
     if pose == 'inhale':   # the stick goes over the mustache, tip glows
         R(8, 8 + Y, 4, 1, Q['vape']); X(8, 8 + Y, Q['vapeL']); X(11, 8 + Y, Q['vapeD']); X(12, 8 + Y, Q['glow'])
@@ -111,13 +113,17 @@ def main():
         d.ellipse([x0 + 3, GROUND - 1, x0 + 19, GROUND + 2], fill=(150, 125, 85, 255))
         im.alpha_composite(S[p], (x0, GROUND - 37))
         if p == 'exhale' and tl[t - 1] != 'exhale':
-            for k in range(7): puffs.append([x0 + 12 + k * .6, GROUND - 28, 1.5 + k * .3, 0])
+            for k in range(14): puffs.append([x0 + 11 + k * .9, GROUND - 28 + (k % 3), 2 + k * .35, 0, 46])
+        # permanent linger: a wisp always rising from the stick + slow haze around his head
+        tip = (x0 + 4 + 11, GROUND - 37 + 8 + 12) if p in ('idle', 'breath', 'exhale') else (x0 + 4 + 12, GROUND - 37 + 8 + 8)
+        if t % 2 == 0: puffs.append([tip[0], tip[1], .8, 0, 26])
+        if t % 5 == 0: puffs.append([x0 + 6 + (t * 7) % 14, GROUND - 40 + (t % 3), 3.5, 0, 60])
         g = Image.new('RGBA', im.size); gd = ImageDraw.Draw(g)
         for pf in puffs:
-            pf[3] += 1; pf[0] += .9 + math.sin(pf[3] * .4) * .4; pf[1] -= .7; pf[2] += .35
-            a = max(0, 200 - pf[3] * 7)
-            gd.ellipse([pf[0] - pf[2], pf[1] - pf[2], pf[0] + pf[2], pf[1] + pf[2]], fill=(235, 240, 248, a))
-        puffs[:] = [pf for pf in puffs if pf[3] < 28]
+            life = pf[4]; pf[3] += 1; pf[0] += .45 + math.sin(pf[3] * .3 + pf[2]) * .35; pf[1] -= .45; pf[2] += .22
+            a = int(max(0, 170 * (1 - pf[3] / life)))
+            gd.ellipse([pf[0] - pf[2], pf[1] - pf[2], pf[0] + pf[2], pf[1] + pf[2]], fill=(232, 236, 244, a))
+        puffs[:] = [pf for pf in puffs if pf[3] < pf[4]]
         im.alpha_composite(g)
         big = im.resize((SW * K, SHH * K), Image.NEAREST)
         q = quotes[0] if t < len(tl) // 2 else quotes[1]
