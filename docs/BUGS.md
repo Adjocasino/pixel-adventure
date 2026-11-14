@@ -1,5 +1,11 @@
 # Bugs & feature notes
 
+## Planned (not built): golden gifts
+- Giving a **golden fish to Jao**, or **anything golden** (golden fish, golden egg, etc.) **to a cat**, triggers a special interaction.
+- Jao: candidate is the "ascend" moment (`demos/jao_ascend.html`). He dissolves into vape smoke + gold sparkles, then comes back with a line.
+- Cats: the trending AI-cat **clapping** animation. Cotton first (`demos/cotton_clap.html`, art `tools/cat_clap.py` → `assets/characters/cats/cotton_clap.png`). Collete and Precious later.
+- Still to decide: whether the gift is used up, how often it can happen, and where the Jao ascend triggers.
+
 ## v1.3 — animal unlocks (in the APK)
 - Bins' shop shows a goal + progress for each future animal: **Duck** own 3 chickens, **Cow** own 4 chickens, **Goat** finish 5 barn shifts, **Bees** get a golden egg in the barn.
 - Unlocks are permanent (saved). A pop-up line announces a new unlock (after buying a chicken or finishing a shift).
