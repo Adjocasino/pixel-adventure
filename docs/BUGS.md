@@ -70,10 +70,12 @@
 - **Fish stall:** sell fish caught in the Mirror Lake minigame (price by fish + tier).
 - **Animal shop:** buy animals for the Barn Ranch; on buying, a prompt asks you to name the animal.
 
-### Fish seller NPC (concept, user's idea)
-- An old man with a full head of thick black hair. He holds a short aluminum vape stick and now and then inhales and puffs out a cloud of vapor.
-- Talking to him gives a random "dumb philosophy" line: internet-style fake-deep quotes, and some real wisdom that sounds dumb. Lines must be original (not copied memes).
-- Status: 5 sample lines sent to the user for a direction check; then write 20+.
+### Jao: market NPC (concept, user's idea)
+- **Name: Jao.** An old man with thick black hair, in a white sando, shorts and blue tsinelas. He holds a short aluminum vape stick and now and then inhales (eyes shut, tip glows) and puffs out a cloud.
+- **Not the seller.** The stalls handle buying/selling. Jao just hangs around the market and gives a random "dumb philosophy" quote when you talk to him, and says a line after you close a sell menu.
+- **Quotes are not fish-related.** Internet-style fake-deep lines plus real wisdom that sounds dumb. Original lines only (not copied memes).
+- Draft sprite: `assets/characters/jao/jao_draft.gif`, `jao_frames.png` (`tools/jao.py`): idle, breath, raise, inhale, exhale.
+- Status: waiting for the user's OK on the look and the quote style; then write 20+ quotes.
 
 ### Fruit catch minigame (inspired by the old PS2 loading-screen catch game; all art and music our own)
 - Adjo with a basket under a fruit tree, moving left/right to catch falling fruit. Could be a loading screen, an orchard minigame, or both (not decided).
