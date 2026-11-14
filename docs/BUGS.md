@@ -62,6 +62,7 @@
 
 ### General (wait for "go")
 - **Minigames use the player's chosen avatar** (Adjo, Inad, ...). The demos only use Adjo as a stand-in. Each avatar needs its own minigame poses (for Fruit Catch: bilao-carry sprint + arms-up idle, like `tools/adjo_bilao.py`).
+- **App icon: option B (Meadow cottage)** chosen by the user: `assets/icon_options/icon_B_meadow.png` (from `tools/app_icon.py`). Set it as the launcher icon on "go".
 - **Remove the kid** character from the game (and from anything that references it, e.g. vs CPU ideas).
 
 ### Fruit catch minigame (inspired by the old PS2 loading-screen catch game; all art and music our own)
