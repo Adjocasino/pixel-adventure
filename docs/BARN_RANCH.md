@@ -52,15 +52,27 @@ Suggested unlock order: chicken, duck, goat, pig, bees, carabao, sheep, rabbit, 
 Scope, single screen, no shop:
 - Barn interior, Adjo (stand-in for the chosen avatar).
 - **"Tend the animals?" Start / Not now** prompt.
-- **2 chickens** with 3 needs: food, water, eggs ready.
+- **2 chickens, Ginger and Rocky**, with 3 needs: food, water, eggs ready.
 - Tasks: scatter corn (hold A), pump + carry + pour water, grab eggs.
 - One chaos event: an unhappy chicken escapes and must be caught.
 - 90-second shift, results screen with eggs, happiness and stars.
 - A mock "Market" panel on the results screen showing **Buy chicken / Buy duck (locked)** to show the unlock flow.
 Next step after that: add the **bees** as the second station to test a very different mechanic (suit, smoke, extractor).
 
-## 7. Open questions
-- Is a shift time-limited (panic) or relaxed (do it at your own pace, needs drain per in-game day)? Possibly both: normal tending is relaxed, "rush hour" is the timed minigame.
-- Do animals have names and personalities (like the pets)?
-- Do products feed into cooking/market in the main game, or only coins?
+## 7. Decisions (user, 2026-11-14)
+- **Shift mode:** default is **timed panic**. A toggle **outside the barn** switches to relaxed tending (future).
+- **Names:** when you buy an animal at the market (future), a prompt asks you to **name it**. The 2 starting chickens are **Ginger** and **Rocky**.
+- **Products depend on points**, and products **stack** in the inventory.
+
+## 8. Scoring (proposed: hybrid, waiting for the user's OK)
+- Each task gets a score in % (how well/fast it was done).
+- Products drop from tasks right away and stack (each egg collected = +1 egg).
+- Each item's **quality** comes from that task's %: bronze / silver / gold (like the fish tiers).
+- The **session %** at the end (all tasks + animal happiness) adds a **bonus stack**: <50% none, 70%+ +10%, 85%+ +25%, 95%+ +50% and 1 golden product.
+- Inventory stacks per product and quality, e.g. "Egg x12", "Golden egg x1".
+- Alternatives considered: per-task only (can farm one easy task) and overall-only (delayed, abstract feedback).
+
+## 9. Open questions
+- Animal personalities (beyond names)?
+- Do products also feed into cooking/market in the main game, or only coins?
 - Multiplayer: later, only when the user says "include in the multiplayer".
