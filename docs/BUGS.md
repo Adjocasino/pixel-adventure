@@ -77,6 +77,12 @@
 - Draft sprite: `assets/characters/jao/jao_draft.gif`, `jao_frames.png` (`tools/jao.py`): idle, breath, raise, inhale, exhale.
 - Quotes: `docs/JAO_QUOTES.md` (v2: style = lines 1, 2, 4 the user liked; 25 talk lines + 5 after-sell lines). Loop preview: `assets/characters/jao/jao_loop.gif`.
 
+### Animal seller NPC (concept, user's idea)
+- Runs the animal shop in the market. Same height as Jao (but standing straight).
+- Black sleeveless shirt (cut-off sleeves, not a tank top), short hair with a curly front lock, big oval glasses, square jaw. Draft extras: jeans, belt, brown boots.
+- Idle loop: breath, blink, pushes his glasses up with one finger.
+- Draft sprite: `assets/characters/animal_seller/seller_loop.gif`, `seller_frames.png` (`tools/animal_seller.py`). Name: not decided yet.
+
 ### Fruit catch minigame (inspired by the old PS2 loading-screen catch game; all art and music our own)
 - Adjo with a basket under a fruit tree, moving left/right to catch falling fruit. Could be a loading screen, an orchard minigame, or both (not decided).
 - 8-bit music (minigame rule).
