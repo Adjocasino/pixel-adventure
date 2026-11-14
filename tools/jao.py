@@ -13,69 +13,77 @@ Q = dict(skin=C('#c98e62'), skinS=C('#a8714a'), skinL=C('#dba67a'), wr=C('#8e5a3
          hair=C('#1a1414'), hairL=C('#3a3236'), hairS=C('#0e0a0a'),
          sw=C('#f2efe8'), swS=C('#d2cdc2'), swL=C('#ffffff'), swR=C('#c2bcae'), col=C('#e6e2d8'), shorts=C('#2a2a32'), shortsS=C('#17171c'),
          shoe=C('#f6f6f2'), shoeS=C('#cfcfc8'), sole=C('#9a9a94'), vape=C('#e8b93a'), vapeL=C('#fff2a8'), vapeD=C('#a8781c'),
-         glow=C('#ffe066'), eye=C('#241a16'), mouth=C('#6a3a2a'))
+         glow=C('#e8b93a'), eye=C('#241a16'), mouth=C('#6a3a2a'))
 
 def jao(pose):
-    """pose: idle | breath | raise | inhale | exhale"""
+    """pose: idle | breath | raise | inhale | exhale.  Old, hunched (head sunk 2px into the shoulders), cane in the left hand."""
     b = B(24, 38, 4, 8); X, R = b.X, b.R
     Y = -1 if pose == 'breath' else 0
-    # legs + tsinelas
+    H = Y + 2                      # head sits lower: hunched back
+    CANE, CANEL, CANED = C('#7a4a26'), C('#9a6438'), C('#5a3418')
+    WATCH, WATCHL = C('#b8bec8'), C('#eef2f6')
+    GL, LENS = C('#3c3e46'), C('#dbe7ee')
+    # cane (behind the left hand): crook handle on top, shaft to the ground
+    R(0, 20 + Y, 1, 9 - Y, CANE); X(0, 22 + Y, CANEL); X(0, 28, CANED)
+    X(0, 19 + Y, CANE); X(1, 18 + Y, CANE); X(2, 18 + Y, CANEL); X(3, 19 + Y, CANED)
+    # legs + white shoes
     for lx in (4, 9):
         R(lx, 24, 3, 3, Q['skin']); X(lx + 2, 25, Q['skinS'])
         R(lx - 1, 26, 5, 2, Q['shoe']); X(lx + 3, 26, Q['shoeS']); R(lx - 1, 28, 5, 1, Q['sole']); X(lx, 26, Q['shoeS'])
-    # shorts
+    # black shorts to the knee
     R(3, 18 + Y, 10, 6, Q['shorts']); R(3, 23 + Y, 4, 1, Q['shortsS']); R(9, 23 + Y, 4, 1, Q['shortsS'])
-    for y in range(19, 24): X(7 + (1 if y > 20 else 0), y + Y, Q['shortsS'])          # leg split
-    X(3, 20 + Y, Q['shortsS']); X(12, 20 + Y, Q['shortsS'])
-    # sando (tank top) with a small belly
-    for y in range(11, 19):
-        w = 1 if 14 <= y <= 17 else 0
-        R(3 - w, y + Y, 10 + 2 * w, 1, Q['sw']); X(12 + w, y + Y, Q['swS']); X(3 - w, y + Y, Q['swL'])
+    for y in range(19, 24): X(7 + (1 if y > 20 else 0), y + Y, Q['shortsS'])
+    # white sweater, rounded shoulders (hump) because of the hunch
+    for y in range(10, 19):
+        w = 1 if 13 <= y <= 17 else 0
+        a, z = (4, 11) if y == 10 else (3 - w, 12 + w)
+        R(a, y + Y, z - a + 1, 1, Q['sw']); X(z, y + Y, Q['swS']); X(a, y + Y, Q['swL'])
     R(3, 18 + Y, 10, 1, Q['swR'])                                              # ribbed hem
-    R(6, 11 + Y, 4, 1, Q['skin'])                                              # neck opening
-    for (x, y) in ((5, 11), (6, 12), (4, 11)): X(x, y + Y, Q['col'])           # left collar point
-    for (x, y) in ((10, 11), (9, 12), (11, 11)): X(x, y + Y, Q['col'])         # right collar point
-    X(5, 12 + Y, Q['swR']); X(10, 12 + Y, Q['swR'])                            # collar shadow
-    X(7, 12 + Y, Q['skin']); X(8, 12 + Y, Q['skin']); X(7, 13 + Y, Q['swR']); X(8, 13 + Y, Q['swS'])   # small placket
-    for (x, y) in ((5, 14), (9, 13), (6, 16), (10, 16)): X(x, y + Y, Q['swS'])  # knit texture
-    # left arm hanging (sleeve + cuff + hand)
-    R(1, 12 + Y, 2, 6, Q['sw']); X(1, 13 + Y, Q['swL']); R(1, 18 + Y, 2, 1, Q['swR']); R(1, 19 + Y, 2, 2, Q['skin'])
-    # right arm + vape (by pose)
+    for (x, y) in ((5, 15), (9, 14), (6, 17), (10, 16)): X(x, y + Y, Q['swS'])  # knit texture
+    # left arm: 3/4 sleeve, bare forearm, silver watch, hand on the cane
+    R(1, 12 + Y, 2, 4, Q['sw']); X(1, 13 + Y, Q['swL']); R(1, 16 + Y, 2, 1, Q['swR'])
+    R(1, 17 + Y, 2, 2, Q['skin']); X(2, 17 + Y, Q['skinS'])
+    X(1, 18 + Y, WATCH); X(2, 18 + Y, WATCHL)
+    R(1, 19 + Y, 2, 1, Q['skin']); X(0, 19 + Y, Q['skin'])                     # gripping the cane
+    # right arm + gold vape (by pose)
     if pose in ('idle', 'breath', 'exhale'):
-        R(13, 12 + Y, 2, 4, Q['sw']); R(12, 15 + Y, 2, 2, Q['sw']); X(14, 15 + Y, Q['swS']); R(11, 15 + Y, 1, 2, Q['skin'])   # sleeve bent to chest, hand
-        R(11, 12 + Y, 1, 4, Q['vape']); X(11, 12 + Y, Q['vapeL']); X(11, 15 + Y, Q['vapeD'])           # stick held upright
+        R(13, 12 + Y, 2, 3, Q['sw']); R(13, 15 + Y, 2, 1, Q['swR']); R(12, 16 + Y, 2, 1, Q['skin']); X(13, 15 + Y, Q['skin'])
+        R(11, 15 + Y, 1, 2, Q['skin']); R(11, 12 + Y, 1, 3, Q['vape']); X(11, 12 + Y, Q['vapeL']); X(11, 14 + Y, Q['vapeD'])
     elif pose == 'raise':
-        R(13, 12 + Y, 2, 3, Q['sw']); R(12, 10 + Y, 2, 2, Q['sw']); X(12, 12 + Y, Q['skin'])
-        R(11, 9 + Y, 1, 3, Q['vape']); X(11, 9 + Y, Q['vapeL'])
-    else:  # inhale: hand at the mouth, stick across the lips
-        R(13, 12 + Y, 2, 2, Q['sw']); R(12, 10 + Y, 2, 2, Q['sw']); R(11, 9 + Y, 2, 1, Q['skin'])
-        R(8, 8 + Y, 4, 1, Q['vape']); X(11, 8 + Y, Q['vapeD']); X(8, 8 + Y, Q['vapeL'])
-        X(12, 8 + Y, Q['glow'])
-    # head
-    for y, (a, z) in enumerate([(5, 10), (4, 11), (4, 11), (4, 11), (4, 11), (4, 11), (5, 10)]):
-        R(a, 3 + y + Y, z - a + 1, 1, Q['skin'])
-    for y in range(4, 10): X(11, y + Y, Q['skinS'])
-    X(3, 6 + Y, Q['skin']); X(12, 6 + Y, Q['skinS'])                      # ears
-    # thick black hair: big volume on top, sideburns
+        R(13, 12 + Y, 2, 2, Q['sw']); R(13, 14 + Y, 2, 1, Q['swR']); R(12, 12 + Y, 1, 2, Q['skin'])
+        R(11, 11 + Y, 1, 3, Q['skin']); R(12, 9 + Y, 1, 3, Q['vape']); X(12, 9 + Y, Q['vapeL'])
+    else:  # inhale: hand at the mouth
+        R(13, 12 + Y, 2, 2, Q['sw']); R(13, 14 + Y, 2, 1, Q['swR']); R(12, 12 + Y, 1, 1, Q['skin']); R(11, 11 + Y, 2, 1, Q['skin'])
+    # head (2px lower than before)
+    for y, (a, z) in enumerate([(5, 10), (4, 11), (4, 11), (4, 11), (4, 11), (4, 11), (4, 11), (5, 10)]):
+        R(a, 2 + y + H, z - a + 1, 1, Q['skin'])
+    for y in range(3, 10): X(11, y + H, Q['skinS'])
+    X(3, 6 + H, Q['skin']); X(12, 6 + H, Q['skinS'])                      # ears
+    # thick black hair
     for y, (a, z) in enumerate([(4, 11), (2, 13), (1, 14), (1, 14), (2, 13), (3, 12)]):
-        R(a, -3 + y + Y, z - a + 1, 1, Q['hair'])
-    R(3, 3 + Y, 1, 3, Q['hair']); R(12, 3 + Y, 1, 3, Q['hair'])            # sideburns
-    for (x, y) in ((5, -2), (6, -2), (4, -1), (9, -1), (10, -2)): X(x, y + Y, Q['hairL'])   # shine
-    X(1, 1 + Y, Q['hairS']); X(14, 1 + Y, Q['hairS'])
-    # face: thick brows, sleepy eyes, wrinkles, big mustache
-    R(5, 4 + Y, 2, 1, Q['hair']); R(9, 4 + Y, 2, 1, Q['hair'])
+        R(a, -4 + y + H, z - a + 1, 1, Q['hair'])
+    R(3, 2 + H, 1, 4, Q['hair']); R(12, 2 + H, 1, 4, Q['hair'])
+    for (x, y) in ((5, -3), (6, -3), (4, -2), (9, -2), (10, -3)): X(x, y + H, Q['hairL'])
+    X(1, 0 + H, Q['hairS']); X(14, 0 + H, Q['hairS'])
+    # deep wrinkles: forehead line, eye bags, cheek folds, chin
+    X(5, 2 + H, Q['skinS']); X(6, 2 + H, Q['skinS']); X(9, 2 + H, Q['skinS']); X(10, 2 + H, Q['skinS'])   # forehead lines
+    X(4, 7 + H, Q['wr']); X(11, 7 + H, Q['wr'])
+    X(5, 8 + H, Q['wr']); X(10, 8 + H, Q['wr']); X(5, 9 + H, Q['wr']); X(10, 9 + H, Q['wr'])
+    X(7, 9 + H, Q['skinS']); X(8, 9 + H, Q['skinS'])
+    # square glasses (eyes inside)
+    for x0 in (4, 8):
+        for x in range(x0, x0 + 4): X(x, 4 + H, GL)               # top bar
+        X(x0, 5 + H, GL); X(x0 + 3, 5 + H, GL)                      # sides (skin shows inside)
+        X(x0 + 1, 6 + H, C('#e3b48e')); X(x0 + 2, 6 + H, C('#e3b48e'))   # lens glint on the cheek
     if pose == 'inhale':
-        R(5, 5 + Y, 2, 1, Q['eye']); R(9, 5 + Y, 2, 1, Q['eye'])            # eyes shut, enjoying it
+        X(5, 5 + H, Q['wr']); X(6, 5 + H, Q['wr']); X(9, 5 + H, Q['wr']); X(10, 5 + H, Q['wr'])   # eyes shut
     else:
-        R(5, 5 + Y, 2, 1, Q['wr']); R(9, 5 + Y, 2, 1, Q['wr'])              # heavy lids
-        X(5, 6 + Y, Q['eye']); X(6, 6 + Y, C('#f4ece0')); X(9, 6 + Y, Q['eye']); X(10, 6 + Y, C('#f4ece0'))
-    X(4, 6 + Y, Q['wr']); X(11, 6 + Y, Q['wr'])                              # crow's feet
-    X(7, 7 + Y, Q['skinS'])                                                  # nose
-    if pose == 'exhale': X(7, 8 + Y, Q['mouth']); X(8, 8 + Y, Q['mouth']); X(7, 9 + Y, Q['mouth']); X(8, 9 + Y, Q['mouth'])
-    else: R(6, 8 + Y, 4, 1, Q['mouth'])
-    X(5, 9 + Y, Q['wr']); X(10, 9 + Y, Q['wr'])                              # smile lines
-    if pose == 'inhale':   # the stick goes over the mustache, tip glows
-        R(8, 8 + Y, 4, 1, Q['vape']); X(8, 8 + Y, Q['vapeL']); X(11, 8 + Y, Q['vapeD']); X(12, 8 + Y, Q['glow'])
+        X(6, 5 + H, Q['eye']); X(9, 5 + H, Q['eye'])
+    X(7, 7 + H, Q['skinS'])                                                  # nose
+    if pose == 'exhale': R(7, 8 + H, 2, 1, Q['mouth']); X(7, 9 + H, Q['mouth'])
+    else: R(6, 8 + H, 4, 1, Q['mouth'])
+    if pose == 'inhale':   # gold stick across the lips
+        R(8, 8 + H, 4, 1, Q['vape']); X(8, 8 + H, Q['vapeL']); X(11, 8 + H, Q['vapeD'])
     b.outline()
     return b.im
 
@@ -125,7 +133,7 @@ def main():
     for t, p in enumerate(tl):
         im = BG.copy(); d = ImageDraw.Draw(im)
         d.ellipse([x0 + 3, GROUND - 1, x0 + 19, GROUND + 2], fill=(150, 125, 85, 255))
-        im.alpha_composite(S[p], (x0, GROUND - 37)); halo(im, p, x0, GROUND - 37, t)
+        im.alpha_composite(S[p], (x0, GROUND - 37))
         if p == 'exhale' and tl[t - 1] != 'exhale':
             for k in range(14): puffs.append([x0 + 11 + k * .9, GROUND - 28 + (k % 3), 2 + k * .35, 0, 46])
         # permanent linger: a wisp always rising from the stick + slow haze around his head
@@ -156,10 +164,10 @@ def closeup():
         for t, p in enumerate(tl):
             im = Image.new('RGBA', (W2, H2), C('#d9c49a')); d = ImageDraw.Draw(im)
             d.ellipse([gx + 3, gy - 1, gx + 19, gy + 2], fill=(150, 125, 85, 255))
-            im.alpha_composite(S[p], (gx, gy - 37)); halo(im, p, gx, gy - 37, t)
+            im.alpha_composite(S[p], (gx, gy - 37))
             if p == 'exhale' and tl[t - 1] != 'exhale':
-                for k in range(14): puffs.append([gx + 11 + k * .9, gy - 28 + (k % 3), 2 + k * .35, 0, 46])
-            tip = (gx + 15, gy - 17) if p in ('idle', 'breath', 'exhale') else (gx + 16, gy - 21)
+                for k in range(14): puffs.append([gx + 11 + k * .9, gy - 26 + (k % 3), 2 + k * .35, 0, 46])
+            tip = (gx + 15, gy - 17) if p in ('idle', 'breath', 'exhale') else (gx + 16, gy - 20)
             if t % 2 == 0: puffs.append([tip[0], tip[1], .8, 0, 26])
             if t % 5 == 0: puffs.append([gx + 6 + (t * 7) % 14, gy - 40 + (t % 3), 3.5, 0, 60])
             g = Image.new('RGBA', im.size); gd = ImageDraw.Draw(g)
