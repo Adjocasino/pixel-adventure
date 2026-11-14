@@ -129,8 +129,8 @@ function endShift(){if(!B||!B.active)return;B.active=0;const pct=B.happyN?Math.r
   const total=B.eggs.bronze+B.eggs.silver+B.eggs.gold,bonusK=pct>=95?.5:pct>=85?.25:pct>=70?.1:0,bonus=total?Math.ceil(total*bonusK):0,golden=pct>=95?1:0;
   results={pct,eggs:Object.assign({},B.eggs),bonus,golden,score:B.score,lost:B.lost,caught:B.caught,stars:pct>=85?3:pct>=60?2:1};
   if(bRole!=='client'){applyResults(results);if(bRole==='host'&&window.MP)MP.send('bn_end',results);}showResults();}
-function applyResults(r){for(const q of['bronze','silver','gold'])if(r.eggs[q])addItem(CM.barn,'egg:'+q,r.eggs[q]);if(r.bonus)addItem(CM.barn,'egg:silver',r.bonus);if(r.golden)addItem(CM.barn,'egg:golden',1);
-  CM.best.barn=Math.max(CM.best.barn||0,r.score);cmSave();}
+function applyResults(r){CM.stats=CM.stats||{};CM.stats.shifts=(CM.stats.shifts||0)+1;if(r.golden)CM.stats.golden=(CM.stats.golden||0)+1;for(const q of['bronze','silver','gold'])if(r.eggs[q])addItem(CM.barn,'egg:'+q,r.eggs[q]);if(r.bonus)addItem(CM.barn,'egg:silver',r.bonus);if(r.golden)addItem(CM.barn,'egg:golden',1);
+  CM.best.barn=Math.max(CM.best.barn||0,r.score);cmSave();if(window.MARKET)setTimeout(()=>MARKET.checkUnlocks(true),400);}
 function showResults(){const r=results;if(!r)return;sfx.chime();
   openPanel('SHIFT DONE',b=>{const p=document.createElement('div');
     p.innerHTML=`<p style="font-size:22px">${'★'.repeat(r.stars)}${'☆'.repeat(3-r.stars)}</p><p>Happiness: <b>${r.pct}%</b> &nbsp; Score: <b>${r.score}</b></p>

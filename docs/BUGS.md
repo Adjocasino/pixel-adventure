@@ -1,5 +1,11 @@
 # Bugs & feature notes
 
+## v1.3 — animal unlocks (in the APK)
+- Bins' shop shows a goal + progress for each future animal: **Duck** own 3 chickens, **Cow** own 4 chickens, **Goat** finish 5 barn shifts, **Bees** get a golden egg in the barn.
+- Unlocks are permanent (saved). A pop-up line announces a new unlock (after buying a chicken or finishing a shift).
+- Unlocked animals still can't be bought until their barn task is built (user picked "unlock rules only" for v1.3).
+- Barn shifts finished and golden eggs earned are now counted (`CM.stats`).
+
 ## v1.2 — Market Square (in the APK)
 - **Market Square** map, west of Willow Village (sign on the village path; also in the map menu).
 - **Fish stall:** sell fish from the bag. Price = fish band base (4 / 8 / 14 / 22 / 35) × tier (Iron 1, Bronze 1.5, Silver 2, Platinum 3, Gold 5). Sell 1, sell all of one kind, or sell every fish.

@@ -41,7 +41,11 @@ jobs:
           cat > notes.md <<EOF
           **Cottage Meadow v${VER}** (build ${{ github.run_number }}) — download **CottageMeadow.apk** below and install it.
 
-          New in v1.2:
+          New in v1.3:
+          - Animal unlocks at Bins' shop: Duck (own 3 chickens), Cow (own 4 chickens), Goat (finish 5 barn shifts), Bees (get a golden egg)
+          - The shop shows each goal and your progress; unlocked animals become buyable once their barn task is added
+
+          v1.2:
           - Market Square (west of Willow Village): sell fish at the fish stall, Jao hangs around with his quotes
           - Bins' animal shop: buy chickens and name them; they join Ginger and Rocky in the barn (Turon says hi)
           - Coins (shown in the bag)

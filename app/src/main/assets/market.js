@@ -111,17 +111,28 @@ function openFishStall(){openPanel('FISH STALL',b=>{
 function sell(k,q,quiet){q=Math.min(q,CM.inv[k]||0);if(!q)return;const v=q*fishPrice(k);addItem(CM.inv,k,-q);CM.coins+=v;cmSave();if(!quiet){sfx.tink();openFishStall();}}
 
 /* ---------------- animal shop ---------------- */
-const SOON=[['Cow','milk'],['Goat','goat milk'],['Bees','honey'],['Duck','duck eggs']];
+/* unlock rules (v1.3). Once unlocked it stays unlocked. Buying still waits until the animal's barn task exists. */
+const SOON=[
+  {k:'duck',nm:'Duck',what:'duck eggs',goal:'Own 3 chickens',need:3,have:()=>chickens().length},
+  {k:'cow',nm:'Cow',what:'milk',goal:'Own 4 chickens',need:4,have:()=>chickens().length},
+  {k:'goat',nm:'Goat',what:'goat milk',goal:'Finish 5 barn shifts',need:5,have:()=>(CM.stats&&CM.stats.shifts)||0},
+  {k:'bees',nm:'Bees',what:'honey',goal:'Get a golden egg in the barn',need:1,have:()=>(CM.stats&&CM.stats.golden)||0}];
+CM.unlocked=CM.unlocked||{};
+function checkUnlocks(announce){const fresh=[];for(const a of SOON)if(!CM.unlocked[a.k]&&a.have()>=a.need){CM.unlocked[a.k]=1;fresh.push(a.nm);}
+  if(fresh.length){cmSave();if(announce){sfx.chime();say(`Unlocked at Bins' animal shop: ${fresh.join(', ')}! Bins: "Come see them. Breakfast first, of course."`);}}return fresh;}
 function chickens(){return CM.animals.filter(a=>a.k==='chicken');}
-function openShop(line){line=line||pick(BINS,'b');openPanel('ANIMAL SHOP',b=>{
+function openShop(line){checkUnlocks(false);line=line||pick(BINS,'b');openPanel('ANIMAL SHOP',b=>{
   const top=document.createElement('p');top.innerHTML=`<i>Bins: "${line}"</i><br>${coinTxt()}`;b.appendChild(top);
-  const l=document.createElement('div');l.className='list';
+  const l=document.createElement('div');l.className='list';l.style.cssText='max-height:48vh;overflow:auto';
   const n=chickens().length,row=document.createElement('button');
   row.innerHTML=`🐔 Chicken: <b style="color:#ffe07a">● ${CHICKEN_PRICE}</b><br><small>Lays eggs in the barn (${n}/${MAX_CHICKENS} in the barn)</small>`;
   if(n>=MAX_CHICKENS){row.disabled=true;row.innerHTML+='<br><small>The coop is full!</small>';}
   else if(CM.coins<CHICKEN_PRICE){row.disabled=true;row.innerHTML+=`<br><small>Need ${CHICKEN_PRICE-CM.coins} more coins. Sell fish at the fish stall.</small>`;}
   row.onclick=()=>nameAnimal('chicken');l.appendChild(row);
-  for(const[nm,what]of SOON){const x=document.createElement('button');x.disabled=true;x.innerHTML=`${nm} <small>(${what})</small>: coming soon`;l.appendChild(x);}
+  for(const a of SOON){const x=document.createElement('button');x.disabled=true;
+    if(CM.unlocked[a.k])x.innerHTML=`✓ ${a.nm} <small>(${a.what})</small>: <b style="color:#b6f0a0">unlocked!</b><br><small>Barn task coming soon, then you can buy it.</small>`;
+    else x.innerHTML=`🔒 ${a.nm} <small>(${a.what})</small><br><small>${a.goal}: ${Math.min(a.have(),a.need)}/${a.need}</small>`;
+    l.appendChild(x);}
   b.appendChild(l);});}
 const SUGGEST=['Nugget','Mochi','Pepper','Kwek','Biscuit','Sunny','Tisoy','Bibingka','Pandesal','Chico'];
 function nameAnimal(kind){const taken=new Set(CM.animals.map(a=>a.name.toLowerCase()));const sug=SUGGEST.filter(s=>!taken.has(s.toLowerCase()));const def=sug[Math.random()*sug.length|0]||'Chick';
@@ -129,7 +140,7 @@ function nameAnimal(kind){const taken=new Set(CM.animals.map(a=>a.name.toLowerCa
     [['Buy ●'+CHICKEN_PRICE,()=>{const el=document.getElementById('anName');let nm=(el&&el.value||'').trim().replace(/[<>&"]/g,'')||def;
         if(taken.has(nm.toLowerCase()))nm+=' 2';if(CM.coins<CHICKEN_PRICE||chickens().length>=MAX_CHICKENS)return;
         CM.coins-=CHICKEN_PRICE;CM.animals.push({k:kind,name:nm});cmSave();sfx.chime();
-        say(`${nm} moved into the barn! Bins: "Now you have to come for breakfast. ${nm} insists."`);},'cur'],['Back',()=>openShop()]]);
+        say(`${nm} moved into the barn! Bins: "Now you have to come for breakfast. ${nm} insists."`);setTimeout(()=>checkUnlocks(true),2600);},'cur'],['Back',()=>openShop()]]);
   setTimeout(()=>{const el=document.getElementById('anName');if(el)el.focus();},50);}
 
 /* ---------------- interaction spots ---------------- */
@@ -139,5 +150,5 @@ addSpot('market',{x:JX+16,y:JFEET-16,w:26,h:26},()=>{jf=JT.indexOf('exhale')-1;s
 addSpot('market',{x:AX+30,y:AY+80,w:14,h:20},()=>openShop(),'A: animal shop');
 addSpot('market',{x:AX+44,y:AY+97,w:44,h:12},()=>openShop(),'A: animal shop');
 
-window.MARKET={openFishStall,openShop,fishPrice,_dbg:{get puffs(){return puffs.length;}}};
+window.MARKET={openFishStall,openShop,fishPrice,checkUnlocks,_dbg:{get puffs(){return puffs.length;}}};
 })();
