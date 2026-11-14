@@ -16,7 +16,7 @@ Q = dict(skin=C('#d9a07a'), skinS=C('#b87e5a'), skinL=C('#ebb894'), eye=C('#241a
          shirt=C('#26262c'), shirtS=C('#16161a'), shirtL=C('#3a3a44'),
          sh=C('#5a5e66'), shS=C('#43464d'), shL=C('#71757e'),
          shoe=C('#a82a5a'), shoeS=C('#7e1c42'), shoeL=C('#cf4a7c'), sole=C('#f2efe8'), lace=C('#f2efe8'),
-         frame=C('#2a2226'), lens=C('#cfe3ef'), lensL=C('#f2fafe'), mouth=C('#8a4a3a'))
+         frame=C('#9a8f88'), frameD=C('#6e645e'), lens=C('#cfe3ef'), lensL=C('#f2fafe'), mouth=C('#8a4a3a'))
 
 def seller(pose):
     """pose: idle | breath | blink | push | push2"""
@@ -68,9 +68,10 @@ def seller(pose):
     for (x, y) in ((6, -1), (7, 0)): X(x, y + Y, Q['hairL'])
     # big oval glasses
     for x0 in (3, 8):
-        for (x, y) in ((1, 0), (2, 0), (3, 0), (0, 1), (4, 1), (0, 2), (4, 2), (1, 3), (2, 3), (3, 3)): X(x0 + x, 3 + y + Y + gy, Q['frame'])
+        for (x, y) in ((1, 0), (2, 0), (3, 0), (0, 1), (4, 1), (0, 2), (4, 2)): X(x0 + x, 3 + y + Y + gy, Q['frame'])   # thin metal rim
+        for (x, y) in ((1, 3), (2, 3), (3, 3)): X(x0 + x, 3 + y + Y + gy, Q['skinS'])                            # lower rim barely shows
         R(x0 + 1, 4 + Y + gy, 3, 2, Q['lens']); X(x0 + 1, 4 + Y + gy, Q['lensL'])
-    X(7, 4 + Y + gy, Q['frame'])                                                   # bridge (frames share x=7/8 edge)
+    X(7, 4 + Y + gy, Q['frameD'])                                                  # bridge (frames share x=7/8 edge)
     # eyes (inside the lenses)
     if pose == 'blink': R(5, 5 + Y + gy, 2, 1, Q['eye']); R(9, 5 + Y + gy, 2, 1, Q['eye'])
     else: X(5, 5 + Y + gy, Q['eye']); X(10, 5 + Y + gy, Q['eye'])
