@@ -30,53 +30,70 @@ def arm(b, k, sx, sy, px, py, inner):
         for dy in (-1, 0, 1): b.sp(px + dx, py + dy, k['paw'])
     b.sp(px + inner, py, PAD); b.sp(px + inner, py + 1, PAD)
 
-# arm poses (paw x offset from body center, paw y) : open wide -> clap
-POSES = {'open': (10, -6), 'mid': (6, -5), 'clap': (2, -4), 'up': (9, -10)}   # (paw x from center, paw y from body center)
+# Full clip, in order: grin + wide claps -> grin gone, paws clasped -> head ducks to lick a paw
+# -> looks up with curled paws -> big arm swoosh and a wide-eyed hold.
+# pose: (left paw, right paw) as (dx, dy) from body center, + options
+POSES = {
+ 'open':   dict(L=(-12, -7), R=(11, -8), splay=1, face='grin'),
+ 'mid':    dict(L=(-7, -5), R=(6, -5), face='grin'),
+ 'clap':   dict(L=(-2, -4), R=(1, -4), face='grin', bob=1),
+ 'rub':    dict(L=(-1, -3), R=(1, -5), face='grin', bob=1),
+ 'clasp':  dict(L=(-1, -2), R=(1, -2), face='plain'),
+ 'groom1': dict(L=(-2, -1), R=(0, -6), face='closed', head=(-1, 2)),
+ 'groom2': dict(L=(-2, -1), R=(1, -7), face='closed', head=(-1, 1)),
+ 'curl':   dict(L=(-3, -5), R=(2, -6), face='plain', curl=1),
+ 'swoosh1':dict(L=(-11, -1), R=(2, -3), face='plain', splay=1, head=(1, 0)),
+ 'swoosh2':dict(L=(-12, 6), R=(3, -4), face='plain', head=(1, 0)),
+ 'swoosh2b':dict(L=(-12, 6), R=(3, -4), face='closed', head=(1, 0)),
+ 'up':     dict(L=(-10, -11), R=(9, -11), splay=1, face='grin'),
+}
+ORDER = list(POSES)
 
-def stand(name, pose, bob=0, blink=False, wide=True, tail=0):
-    k = CATS[name]; b = B(26, 32); cx = 13; by = 21 + bob
-    # tail behind, swishing
+def paw_toes(b, k, px, py, side):
+    for dx, dy in ((side * 2, -1), (side * 2, 0), (side * 2, 1), (side, -2), (side, 2)):
+        b.sp(px + dx, py + dy, k['paw'])
+
+def stand(name, pose, tail=0):
+    P = POSES[pose]; k = CATS[name]; b = B(30, 32); cx = 15; by = 21 + P.get('bob', 0)
     for t in range(14):
         u = t / 13; x = cx + 4 + u * 5 + math.sin(u * 3 + tail) * 2; y = 28 - u * 13
         b.sp(x, y, k['tail']); b.sp(x + 1, y, k['tail'])
-    # back legs (standing): two stubby legs, big feet
     for lx in (cx - 4, cx + 2):
         for y in range(by + 3, 30): b.sp(lx, y, k['point']); b.sp(lx + 1, y, k['point']); b.sp(lx + 2, y, k['pointS'])
         for dx in range(-1, 3): b.sp(lx + dx, 30, k['paw'])
-    # body: upright oval, belly shade
     b.ell(cx, by, 5.5, 7.5, lambda x, y, dx, dy: k['bodyS'] if dx > .55 or dy > .7 else k['body'])
-    head(b, k, cx, by - 10, blink=blink)
-    k_nose[0] = k['nose']; grin(b, cx, by - 10, wide)
+    hdx, hdy = P.get('head', (0, 0))
+    hx, hy = cx + hdx, by - 10 + hdy
+    head(b, k, hx, hy, blink=P['face'] == 'closed')
+    if P['face'] == 'grin': k_nose[0] = k['nose']; grin(b, hx, hy, True)
     b.outline()
-    ox, py = POSES[pose]
     for side in (-1, 1):
-        a = B(26, 32)
+        a = B(30, 32)
         sx = cx - 5 if side < 0 else cx + 4
-        px = cx - 1 - ox if side < 0 else cx + ox
-        arm(a, k, sx, by - 3, px, by + py, 1 if side < 0 else -1)
+        dx, dy = P['L'] if side < 0 else P['R']
+        px, py = cx + dx - (1 if side < 0 else 0), by + dy
+        arm(a, k, sx, by - 3, px, py, 1 if side < 0 else -1)
+        if P.get('splay'): paw_toes(a, k, px, py, side)
+        if P.get('curl'): a.sp(px, py - 2, k['paw']); a.sp(px + side, py - 2, k['paw'])
         a.outline(); b.im.alpha_composite(a.im)
     return b.im
 
-def frames(name='cotton'):
-    seq = []
-    # a beat = open, mid, clap, (hold) ... with a little bounce on the clap, like the clip
-    for beat in range(4):
-        seq += [stand(name, 'open', 0, tail=beat), stand(name, 'mid', 0, tail=beat + .3),
-                stand(name, 'clap', 1, tail=beat + .6), stand(name, 'clap', 1, wide=True, tail=beat + .8),
-                stand(name, 'mid', 0, tail=beat + 1)]
-    return seq
+# timeline in ms, mirrors the clip (6.8 s)
+TIMELINE = ([('open', 120), ('mid', 70), ('clap', 110), ('rub', 160), ('mid', 70)] * 5
+            + [('clasp', 420)] + [('groom1', 200), ('groom2', 200)] * 3 + [('clasp', 150), ('curl', 550)]
+            + [('swoosh1', 160), ('swoosh2', 700), ('swoosh2b', 140), ('swoosh2', 650)])
 
 if __name__ == '__main__':
     O = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'assets', 'characters', 'cats')
-    uniq = [stand('cotton', p, b) for p, b in (('open', 0), ('mid', 0), ('clap', 1))] + [stand('cotton', 'open', 0, blink=True), stand('cotton', 'up', 0)]
-    sh = Image.new('RGBA', (26 * len(uniq), 32), (0, 0, 0, 0))
-    for i, im in enumerate(uniq): sh.alpha_composite(im, (i * 26, 0))
+    fr = [stand('cotton', p) for p in ORDER]
+    sh = Image.new('RGBA', (30 * len(fr), 32), (0, 0, 0, 0))
+    for i, im in enumerate(fr): sh.alpha_composite(im, (i * 30, 0))
     sh.save(os.path.join(O, 'cotton_clap.png'))
-    S = 8; bg = (0, 230, 64, 255)
-    gif = []
-    for im in frames():
-        f = Image.new('RGBA', (26 * S + 40, 32 * S + 40), bg); f.alpha_composite(im.resize((26 * S, 32 * S), Image.NEAREST), (20, 20)); gif.append(f.convert('RGB'))
-    gif[0].save(os.path.join(O, 'cotton_clap.gif'), save_all=True, append_images=gif[1:], duration=[90, 70, 110, 70, 70] * 4, loop=0)
-    big = Image.new('RGBA', (len(uniq) * (26 * S + 20) + 20, 32 * S + 40), bg)
-    for i, im in enumerate(uniq): big.alpha_composite(im.resize((26 * S, 32 * S), Image.NEAREST), (20 + i * (26 * S + 20), 20))
-    big.convert('RGB').save('/tmp/cc/sheet.png'); print('ok')
+    S = 8; bg = (0, 230, 64, 255); gif = []; d = []
+    for n, (p, ms) in enumerate(TIMELINE):
+        im = stand('cotton', p, tail=n * .4)
+        f = Image.new('RGBA', (30 * S + 40, 32 * S + 40), bg); f.alpha_composite(im.resize((30 * S, 32 * S), Image.NEAREST), (20, 20)); gif.append(f.convert('RGB')); d.append(ms)
+    gif[0].save(os.path.join(O, 'cotton_clap.gif'), save_all=True, append_images=gif[1:], duration=d, loop=0)
+    big = Image.new('RGBA', (6 * (30 * S // 2 + 10) + 10, 2 * (32 * S // 2 + 10) + 10), bg)
+    for i, im in enumerate(fr): big.alpha_composite(im.resize((30 * S // 2, 32 * S // 2), Image.NEAREST), (10 + (i % 6) * (30 * S // 2 + 10), 10 + (i // 6) * (32 * S // 2 + 10)))
+    big.convert('RGB').save('/tmp/cc/sheet.png'); print(ORDER, sum(d))
