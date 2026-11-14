@@ -42,6 +42,22 @@
   | 85–94% | Dalag / Bangus | 85–86 | 87–88 | 89–90 | 91–92 | 93–94 |
   | 95–100% | Karpa / Igat | 95 | 96 | 97 | 98–99 | 100 (perfect run only) |
 
+## Music demos (not in the game; original, generated in code)
+- **All versions on one page:** `demos/compare_all.html` (artifact "Song demos: compare all versions").
+- **Willow Village** (`demos/village_piano.html`): current game version, solo piano, piano + strings; keys Original / Lower / Much lower.
+- **Quiet Field** (`demos/quiet_field.html`): E minor, 48 BPM. Solo piano, piano + soft pad, piano + low harp, piano + mid harp; keys Normal / Lower.
+- **Porch Light** (`demos/porch_light.html`): F major 6/8, 72 BPM, "sitting on the porch with your wife". Solo piano, porch version (pad, flute, birds), piano + low harp.
+- Waiting for the user's listening feedback on all of them.
+
+## Pictures made (not in the game)
+- `assets/minigames/cpr_revive.gif`: CPR revive animation (multiplayer idea).
+- `assets/characters/inad_fruit_catch.gif`: Inad in Fruit Catch (magic floating bilao, broom ride).
+- `docs/mockups/barn_wireframe.png`: Barn Ranch layout (user: "perfect").
+
+## Barn Ranch minigame: full plan in `docs/BARN_RANCH.md`
+- Animals tended inside a barn; start with 2 chickens (Ginger and Rocky); buy and name more animals later.
+- Timed panic by default; hybrid scoring (approved); layout approved.
+
 ## Idea list (not built; wait for the user's "go")
 
 ### General (wait for "go")
