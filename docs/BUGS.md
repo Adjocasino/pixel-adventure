@@ -3,7 +3,7 @@
 ## Planned (not built): golden gifts
 - Giving a **golden fish to Jao**, or **anything golden** (golden fish, golden egg, etc.) **to a cat**, triggers a special interaction.
 - Jao: candidate is the "ascend" moment (`demos/jao_ascend.html`). He dissolves into vape smoke + gold sparkles, then comes back with a line.
-- Cats: the trending AI-cat **clapping** animation. Cotton first (`demos/cotton_clap.html`, art `tools/cat_clap.py` → `assets/characters/cats/cotton_clap.png`). Collete and Precious later.
+- Cats: the trending AI-cat **clapping** animation. All three cats do the full clip (`demos/cats_clap.html`, art `tools/cat_clap.py` → `assets/characters/cats/<cat>_clap.png`): grin + wide claps, grin vanishes, paw lick, look up, arm swoosh.
 - Still to decide: whether the gift is used up, how often it can happen, and where the Jao ascend triggers.
 
 ## v1.3 — animal unlocks (in the APK)

@@ -25,7 +25,7 @@ def arm(b, k, sx, sy, px, py, inner):
     n = int(max(abs(px - sx), abs(py - sy))) + 1
     for i in range(n + 1):
         u = i / n; x = sx + (px - sx) * u; y = sy + (py - sy) * u
-        b.sp(x, y, k['body']); b.sp(x, y + 1, k['bodyS']); b.sp(x + 1, y, k['body'])
+        b.sp(x, y, k['point']); b.sp(x, y + 1, k['pointS']); b.sp(x + 1, y, k['point'])
     for dx in (-1, 0, 1):
         for dy in (-1, 0, 1): b.sp(px + dx, py + dy, k['paw'])
     b.sp(px + inner, py, PAD); b.sp(px + inner, py + 1, PAD)
@@ -85,15 +85,18 @@ TIMELINE = ([('open', 120), ('mid', 70), ('clap', 110), ('rub', 160), ('mid', 70
 
 if __name__ == '__main__':
     O = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'assets', 'characters', 'cats')
-    fr = [stand('cotton', p) for p in ORDER]
-    sh = Image.new('RGBA', (30 * len(fr), 32), (0, 0, 0, 0))
-    for i, im in enumerate(fr): sh.alpha_composite(im, (i * 30, 0))
-    sh.save(os.path.join(O, 'cotton_clap.png'))
-    S = 8; bg = (0, 230, 64, 255); gif = []; d = []
-    for n, (p, ms) in enumerate(TIMELINE):
-        im = stand('cotton', p, tail=n * .4)
-        f = Image.new('RGBA', (30 * S + 40, 32 * S + 40), bg); f.alpha_composite(im.resize((30 * S, 32 * S), Image.NEAREST), (20, 20)); gif.append(f.convert('RGB')); d.append(ms)
-    gif[0].save(os.path.join(O, 'cotton_clap.gif'), save_all=True, append_images=gif[1:], duration=d, loop=0)
-    big = Image.new('RGBA', (6 * (30 * S // 2 + 10) + 10, 2 * (32 * S // 2 + 10) + 10), bg)
-    for i, im in enumerate(fr): big.alpha_composite(im.resize((30 * S // 2, 32 * S // 2), Image.NEAREST), (10 + (i % 6) * (30 * S // 2 + 10), 10 + (i // 6) * (32 * S // 2 + 10)))
-    big.convert('RGB').save('/tmp/cc/sheet.png'); print(ORDER, sum(d))
+    S = 8; bg = (0, 230, 64, 255); rows = []
+    for name in ('cotton', 'collete', 'precious'):
+        fr = [stand(name, p) for p in ORDER]; rows.append(fr)
+        sh = Image.new('RGBA', (30 * len(fr), 32), (0, 0, 0, 0))
+        for i, im in enumerate(fr): sh.alpha_composite(im, (i * 30, 0))
+        sh.save(os.path.join(O, f'{name}_clap.png'))
+        gif = []; d = []
+        for n, (p, ms) in enumerate(TIMELINE):
+            im = stand(name, p, tail=n * .4)
+            f = Image.new('RGBA', (30 * S + 40, 32 * S + 40), bg); f.alpha_composite(im.resize((30 * S, 32 * S), Image.NEAREST), (20, 20)); gif.append(f.convert('RGB')); d.append(ms)
+        gif[0].save(os.path.join(O, f'{name}_clap.gif'), save_all=True, append_images=gif[1:], duration=d, loop=0)
+    s2 = 4; big = Image.new('RGBA', (len(ORDER) * (30 * s2 + 4) + 8, 3 * (32 * s2 + 6) + 8), bg)
+    for r, fr in enumerate(rows):
+        for i, im in enumerate(fr): big.alpha_composite(im.resize((30 * s2, 32 * s2), Image.NEAREST), (6 + i * (30 * s2 + 4), 6 + r * (32 * s2 + 6)))
+    big.convert('RGB').save('/tmp/cc/all.png'); print('ok')
