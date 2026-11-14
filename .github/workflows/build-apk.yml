@@ -37,7 +37,23 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          VER=$(grep -oP 'versionName = "\K[^"]+' app/build.gradle.kts)
+          cat > notes.md <<EOF
+          **Cottage Meadow v${VER}** (build ${{ github.run_number }}) — download **CottageMeadow.apk** below and install it.
+
+          The first official version:
+          - Mirror Lake rhythm fishing (catch chart: fish + Iron → Gold tiers)
+          - Fruit Catch under the big mango tree (physics bilao, wind, fruit storm)
+          - Barn Ranch with Ginger and Rocky (storage box outside the barn)
+          - Music picker in Settings (8-bit and piano / harp songs)
+          - LAN multiplayer (same hotspot or Wi-Fi): walk together, Fruit Catch co-op and versus, barn together
+          - New cottage app icon
+
+          Commit ${{ github.sha }}.
+          EOF
+          sed -i 's/^          //' notes.md
           gh release create "build-${{ github.run_number }}" CottageMeadow.apk \
             --repo "${{ github.repository }}" \
-            --title "Cottage Meadow build ${{ github.run_number }}" \
-            --notes "Debug APK from commit ${{ github.sha }}. Download CottageMeadow.apk below and sideload it."
+            --title "Cottage Meadow v${VER} (build ${{ github.run_number }})" \
+            --notes-file notes.md \
+            --latest

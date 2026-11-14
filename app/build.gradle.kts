@@ -10,8 +10,8 @@ android {
         applicationId = "com.pixeladventure.game"
         minSdk = 26
         targetSdk = 34
-        versionCode = 12
-        versionName = "3.6"
+        versionCode = 13
+        versionName = "1.0"
     }
 
     buildTypes {

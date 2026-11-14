@@ -1,5 +1,16 @@
 # Bugs & feature notes
 
+## v1.0 — first official release (in the APK)
+- **Mirror Lake fishing** minigame: sparkle spot at the end of the dock. The catch chart is in use, and fish go to the **Bag** (▤).
+- **Fruit Catch**: big mango tree in Sunny Meadow. Solo, plus **Co-op** (shared score, CPR revive = **1 heart**, bonk rescue, tilt to pour into a friend's bilao) and **Versus** (own crates, BUMP, banana peel drop). Fruit goes to the Bag.
+- **Barn Ranch** with Ginger and Rocky, east side of Sunny Meadow. Clipboard to start; sign outside toggles Timed/Relaxed. Products go to the **storage box outside the barn**; hybrid bonus (silver/golden eggs).
+- **Settings (⚙) music picker:** Auto, all chiptune tracks, and Village Piano / Quiet Field (incl. harp low/mid) / Porch Light versions.
+- **LAN multiplayer (⇄)** over hotspot or the same Wi-Fi, with nothing to install but the APK: walk together, Fruit Catch co-op/versus, barn together. Guide: `docs/MULTIPLAYER_GUIDE.md`.
+- **App icon B2** (meadow cottage with orange wood).
+- Release title "Cottage Meadow v1.0 (build N)", marked **Latest**; the build-N tag is kept.
+- Still waiting for "go": remove the kid; market map with Jao, Bins and Turon; selling fish and buying animals.
+
+
 ## Fixed in v3.6 (build-12)
 1. **Adjo's sprint floated.** The side sprint frames were anchored on the dust under his feet, not his boots. They're now cropped so the planted boot sits on the ground.
 2. **Adjo felt laggy.** His walk cycle now runs faster to match his speed (`walkK 1.35`), and his idle has a real breathing frame (before, it showed the same image twice, so he looked frozen). If he still feels laggy on the phone, report what it looks like.

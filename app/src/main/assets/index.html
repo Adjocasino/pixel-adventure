@@ -33,6 +33,30 @@ html,body{margin:0;height:100%;overflow:hidden;background:#13221d;touch-action:n
 #menu button{font:inherit;color:#fff;font-weight:bold;padding:12px 10px;border-radius:10px;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);text-shadow:inherit}
 #menu button.cur{background:rgba(120,200,140,.35)}
 #menu .close{display:block;margin:12px auto 0;padding:8px 22px}
+#pnl{position:absolute;inset:0;background:rgba(10,20,18,.6);display:none;align-items:center;justify-content:center;z-index:5}
+#pnl.show{display:flex}
+#pnl .panel{background:rgba(25,45,38,.95);border:2px solid rgba(255,255,255,.3);border-radius:16px;padding:14px 16px;min-width:280px;max-width:min(92vw,560px);max-height:86vh;overflow:auto}
+#pnl h3{margin:0 0 10px;text-align:center;letter-spacing:2px}
+#pnl button{font:inherit;color:#fff;font-weight:bold;padding:10px 12px;border-radius:10px;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);text-shadow:inherit;margin:3px}
+#pnl button.cur{background:rgba(120,200,140,.35)}
+#pnl .close{display:block;margin:12px auto 0;padding:8px 22px}
+#pnl .row{display:flex;flex-wrap:wrap;justify-content:center;gap:4px}
+#pnl .list button{display:block;width:100%;text-align:left;margin:4px 0}
+#pnl .items{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px}
+#pnl .it{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.08);border-radius:10px;padding:5px 8px;font-size:13px}
+#pnl .it canvas{width:32px;height:32px;image-rendering:pixelated;flex:0 0 32px}
+#pnl p{margin:6px 0;line-height:1.4;font-size:14px;text-align:center}
+#pnl input{font:inherit;font-size:16px;padding:8px;border-radius:8px;border:2px solid rgba(255,255,255,.3);background:rgba(0,0,0,.3);color:#fff;width:180px;text-align:center}
+#mgw{position:fixed;inset:0;display:none;background:#0e1a24;z-index:4;touch-action:none}
+#mgw.on{display:block}
+#mgw canvas.mgc{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);image-rendering:pixelated;image-rendering:crisp-edges}
+#mgw .pad{position:absolute;width:84px;height:84px;border-radius:50%;border:3px solid rgba(0,0,0,.35);box-shadow:0 4px 0 rgba(0,0,0,.35),inset 0 2px 0 rgba(255,255,255,.35);color:#fff;font:900 28px "Trebuchet MS",sans-serif;display:flex;align-items:center;justify-content:center;text-shadow:0 2px 0 rgba(0,0,0,.4);user-select:none}
+#mgw .pad small{position:absolute;bottom:-18px;font-size:11px;font-weight:800;opacity:.9;white-space:nowrap;color:#fff}
+#mgw .pad.on{filter:brightness(1.4);transform:translateY(3px)}
+#mgw .pad.sm{width:62px;height:62px;font-size:20px}
+#mgw .mgx{position:absolute;left:10px;top:10px;width:40px;height:40px;border-radius:10px;border:2px solid rgba(255,255,255,.35);background:rgba(255,255,255,.14);color:#fff;font:bold 18px sans-serif}
+body.mgon #ui{z-index:6}
+body.mgon #ui>*:not(#pnl){display:none!important}
 #load{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;color:#cde;font-size:16px;letter-spacing:2px}
 </style>
 </head>
@@ -41,15 +65,17 @@ html,body{margin:0;height:100%;overflow:hidden;background:#13221d;touch-action:n
 <canvas id="cv"></canvas>
 <div id="ui">
   <div id="area"></div>
-  <div id="topr"><button id="bMap" aria-label="Travel">⌖</button><button id="bSnd" aria-label="Sound">♪</button></div>
+  <div id="topr"><button id="bInv" aria-label="Bag">▤</button><button id="bMP" aria-label="Multiplayer">⇄</button><button id="bSet" aria-label="Settings">⚙</button><button id="bMap" aria-label="Travel">⌖</button><button id="bSnd" aria-label="Sound">♪</button></div>
   <div id="joy"><div id="knob"></div></div>
   <div class="pbtn big" id="bA" aria-label="Action"><i></i><small>Action</small></div>
   <div class="pbtn" id="bB" aria-label="Run"><i></i><small>Run</small></div>
   <div class="pbtn" id="bE" aria-label="Emote"><i></i><small>Emote</small></div>
   <div class="pbtn" id="bI" aria-label="Item"><i></i><small>Item</small></div>
   <div id="msg"></div>
+  <div id="pnl" class="menu"><div class="panel"><h3 id="pnlT"></h3><div id="pnlB"></div><button class="close" id="pnlX">Close</button></div></div>
   <div id="menu"><div class="panel"><h3>TRAVEL</h3><div class="maps" id="maps"></div><h3 style="margin-top:14px">CHARACTER</h3><div class="maps" id="chars"></div><button class="close" id="mClose">Close</button></div></div>
 </div>
+<div id="mgw"></div>
 <script>
 'use strict';
 /* ==================================================================
@@ -654,7 +680,7 @@ const SONGS={
    {type:'sine',v:.9,n:SQ(`E3:8 A2:8 D3:8 G2:8 C3:8 B2:8 E3:16`)}]},
 };
 let curSong=null,songTr=[];
-function setMusic(n){if(curSong===n&&songTr.length)return;curSong=n;songTr=[];if(!n||!AC)return;const t=AC.currentTime+.1;songTr=SONGS[n].tr.map(tr=>({tr,i:0,next:t}));}
+function setMusic(n){if(window.musicPick)n=musicPick(n);if(curSong===n&&songTr.length)return;curSong=n;songTr=[];if(!n||!AC)return;const t=AC.currentTime+.1;songTr=SONGS[n].tr.map(tr=>({tr,i:0,next:t}));}
 function musicTick(){if(!AC||!songTr.length)return;const st=SONGS[curSong].step,now=AC.currentTime;
   for(const s of songTr){if(s.next<now-.2)s.next=now+.05;while(s.next<now+.3){const[f,l]=s.tr.n[s.i];if(f)tone(f,l*st*.95,s.tr.type,s.tr.v*.5,0,0,musG,s.next,true);s.next+=l*st;s.i=(s.i+1)%s.tr.n.length;}}}
 
@@ -993,6 +1019,7 @@ const hit=(a,b)=>a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
 function burst(x,y,cols,n=10,sp=1.4){for(let i=0;i<n;i++){const a=Math.random()*6.28,s=.4+Math.random()*sp;parts.push({x,y,z:4+Math.random()*6,vx:Math.cos(a)*s,vy:Math.sin(a)*s*.6,vz:1+Math.random()*1.5,t:30+Math.random()*20|0,c:cols[Math.random()*cols.length|0]});}}
 function action(){
   if(petInteract())return;
+  if(window.HOOKS&&HOOKS.action())return;
   const fb=frontBox();
   for(const o of map.objs){if(o.hidden||!o.msg)continue;const ob=o.b||{x:o.x-8,y:o.y-10,w:16,h:10};if(hit(fb,{x:ob.x-2,y:ob.y-8,w:ob.w+4,h:ob.h+10})){say(o.msg);sfx.chime();return;}}
   if(map.id==='village'&&hit(fb,{x:236,y:178,w:24,h:12})){sfx.open();travel('home',8.75,10,'up');return;}
@@ -1014,11 +1041,12 @@ function update(){
   if(fade){fade.t++;if(fade.t===fade.d)fade.mid();if(fade.t>=fade.d*2)fade=null;return;}
   if(menuOpen)return;
   if(msgT>0&&--msgT===0)msgEl.classList.remove('show');
+  if(window.HOOKS&&HOOKS.update(inp))return;
   // player
   if(pl.act>0){pl.act--;if(pl.act===11)swingHit();}
   else{
     if(inp.emo&&!pl.emote){pl.emote=1;pl.emoK=-1;if(!CHARS[pl.char].emo)sfx.blub();}
-    if(inp.item){say('No item in your hands yet. Tools are coming soon!');sfx.blub();}
+    if(inp.item){if(!(window.HOOKS&&HOOKS.item())){say('No item in your hands yet. Tools are coming soon!');sfx.blub();}}
     if(inp.act)action();
     const ride=!!(inp.run&&CHARS[pl.char].ride),sprint=!!(inp.run&&CHARS[pl.char].run),sp=ride?2.3:sprint?2.15:inp.run?1.9:1.05,mag=Math.hypot(inp.x,inp.y);pl.riding=ride&&mag>0;pl.sprint=sprint&&mag>0;
     if(mag>0&&pl.act===0){pl.dir=Math.abs(inp.x)>Math.abs(inp.y)*1.05?(inp.x<0?'left':'right'):(inp.y<0?'up':'down');
@@ -1076,6 +1104,7 @@ function update(){
   if(!map.dark&&!map.indoor&&Math.random()<.004)sfx.bird();
   // camera
   const tc=camTarget();cam.x+=(tc.x-cam.x)*.18;cam.y+=(tc.y-cam.y)*.18;
+  if(window.HOOKS)HOOKS.tick();
   if(T%300===0)saveState();
 }
 function critBlocked(x,y){if(x<8||y<8||x>map.w*TS-8||y>map.h*TS-8)return true;if(map.tp[(y|0)*map.w*TS+(x|0)]===T_W)return true;
@@ -1118,8 +1147,10 @@ function render(){
   const list=vis.map(o=>({y:o.y,o}));list.push({y:pl.y,p:1});
   for(const c of map.crit)if(c.k==='chick'||c.k==='duck')list.push({y:c.y,c});
   if(map.pets)for(const p of map.pets)list.push({y:p.perch||p.st==='hop'?Math.max(p.y,154):p.y,pet:p});
+  if(window.HOOKS)HOOKS.drawList(list);
   list.sort((a,b)=>a.y-b.y);
   for(const it of list){
+    if(it.fn){it.fn(cx,cy);continue;}
     if(it.p){drawHero(cx,cy);continue;}
     if(it.pet){PET_DRAW[it.pet.k](it.pet,cx,cy);continue;}
     if(it.c){const c=it.c;if(c.k==='chick'){const s=(c.fl?CHKf:CHK)[c.f||0];ctx.drawImage(s,Math.round(c.x-cx-8),Math.round(c.y-cy-14));}
@@ -1149,6 +1180,7 @@ function render(){
   for(const o of vis)if(o.lamp){const a=.12+.03*Math.sin(T/20),x=Math.round(o.x-cx),y=Math.round(o.y-cy-32);ctx.fillStyle=`rgba(255,210,120,${a})`;ctx.fillRect(x-7,y-5,14,10);ctx.fillRect(x-5,y-7,10,14);ctx.fillStyle=`rgba(255,220,140,${a*1.4})`;ctx.fillRect(x-3,y-3,6,6);}
   ctx.globalCompositeOperation='source-over';
   if(pl.emote){if(CHARS[pl.char].emo)drawAdjoFx(cx,cy);else drawEmote(cx,cy);}
+  if(window.HOOKS)HOOKS.overlay(cx,cy);
   if(fade){const a=fade.t<fade.d?fade.t/fade.d:2-fade.t/fade.d;ctx.fillStyle=`rgba(10,18,16,${clamp(a,0,1)})`;ctx.fillRect(0,0,VW,VH);}
 }
 function drawHero(cx,cy){
@@ -1208,16 +1240,22 @@ sndB.onclick=()=>{audioInit();MUTE=!MUTE;if(master)master.gain.value=MUTE?0:1;sn
 let last=performance.now(),acc=0;
 function frame(now){acc+=Math.min(100,now-last);last=now;let n=0;while(acc>=1000/60&&n<4){update();acc-=1000/60;n++;}if(T%4===0)musicTick();render();requestAnimationFrame(frame);}
 window.__onPause=()=>saveState();
-window.__onBack=()=>{if(menuOpen){toggleMenu(false);return true;}return false;};
+window.__onBack=()=>{if(window.HOOKS&&HOOKS.back())return true;if(menuOpen){toggleMenu(false);return true;}return false;};
 document.addEventListener('visibilitychange',()=>{if(document.hidden)saveState();});
-window.__pa={CHARS,buildChar,makeGirl,JELLY,get map(){return map},pl,keys,enter,travel,get parts(){return parts}};
+window.__pa={CHARS,buildChar,makeGirl,JELLY,get map(){return map},pl,keys,enter,travel,get parts(){return parts},get T(){return T},get cam(){return cam}};
 
 resize();
-setTimeout(()=>{
+addEventListener('load',()=>setTimeout(()=>{
   let st={};try{st=JSON.parse(localStorage.getItem('paSandbox')||'{}');}catch(e){}
   if(st.map&&GEN[st.map])enter(st.map,0,0,st.dir,st.x,st.y);else enter('village',24,18,'down');
   document.getElementById('load').remove();requestAnimationFrame(frame);
-},30);
+},30));
 </script>
+<script src="music.js"></script>
+<script src="systems.js"></script>
+<script src="fishing.js"></script>
+<script src="fruit.js"></script>
+<script src="barn.js"></script>
+<script src="mp.js"></script>
 </body>
 </html>

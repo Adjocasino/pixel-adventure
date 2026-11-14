@@ -12,6 +12,7 @@ import android.webkit.WebViewClient;
 
 public class MainActivity extends Activity {
     private WebView web;
+    private LanBridge lan;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +27,8 @@ public class MainActivity extends Activity {
         s.setAllowFileAccess(true);
         web.setWebViewClient(new WebViewClient());
         web.setWebChromeClient(new WebChromeClient());
+        lan = new LanBridge(this, web);
+        web.addJavascriptInterface(lan, "AndroidMP");
         setContentView(web);
         hideBars();
         web.loadUrl("file:///android_asset/index.html");
@@ -58,6 +61,12 @@ public class MainActivity extends Activity {
     protected void onResume() {
         super.onResume();
         web.onResume();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (lan != null) lan.close();
+        super.onDestroy();
     }
 
     @SuppressWarnings("deprecation")
