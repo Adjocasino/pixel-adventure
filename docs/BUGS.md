@@ -1,5 +1,15 @@
 # Bugs & feature notes
 
+## v1.2 — Market Square (in the APK)
+- **Market Square** map, west of Willow Village (sign on the village path; also in the map menu).
+- **Fish stall:** sell fish from the bag. Price = fish band base (4 / 8 / 14 / 22 / 35) × tier (Iron 1, Bronze 1.5, Silver 2, Platinum 3, Gold 5). Sell 1, sell all of one kind, or sell every fish.
+- **Jao** stands beside the fish stall (not the seller), vaping, with the permanent smoke linger. Talk to him for a random quote (25 lines); after you close the fish stall he says one of the 5 money lines.
+- **Bins' animal shop:** chicken 150 coins, up to 6 chickens in the barn. On buying you name her. Cow, goat, bees and duck say "coming soon". Every Bins line is a meal invite.
+- **Turon** sits in front of the shop (pet him). Chick pen next to the counter.
+- **Coins** saved with the game and shown in the bag. Bought chickens join the barn shift (and the HUD list).
+- Art comes from the mockup tools: `tools/export_market_sprites.py` → `market.png` + `market_atlas.js`.
+- Still waiting for "go": remove the kid.
+
 ## v1.0 — first official release (in the APK)
 - **Mirror Lake fishing** minigame: sparkle spot at the end of the dock. The catch chart is in use, and fish go to the **Bag** (▤).
 - **Fruit Catch**: big mango tree in Sunny Meadow. Solo, plus **Co-op** (shared score, CPR revive = **1 heart**, bonk rescue, tilt to pour into a friend's bilao) and **Versus** (own crates, BUMP, banana peel drop). Fruit goes to the Bag.
@@ -8,7 +18,6 @@
 - **LAN multiplayer (⇄)** over hotspot or the same Wi-Fi, with nothing to install but the APK: walk together, Fruit Catch co-op/versus, barn together. Guide: `docs/MULTIPLAYER_GUIDE.md`.
 - **App icon B2** (meadow cottage with orange wood).
 - Release title "Cottage Meadow v1.0 (build N)", marked **Latest**; the build-N tag is kept.
-- Still waiting for "go": remove the kid; market map with Jao, Bins and Turon; selling fish and buying animals.
 
 
 ## Fixed in v3.6 (build-12)

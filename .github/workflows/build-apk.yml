@@ -41,7 +41,12 @@ jobs:
           cat > notes.md <<EOF
           **Cottage Meadow v${VER}** (build ${{ github.run_number }}) — download **CottageMeadow.apk** below and install it.
 
-          The first official version:
+          New in v1.2:
+          - Market Square (west of Willow Village): sell fish at the fish stall, Jao hangs around with his quotes
+          - Bins' animal shop: buy chickens and name them; they join Ginger and Rocky in the barn (Turon says hi)
+          - Coins (shown in the bag)
+
+          Also in this version (since v1.0):
           - Mirror Lake rhythm fishing (catch chart: fish + Iron → Gold tiers)
           - Fruit Catch under the big mango tree (physics bilao, wind, fruit storm)
           - Barn Ranch with Ginger and Rocky (storage box outside the barn)

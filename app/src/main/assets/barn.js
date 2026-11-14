@@ -88,7 +88,8 @@ GEN.barn={name:'Barn',seed:77,base:T_P,music:'home',spawn:[10,10],interior:1,w:B
 let B=null;          // the shift (host/solo) or the host's copy (client)
 let bRole='local',bMe=0,lastSend=0,results=null;
 function newShift(mode,n){return{active:1,mode,time:0,feeder:.6,waterer:.6,score:0,eggs:{bronze:0,silver:0,gold:0},happySum:0,happyN:0,
-  chickens:[mkChick('Ginger',40,70),mkChick('Rocky',72,82)],nests:[null,null,null],carry:Array.from({length:n},()=>({k:null,n:0})),pump:Array(n).fill(0),pops:[],lost:0,caught:0};}
+  chickens:hens().map((h,i)=>mkChick(h.name,24+(i%3)*30+(i>2?14:0),62+(i>2?24:0)+(i%2)*6)),nests:[null,null,null],carry:Array.from({length:n},()=>({k:null,n:0})),pump:Array(n).fill(0),pops:[],lost:0,caught:0};}
+function hens(){const l=(CM.animals||[]).filter(a=>a.k==='chicken');return l.length?l:[{k:'chicken',name:'Ginger'},{k:'chicken',name:'Rocky'}];}
 function mkChick(name,x,y){return{name,x,y,tx:x,ty:y,food:.8,water:.8,run:0,lost:0,layT:4+Math.random()*4,f:0,fl:0,t:0,sad:0};}
 const pop=(x,y,txt,col)=>{B.pops.push({x,y,txt,col,t:0});};
 function startShift(mode,role,me){results=null;bRole=role;bMe=me||0;if(role!=='client'){B=newShift(mode,role==='host'?2:1);}
@@ -147,7 +148,7 @@ addSpot('barn',{x:POS.clip[0]-12,y:32,w:38,h:20},()=>{
   if(B&&B.active){if(B.mode==='relaxed'||bRole!=='client')ask('Barn shift',B.mode==='relaxed'?'End the relaxed shift now?':'End the shift early?',[['End shift',()=>{if(bRole==='client')MP.send('bn_stop',{});else endShift();}],['Keep going',null,'cur']]);return;}
   const mode=CM.barnMode==='relaxed'?'relaxed':'timed',btns=[['Start',()=>startShift(mode,'local',0),'cur']];
   if(window.MP&&MP.connected)btns.push(['Together',()=>MP.invite('barn',mode)]);btns.push(['Not now',null]);
-  ask('Tend the animals?',`${mode==='relaxed'?'<b>Relaxed</b> shift: no timer.':'<b>Timed panic</b>: 90 seconds.'} Feed Ginger and Rocky (corn bin → feeder), give water (pump → waterer), collect eggs (nests → egg crate) and catch runaways!<br><small>Change Timed/Relaxed at the sign outside the barn.</small>`,btns);},'A: clipboard');
+  ask('Tend the animals?',`${mode==='relaxed'?'<b>Relaxed</b> shift: no timer.':'<b>Timed panic</b>: 90 seconds.'} Feed ${hens().map(h=>h.name).join(', ').replace(/, ([^,]*)$/,' and $1')} (corn bin → feeder), give water (pump → waterer), collect eggs (nests → egg crate) and catch runaways!<br><small>Change Timed/Relaxed at the sign outside the barn.</small>`,btns);},'A: clipboard');
 addSpot('barn',{x:POS.bin[0]-6,y:POS.bin[1]-6,w:42,h:40},()=>act('bin'),'A: corn');
 addSpot('barn',{x:POS.pump[0]-6,y:POS.pump[1]+4,w:42,h:36},()=>act('pump'),'A: pump');
 addSpot('barn',{x:POS.feeder[0]-4,y:POS.feeder[1]-4,w:36,h:22},()=>act('feeder'),'A: feeder');
@@ -163,8 +164,8 @@ HOOKS.extraTick.push(()=>{if(!B||!B.active)return;if(bRole!=='client')stepShift(
   if(bRole==='host'&&window.MP&&T-lastSend>=6){lastSend=T;MP.send('bn_state',B);}});
 /* ---------------- drawing ---------------- */
 HOOKS.extraDraw.push(list=>{if(!map||map.id!=='barn')return;const st=B;
-  const chicks=st?st.chickens:[{name:'Ginger',x:40,y:70,fl:0,f:0},{name:'Rocky',x:72,y:82,fl:1,f:0}];
-  if(!st){const t=__pa.T;chicks[0].x=40+Math.sin(t/90)*10;chicks[1].x=72+Math.cos(t/110)*12;chicks[0].f=(t>>4)%2;chicks[1].f=(t>>5)%2;}
+  const chicks=st?st.chickens:hens().map((h,i)=>{const t=__pa.T+i*137,bx=24+(i%3)*30+(i>2?14:0),by=62+(i>2?24:0)+(i%2)*6;
+    return{name:h.name,x:bx+Math.sin(t/(90+i*13))*10,y:by,fl:Math.cos(t/(90+i*13))<0?1:0,f:(t>>(4+i%2))%2};});
   for(const c of chicks){if(c.lost)continue;list.push({y:c.y,fn:(cx,cy)=>{const s=(c.fl?CHKf:CHK)[c.f||0],x=Math.round(c.x-cx),y=Math.round(c.y-cy);
       ctx.drawImage(shadowC(5,2),x-5,y-2);ctx.drawImage(s,x-8,y-14);
       if(Math.hypot(c.x-pl.x,c.y-pl.y)<40||c.run)wtxt(c.name,x,y-19,c.run?'#ff9aa0':'#fff6c8',6);}});}
@@ -178,13 +179,13 @@ HOOKS.extraOverlay.push((cx,cy)=>{if(!map||map.id!=='barn'||!B)return;const st=B
   for(const p of st.pops)wtxt(p.txt,Math.round(p.x-cx+20),Math.round(p.y-cy-p.t*10),p.col,6);
   // HUD (top centre, clear of the nests)
   ctx.save();ctx.translate(Math.round(VW/2-77),0);
-  ctx.fillStyle='rgba(20,30,28,.75)';ctx.fillRect(4,4,150,36);
+  const hh=18+st.chickens.length*9;ctx.fillStyle='rgba(20,30,28,.75)';ctx.fillRect(4,4,150,hh);
   wtxt(st.mode==='relaxed'?'RELAXED SHIFT':`TIME ${Math.max(0,Math.ceil(DUR-st.time))}s`,8,11,st.mode!=='relaxed'&&DUR-st.time<15?'#ff9aa0':'#fff6c8',7,'left');
   wtxt(`score ${st.score}`,150,11,'#fff',7,'right');
   st.chickens.forEach((c,i)=>{const y=21+i*9;wtxt(c.name,8,y,c.lost?'#888':c.run?'#ff9aa0':'#fff',6,'left');
     const mb=(x,v,col)=>{ctx.fillStyle='#1a1a1a';ctx.fillRect(x,y-2,34,4);ctx.fillStyle=v<.2?'#ff6a6a':col;ctx.fillRect(x,y-2,Math.round(34*v),4);};
     if(!c.lost){mb(46,c.food,'#f2c56b');mb(86,c.water,'#9ae0ff');}else wtxt('got out',60,y,'#888',6,'left');});
-  wtxt('food',63,38,'#f2c56b',5);wtxt('water',103,38,'#9ae0ff',5);
+  wtxt('food',63,hh+2,'#f2c56b',5);wtxt('water',103,hh+2,'#9ae0ff',5);
   ctx.restore();
   // what you're carrying (over your head)
   const cr=st.carry[bMe];if(cr&&cr.k){const x=Math.round(pl.x-cx),y=Math.round(pl.y-cy-30);ctx.fillStyle='rgba(20,30,28,.8)';ctx.fillRect(x-14,y-6,28,9);

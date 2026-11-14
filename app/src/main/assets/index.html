@@ -55,7 +55,7 @@ html,body{margin:0;height:100%;overflow:hidden;background:#13221d;touch-action:n
 #mgw .pad.on{filter:brightness(1.4);transform:translateY(3px)}
 #mgw .pad.sm{width:62px;height:62px;font-size:20px}
 #mgw .mgx{position:absolute;left:10px;top:10px;width:40px;height:40px;border-radius:10px;border:2px solid rgba(255,255,255,.35);background:rgba(255,255,255,.14);color:#fff;font:bold 18px sans-serif}
-body.mgon #ui{z-index:6}
+#pnl button:disabled{opacity:.45}body.mgon #ui{z-index:6}
 body.mgon #ui>*:not(#pnl){display:none!important}
 #load{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;color:#cde;font-size:16px;letter-spacing:2px}
 </style>
@@ -491,9 +491,10 @@ function border(m,R,pal){
 const grassOK=m=>(x,y)=>(m.t[y*m.w+x]===T_G||m.t[y*m.w+x]===T_F)&&!nearExit(m,x,y)&&[[1,0],[-1,0],[0,1],[0,-1]].every(([a,b])=>{const t=tAt(m,x+a,y+b);return t===T_G||t===T_F;});
 const GEN={
  village:{name:'Willow Village',seed:11,base:T_G,music:'day',spawn:[24,18],
-  exits:[{side:'n',a:21,b:27,to:'forest',sx:24,sy:25,dir:'up'},{side:'s',a:21,b:27,to:'lake',sx:24,sy:2,dir:'down'},{side:'e',a:11,b:17,to:'meadow',sx:2,sy:14,dir:'right'}],
+  exits:[{side:'n',a:21,b:27,to:'forest',sx:24,sy:25,dir:'up'},{side:'s',a:21,b:27,to:'lake',sx:24,sy:2,dir:'down'},{side:'e',a:11,b:17,to:'meadow',sx:2,sy:14,dir:'right'},{side:'w',a:15,b:19,to:'market',sx:45,sy:16,dir:'left'}],
   build(m,R){
     path(m,[[24,-2],[23,6],[25,12],[24,18],[23,23],[24,30]],4.6,T_S);
+    path(m,[[23,18],[14,17],[6,17],[-2,17]],4,T_S);
     path(m,[[24,14],[31,15],[39,13],[50,14]],4.2,T_S);ell(m,24,16,4.6,3.6,T_S);
     for(let y=5;y<=11;y++)for(let x=11;x<=20;x++)occ(m,x,y);
     add(m,'house',248,186);
@@ -503,7 +504,7 @@ const GEN={
     for(const[tx,ty]of[[21,15],[27,9],[27,21],[20,20]])addAt(m,'lamp',tx,ty);
     addAt(m,'well',31,20,{msg:'You peek into the well. Plip... it\'s deep!'},1);
     addAt(m,'barrel',20,11);addAt(m,'crate',11,11);addAt(m,'barrel',12,12);
-    addAt(m,'sign',27,3,{msg:'↑ Whisperwood'});addAt(m,'sign',43,11,{msg:'→ Sunny Meadow'});addAt(m,'sign',27,25,{msg:'↓ Mirror Lake'});
+    addAt(m,'sign',27,3,{msg:'↑ Whisperwood'});addAt(m,'sign',43,11,{msg:'→ Sunny Meadow'});addAt(m,'sign',27,25,{msg:'↓ Mirror Lake'});addAt(m,'sign',7,15,{msg:'← Market Square: Jao, Bins and Turon'});
     border(m,R,'day');
     scatter(m,R,'tree',24,grassOK(m),1,{pal:'day'});scatter(m,R,'bush',9,grassOK(m),0,R=>({berry:R()<.4}));
     scatter(m,R,'rock',5,grassOK(m));scatter(m,R,'stump',3,grassOK(m));scatter(m,R,'fern',34,grassOK(m));
@@ -1257,5 +1258,7 @@ addEventListener('load',()=>setTimeout(()=>{
 <script src="fruit.js"></script>
 <script src="barn.js"></script>
 <script src="mp.js"></script>
+<script src="market_atlas.js"></script>
+<script src="market.js"></script>
 </body>
 </html>
