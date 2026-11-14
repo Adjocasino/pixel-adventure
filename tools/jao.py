@@ -70,15 +70,12 @@ def jao(pose):
     X(4, 7 + H, Q['wr']); X(11, 7 + H, Q['wr'])
     X(5, 8 + H, Q['wr']); X(10, 8 + H, Q['wr']); X(5, 9 + H, Q['wr']); X(10, 9 + H, Q['wr'])
     X(7, 9 + H, Q['skinS']); X(8, 9 + H, Q['skinS'])
-    # square glasses (eyes inside)
-    for x0 in (4, 8):
-        for x in range(x0, x0 + 4): X(x, 4 + H, GL)               # top bar
-        X(x0, 5 + H, GL); X(x0 + 3, 5 + H, GL)                      # sides (skin shows inside)
-        X(x0 + 1, 6 + H, C('#e3b48e')); X(x0 + 2, 6 + H, C('#e3b48e'))   # lens glint on the cheek
+    # eyes (no glasses): heavy lids over small dark eyes
+    R(5, 4 + H, 2, 1, Q['wr']); R(9, 4 + H, 2, 1, Q['wr'])
     if pose == 'inhale':
-        X(5, 5 + H, Q['wr']); X(6, 5 + H, Q['wr']); X(9, 5 + H, Q['wr']); X(10, 5 + H, Q['wr'])   # eyes shut
+        R(5, 5 + H, 2, 1, Q['wr']); R(9, 5 + H, 2, 1, Q['wr'])             # eyes shut
     else:
-        X(6, 5 + H, Q['eye']); X(9, 5 + H, Q['eye'])
+        X(6, 5 + H, Q['eye']); X(9, 5 + H, Q['eye']); X(5, 5 + H, C('#f4ece0')); X(10, 5 + H, C('#f4ece0'))
     X(7, 7 + H, Q['skinS'])                                                  # nose
     if pose == 'exhale': R(7, 8 + H, 2, 1, Q['mouth']); X(7, 9 + H, Q['mouth'])
     else: R(6, 8 + H, 4, 1, Q['mouth'])

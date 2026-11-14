@@ -71,7 +71,7 @@
 - **Animal shop:** buy animals for the Barn Ranch; on buying, a prompt asks you to name the animal.
 
 ### Jao: market NPC (concept, user's idea)
-- **Name: Jao.** A very old man: thick black hair, deep wrinkles, square glasses, **hunched back** (head sunk into the shoulders). White collared sweater with 3/4 sleeves, a **silver watch**, knee-length black shorts, white shoes. **Cane** in his left hand, a short **gold vape stick** (no glow) in his right. Now and then he inhales (eyes shut) and puffs out a big cloud; **smoke always lingers** around him.
+- **Name: Jao.** A very old man: thick black hair, deep wrinkles, no glasses, **hunched back** (head sunk into the shoulders). White collared sweater with 3/4 sleeves, a **silver watch**, knee-length black shorts, white shoes. **Cane** in his left hand, a short **gold vape stick** (no glow) in his right. Now and then he inhales (eyes shut) and puffs out a big cloud; **smoke always lingers** around him.
 - **Not the seller.** The stalls handle buying/selling. Jao just hangs around the market and gives a random "dumb philosophy" quote when you talk to him, and says a line after you close a sell menu.
 - **Quotes are not fish-related.** Internet-style fake-deep lines plus real wisdom that sounds dumb. Original lines only (not copied memes).
 - Draft sprite: `assets/characters/jao/jao_draft.gif`, `jao_frames.png` (`tools/jao.py`): idle, breath, raise, inhale, exhale.
