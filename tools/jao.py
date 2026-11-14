@@ -12,8 +12,8 @@ os.makedirs(OUT, exist_ok=True)
 Q = dict(skin=C('#c98e62'), skinS=C('#a8714a'), skinL=C('#dba67a'), wr=C('#8e5a3a'),
          hair=C('#1a1414'), hairL=C('#3a3236'), hairS=C('#0e0a0a'),
          sw=C('#f2efe8'), swS=C('#d2cdc2'), swL=C('#ffffff'), swR=C('#c2bcae'), col=C('#e6e2d8'), shorts=C('#2a2a32'), shortsS=C('#17171c'),
-         shoe=C('#f6f6f2'), shoeS=C('#cfcfc8'), sole=C('#9a9a94'), vape=C('#8f96a0'), vapeL=C('#d8dee6'), vapeD=C('#5d636c'),
-         glow=C('#9cd1f8'), eye=C('#241a16'), mouth=C('#6a3a2a'))
+         shoe=C('#f6f6f2'), shoeS=C('#cfcfc8'), sole=C('#9a9a94'), vape=C('#e8b93a'), vapeL=C('#fff2a8'), vapeD=C('#a8781c'),
+         glow=C('#ffe066'), eye=C('#241a16'), mouth=C('#6a3a2a'))
 
 def jao(pose):
     """pose: idle | breath | raise | inhale | exhale"""
@@ -81,6 +81,16 @@ def jao(pose):
 
 # ---------- preview scene ----------
 SW, SHH, K, GROUND = 150, 80, 5, 70
+def halo(im, p, sx, sy, t):
+    """soft pulsing gold glow around the vape stick; sx,sy = sprite top-left on the canvas"""
+    if p in ('idle', 'breath', 'exhale'): cx, cy = sx + 15, sy + 21 + (-1 if p == 'breath' else 0)
+    elif p == 'raise': cx, cy = sx + 15, sy + 18
+    else: cx, cy = sx + 14, sy + 16
+    g = Image.new('RGBA', im.size); gd = ImageDraw.Draw(g); r = 4 + (1 if (t // 3) % 2 else 0)
+    gd.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(255, 200, 60, 110)); gd.ellipse([cx - 2, cy - 2, cx + 2, cy + 2], fill=(255, 235, 130, 170))
+    im.alpha_composite(g)
+    if (t // 4) % 3 == 0: ImageDraw.Draw(im).point((cx + 2, cy - 4), fill=(255, 246, 190, 255))   # twinkle
+
 def scene_bg():
     im = Image.new('RGBA', (SW, SHH), C('#d9c49a')); d = ImageDraw.Draw(im)
     d.rectangle([0, 0, SW, 30], fill=C('#bfe3f5'))
@@ -115,7 +125,7 @@ def main():
     for t, p in enumerate(tl):
         im = BG.copy(); d = ImageDraw.Draw(im)
         d.ellipse([x0 + 3, GROUND - 1, x0 + 19, GROUND + 2], fill=(150, 125, 85, 255))
-        im.alpha_composite(S[p], (x0, GROUND - 37))
+        im.alpha_composite(S[p], (x0, GROUND - 37)); halo(im, p, x0, GROUND - 37, t)
         if p == 'exhale' and tl[t - 1] != 'exhale':
             for k in range(14): puffs.append([x0 + 11 + k * .9, GROUND - 28 + (k % 3), 2 + k * .35, 0, 46])
         # permanent linger: a wisp always rising from the stick + slow haze around his head
@@ -146,7 +156,7 @@ def closeup():
         for t, p in enumerate(tl):
             im = Image.new('RGBA', (W2, H2), C('#d9c49a')); d = ImageDraw.Draw(im)
             d.ellipse([gx + 3, gy - 1, gx + 19, gy + 2], fill=(150, 125, 85, 255))
-            im.alpha_composite(S[p], (gx, gy - 37))
+            im.alpha_composite(S[p], (gx, gy - 37)); halo(im, p, gx, gy - 37, t)
             if p == 'exhale' and tl[t - 1] != 'exhale':
                 for k in range(14): puffs.append([gx + 11 + k * .9, gy - 28 + (k % 3), 2 + k * .35, 0, 46])
             tip = (gx + 15, gy - 17) if p in ('idle', 'breath', 'exhale') else (gx + 16, gy - 21)

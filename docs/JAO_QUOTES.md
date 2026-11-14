@@ -1,38 +1,40 @@
-# Jao's quotes (draft)
+# Jao's quotes (draft v2)
 
-Jao hangs around the market stalls. He is not the seller. Lines are original "dumb philosophy": fake-deep internet-style quotes, and real wisdom that sounds dumb. Not fish-related. `*puff*` = he vapes during the line.
+Jao hangs around the market stalls. He is not the seller. Lines are original "dumb philosophy", not fish-related.
+**Style (user picked lines 1, 2, 4 as perfect):** one short, confident observation about something ordinary, then a dumb twist.
+Three shapes: "X never does Y. Still Z." / "You are not A. B is just C." / "Be like X. Good thing. ...Bad thing. Hmm."
+`*puff*` = he vapes during the line.
 
 ## When you talk to him (random)
-1. The moon never goes to the gym. Still full.
-2. You are not late. Everyone else is just early.
-3. The sun shines on everybody. Even the guy who owes you money. *puff*
-4. Be like a chair. Always supportive. ...People also sit on you. Hmm.
-5. Rain never asks permission. Be the rain. But say sorry after.
-6. Every staircase is just a slide that gave up.
-7. If you can't find yourself, check where you left your slippers.
-8. Mountains don't rush. That's why they're still here.
-9. Your shadow follows you everywhere and never complains. Be grateful. Or be scared. Your choice.
-10. Silence is free. That's why nobody buys it.
-11. A cloud weighs more than an elephant and it still floats. So what's your excuse? *puff*
-12. Don't wait for the perfect moment. The perfect moment is also waiting. Nobody moves.
-13. If your plan fails, change the plan. Not the dream. ...Maybe also the dream.
-14. Some doors are push. Some doors are pull. Life is mostly pull.
-15. Breathe in. Breathe out. *puff* ...That's two of my hobbies.
-16. You can't be sad while eating a mango. I tested it. Twice.
-17. The road is long. But so is the nap after.
-18. A friend who lends you an umbrella is a friend. A friend who returns it is a legend.
-19. Even the wind gets tired. That's why we have afternoons.
-20. Wisdom comes with age. I'm still waiting for the delivery.
-21. Your problems are like my hair. Thick. But they make you look interesting.
-22. An ant carries ten times its weight. The ant never got a sweater. Know your priorities.
-23. When nobody claps for you, clap for yourself. Loudly. Until they get uncomfortable.
-24. Life is short. Unless you're waiting in line. Then it's very long.
-25. Water takes the shape of the cup. Be water. Unless the cup is ugly. *puff*
+1. The moon never goes to the gym. Still full. *(kept)*
+2. You are not late. Everyone else is just early. *(kept)*
+3. Be like a chair. Always supportive. ...People also sit on you. Hmm. *(kept)*
+4. Clouds never pay rent. Still living up there.
+5. You are not lost. The road just moved.
+6. Be like a pillow. Soft. Always there for you. ...Gets drooled on. Hmm.
+7. Trees never finished school. Still leaving.
+8. You are not short. The ceiling is just showing off.
+9. Be like a candle. Bright. Warm. ...Slowly melting. Hmm. *puff*
+10. The rooster never sets an alarm. Still wakes up everybody.
+11. You are not broke. Your money is just on vacation.
+12. Be like an umbrella. Protect others from the rain. ...Then get left on the jeep. Hmm.
+13. The stars never post online. Still everybody looks at them.
+14. You are not lazy. You are in power-saving mode.
+15. Be like a bridge. Connect people. ...People walk all over you. Hmm.
+16. The sun never says sorry for being late in the morning. Still everyone waits for it.
+17. You are not old. You are vintage. *puff*
+18. Be like coffee. Strong. Warm. ...Also bitter. Hmm.
+19. Mountains never move. Still people travel to see them.
+20. You are not wrong. You are just early to being right.
+21. Be like a door. Open to everyone. ...Also gets slammed. Hmm.
+22. Rain never gets invited. Still comes to every party.
+23. You are not alone. Your shadow is right there. Rude, but there.
+24. Be like a fan. Keep everyone cool. ...Nobody says thank you to a fan. Hmm. *puff*
+25. Fish never learned to swim. Still better than you at it.
 
 ## After you close a sell menu (random)
-1. Spend it wisely. Or don't. Money likes adventure too.
-2. Coins come, coins go. I stay. *puff*
-3. You sold it? Good. Letting go is growth.
-4. Rich today, hungry tomorrow. Buy merienda.
-5. Every sale is a goodbye. I cry inside. Not outside. Outside is smoke.
-6. Profit is nice. Peace is nicer. Both is best.
+1. Money never stays. Still everyone wants it.
+2. You did not lose the item. You gained coins. Big brain.
+3. Be like a coin. Shiny. Valuable. ...Always passed around. Hmm.
+4. You are not spending. You are moving money to a better home.
+5. Wallets never smile. Still they feel happy when full. *puff*
