@@ -30,7 +30,7 @@ Three shapes: "X never does Y. Still Z." / "You are not A. B is just C." / "Be l
 22. Rain never gets invited. Still comes to every party.
 23. You are not alone. Your shadow is right there. Rude, but there.
 24. Be like a fan. Keep everyone cool. ...Nobody says thank you to a fan. Hmm. *puff*
-25. Fish never learned to swim. Still better than you at it.
+25. Cats never say sorry. Still everybody loves them.
 
 ## After you close a sell menu (random)
 1. Money never stays. Still everyone wants it.
