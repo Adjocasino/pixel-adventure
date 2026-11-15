@@ -6,6 +6,24 @@
 - Cats: the trending AI-cat **clapping** animation. All three cats do the full clip (`demos/cats_clap.html`, art `tools/cat_clap.py` → `assets/characters/cats/<cat>_clap.png`): grin + wide claps, grin vanishes, paw lick, look up, arm swoosh.
 - Still to decide: whether the gift is used up, how often it can happen, and where the Jao ascend triggers.
 
+## Next build (committed, not built yet)
+- **Fruit Catch: no fruit if you faint.** Solo: 0 hearts = game over and the fruit is lost. Co-op (and versus): if everyone is down, the fruit is lost. Reaching "time's up" still banks your fruit. The best score is still recorded. The results screen says "you fainted / everyone fainted: the fruit is lost!".
+
+## Planned: save sync between phones (not built, waiting for "go")
+- Today each phone has its **own save** (WebView local storage). Progress is not shared between phones.
+- Options, simplest first:
+  1. **Export / Import save:** a button in Settings turns the save into a code/file; import it on another phone (last import wins).
+  2. **Sync over LAN:** with two phones connected by ⇄, "Copy my save to this phone".
+  3. **Cloud save:** sign in, progress saved online and the same everywhere (needs a server, accounts, internet; may cost money).
+- Still to decide: one player on two phones, or a **shared farm** between friends (closer to option 3).
+
+## Planned: fix APK updates (waiting for "go")
+- Each CI build is signed with a **new throwaway debug key** (checked: build 15 and build 16 have different certificates). Android only updates an app when the key matches, so a new APK **can't install over** the old one: you must uninstall first, which **wipes the save**.
+- Fix: one permanent signing key stored as a GitHub secret; the workflow signs every build with it. Needs one last uninstall per phone, then every update installs over the top and keeps the save.
+
+## Build rule
+- Changes are committed with `[skip ci]`. A release is built **only when the user says build/release**.
+
 ## v1.4 — sell animal products (in the APK)
 - **Bins buys** eggs (straight from the barn storage) and fruit (from the bag): "🥚 Sell eggs & fruit" at the top of his shop. He says a meal line after.
 - Base prices: eggs bronze 2 / silver 6 / gold 14 / golden 80; fruit calamansi 1, banana 1, guava 2, mango 3, watermelon 8, golden mango 40. Fish unchanged.

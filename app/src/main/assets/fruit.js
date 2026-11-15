@@ -260,7 +260,7 @@ function sim(dt){G.time+=dt;G.beatT+=dt;const d=diff();
   G.bodies=G.bodies.filter(b=>!b.dead);
   for(const s of[0,1])if(G.dep[s]){G.dep[s].t+=dt;if(G.dep[s].t>.8)tally(s);}}
 // rewards: banked fruit goes to the bag (co-op: everyone gets the team's fruit, versus: your own crate)
-function finishRewards(){const mine=mode==='vs'?G.banked[me]:G.banked[0],cnt={};for(const k of mine)cnt[k]=(cnt[k]||0)+1;
+function finishRewards(){const mine=mode==='vs'?G.banked[me]:G.banked[0],cnt={};if(G.win)for(const k of mine)cnt[k]=(cnt[k]||0)+1;   // fainted (solo) or everyone down: no fruit
   for(const k in cnt)addItem(CM.inv,'fruit:'+k,cnt[k]);const sc=mode==='vs'?G.sc[me]:G.sc[0];CM.best.fruit=Math.max(CM.best.fruit||0,sc);cmSave();G.reward=cnt;}
 
 /* =================== view (what we draw) =================== */
@@ -361,7 +361,7 @@ function draw(){const V=viewState(),now=performance.now()/1000;ctx.save();ctx.se
     if(mode==='vs'){txt(`P1 ${sc[0]}   —   P2 ${sc[1]}`,W/2,60,'#fff',10,'center');txt(sc[0]===sc[1]?'DRAW!':(sc[0]>sc[1]?'P1':'P2')+' WINS!',W/2,74,'#ffd36a',10,'center');}
     else txt('score '+sc[0],W/2,62,'#fff',9,'center');
     txt(`biggest load ${G.bestLoad}   spilled ${G.spilled}`,W/2,88,'#d8f0a0',7,'center');
-    const rw=G.reward||{},keys=Object.keys(rw);txt(keys.length?'to your bag: '+keys.map(k=>`${({mango:'mango',guava:'guava',cala:'calamansi',banana:'banana',melon:'watermelon',gold:'golden mango'})[k]} ×${rw[k]}`).join(', '):'no fruit banked',W/2,102,'#fff0a0',6,'center');
+    const rw=G.reward||{},keys=Object.keys(rw);txt(keys.length?'to your bag: '+keys.map(k=>`${({mango:'mango',guava:'guava',cala:'calamansi',banana:'banana',melon:'watermelon',gold:'golden mango'})[k]} ×${rw[k]}`).join(', '):win?'no fruit banked':(mode==='solo'?'you fainted: the fruit is lost!':'everyone fainted: the fruit is lost!'),W/2,102,win?'#fff0a0':'#ff9aa0',6,'center');
     txt(role==='client'?'B: leave':'A: play again    B: leave',W/2,128,'#fff',7,'center');}
   ctx.restore();}
 
@@ -411,7 +411,7 @@ window.FRUIT={
   onAgain(){if(MG===game&&role==='client'){state='title';G=null;snapA=snapB=null;}},
   onLeave(){if(MG===game){say('Your partner left Fruit Catch.');mgClose();}},
   get running(){return MG===game;},
-  _dbg:{get G(){return G},get state(){return state},drop:(k,x)=>{addBody(k,x??G.players[0].bx,CANOPY,0,0);},noSpawn:()=>{if(G)G.spawnT=1e9;},sim:(n)=>{for(let i=0;i<n;i++)sim(1/60);}},
+  _dbg:{get G(){return G},get state(){return state},drop:(k,x)=>{addBody(k,x??G.players[0].bx,CANOPY,0,0);},noSpawn:()=>{if(G)G.spawnT=1e9;},hurt:(p,n)=>hurt(p,n),sim:(n)=>{for(let i=0;i<n;i++)sim(1/60);}},
 };
 })();
 /* the big mango tree in Sunny Meadow (tree at tile 12,9) starts Fruit Catch */
