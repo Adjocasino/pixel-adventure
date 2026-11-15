@@ -508,7 +508,7 @@ const GEN={
     border(m,R,'day');
     scatter(m,R,'tree',24,grassOK(m),1,{pal:'day'});scatter(m,R,'bush',9,grassOK(m),0,R=>({berry:R()<.4}));
     scatter(m,R,'rock',5,grassOK(m));scatter(m,R,'stump',3,grassOK(m));scatter(m,R,'fern',34,grassOK(m));
-    m.flowers=70;m.chickens=4;m.butterflies=6;m.leafCols=['#5aa86a','#7cbf6e','#e6ae5a'];
+    m.flowers=70;m.butterflies=6;m.leafCols=['#5aa86a','#7cbf6e','#e6ae5a'];
     m.coop=[180,190,330,232];
   }},
  forest:{name:'Whisperwood',seed:23,base:T_F,music:'forest',dark:1,spawn:[24,22],
@@ -977,7 +977,7 @@ function drawAdjoFx(cx,cy){const k=adjoEmoteK(),px=Math.round(pl.x-cx),py=Math.r
       ctx.drawImage(fr,Math.round(x),Math.round(y));}}
 }
 
-const CHARS={girl:{name:'Inad',set:buildChar(makeGirl)},adjo:makeAdjo(),kid:{name:'Kid',set:buildChar(makeHero)}};
+const CHARS={girl:{name:'Inad',set:buildChar(makeGirl)},adjo:makeAdjo()};   // the Kid was removed (v1.5); an old save that picked him starts as Inad
 {const r=[0,1,2,3].map(f=>makeGirl('side',f,{ride:1}));CHARS.girl.ride={right:r,left:r.map(flipC),down:[0,1,2,3].map(f=>makeGirl('down',f,{ride:1})),up:[0,1,2,3].map(f=>makeGirl('up',f,{ride:1}))};
  CHARS.girl.extra={reachR:makeGirl('down',0,{reach:'r',look:1}),reachL:makeGirl('down',0,{reach:'l',look:1}),look:makeGirl('down',0,{look:1})};}
 let map=null,T=0,fade=null,cam={x:0,y:0},parts=[],msgT=0;
