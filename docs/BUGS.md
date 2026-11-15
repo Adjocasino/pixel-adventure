@@ -6,6 +6,12 @@
 - Cats: the trending AI-cat **clapping** animation. All three cats do the full clip (`demos/cats_clap.html`, art `tools/cat_clap.py` → `assets/characters/cats/<cat>_clap.png`): grin + wide claps, grin vanishes, paw lick, look up, arm swoosh.
 - Still to decide: whether the gift is used up, how often it can happen, and where the Jao ascend triggers.
 
+## v1.4 — sell animal products (in the APK)
+- **Bins buys** eggs (straight from the barn storage) and fruit (from the bag): "🥚 Sell eggs & fruit" at the top of his shop. He says a meal line after.
+- Base prices: eggs bronze 2 / silver 6 / gold 14 / golden 80; fruit calamansi 1, banana 1, guava 2, mango 3, watermelon 8, golden mango 40. Fish unchanged.
+- **Hard to profit from cheap stuff:** items worth under 10 coins lose 15% of their price per item sold (down to 25%, min 1 coin). Demand recovers about 7.5% per real minute (full in ~10 min). Items worth 10+ always sell at full price. Shown as "↓ N% demand" in the list. Example: 10 bronze eggs = 12 coins instead of 20.
+- Fish stall and Bins share one sell screen (Sell 1 / All / Sell everything).
+
 ## v1.3 — animal unlocks (in the APK)
 - Bins' shop shows a goal + progress for each future animal: **Duck** own 3 chickens, **Cow** own 4 chickens, **Goat** finish 5 barn shifts, **Bees** get a golden egg in the barn.
 - Unlocks are permanent (saved). A pop-up line announces a new unlock (after buying a chicken or finishing a shift).

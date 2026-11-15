@@ -93,22 +93,46 @@ HOOKS.extraOverlay.push((cx,cy)=>{if(!here())return;
   for(const p of puffs){const a=Math.max(0,.67*(1-p[3]/p[4]));ctx.fillStyle=`rgba(232,236,244,${a.toFixed(3)})`;ctx.beginPath();ctx.arc(p[0]-cx,p[1]-cy,p[2],0,7);ctx.fill();}
   wtxt('Jao',Math.round(JX+12-cx),Math.round(JFEET-46-cy),'#fff6c8',6);});
 
-/* ---------------- fish stall ---------------- */
-function openFishStall(){openPanel('FISH STALL',b=>{
-  const top=document.createElement('p');top.innerHTML=`${coinTxt()}<br><small>Sell what you catch at Mirror Lake. Better tier = more coins.</small>`;b.appendChild(top);
-  const keys=Object.keys(CM.inv).filter(k=>k.startsWith('fish:')).sort((x,y)=>fishPrice(y)-fishPrice(x));
-  if(!keys.length){const p=document.createElement('p');p.textContent='You have no fish. Go fishing at the end of the Mirror Lake dock!';b.appendChild(p);return;}
-  const l=document.createElement('div');l.className='list';l.style.cssText='max-height:46vh;overflow:auto';
-  for(const k of keys){const n=CM.inv[k],pr=fishPrice(k),row=document.createElement('div');row.style.cssText='display:flex;align-items:center;gap:6px;margin:3px 0';
-    const c=document.createElement('canvas');c.width=c.height=16;c.style.cssText='width:24px;height:24px;image-rendering:pixelated';c.getContext('2d').drawImage(itemIcon(k),0,0);row.appendChild(c);
-    const s=document.createElement('span');s.style.cssText='flex:1;min-width:0;text-align:left;font-size:13px;line-height:1.25';s.innerHTML=`${itemName(k)} <b>×${n}</b><br><small style="color:#ffe07a">● ${pr} each</small>`;row.appendChild(s);
-    for(const[lab,q]of[['Sell 1',1],['All',n]]){const x=document.createElement('button');x.textContent=lab;x.style.cssText='flex:0 0 auto;width:auto;min-width:0;margin:0;padding:5px 10px;font-size:12px';x.onclick=()=>{sell(k,q);};row.appendChild(x);}
-    l.appendChild(row);}
+/* ---------------- selling (shared) ----------------
+   Base price per item. Cheap items (base < LOW) lose demand as you sell them: each one sold drops that item's
+   price by 15% (down to 25% of base, min 1 coin), and demand recovers slowly (back to full in about 10 minutes
+   of real time). Valuable items always sell at full price. So grinding common stuff is a poor way to get rich. */
+const EGG_BASE={bronze:2,silver:6,gold:14,golden:80};
+const FRUIT_BASE={cala:1,banana:1,guava:2,mango:3,melon:8,gold:40};
+const LOW=10,DROP=.85,FLOOR=.25,RECOVER_PER_MIN=.075;
+function basePrice(k){const p=k.split(':');
+  if(p[0]==='fish')return fishPrice(k);if(p[0]==='egg')return EGG_BASE[p[1]]||2;if(p[0]==='fruit')return FRUIT_BASE[p[1]]||1;return 1;}
+CM.demand=CM.demand||{};
+function demand(k){const d=CM.demand[k];if(!d)return 1;const m=Math.min(1,d[0]+RECOVER_PER_MIN*(Date.now()-d[1])/60000);if(m>=1){delete CM.demand[k];return 1;}return m;}
+function priceAt(k,m){const b=basePrice(k);return b>=LOW?b:Math.max(1,Math.round(b*m));}
+function price(k){return priceAt(k,demand(k));}
+function quote(k,q){let m=demand(k),v=0;const b=basePrice(k);for(let i=0;i<q;i++){v+=priceAt(k,m);if(b<LOW)m=Math.max(FLOOR,m*DROP);}return[v,m];}
+function sellItems(store,k,q){q=Math.min(q,store[k]||0);if(!q)return 0;const[v,m]=quote(k,q);addItem(store,k,-q);CM.coins+=v;
+  if(basePrice(k)<LOW)CM.demand[k]=[m,Date.now()];cmSave();return v;}
+/* groups: [[label,store,filter],...] */
+function openSell(title,intro,groups,onClose){const reopen=()=>openSell(title,intro,groups,onClose);openPanel(title,b=>{
+  const top=document.createElement('p');top.innerHTML=`${coinTxt()}<br><small>${intro}</small>`;b.appendChild(top);
+  const l=document.createElement('div');l.style.cssText='max-height:46vh;overflow:auto';let any=[];
+  for(const[label,store,filt,empty]of groups){const keys=Object.keys(store).filter(k=>store[k]>0&&filt(k)).sort((x,y)=>basePrice(y)-basePrice(x));
+    if(groups.length>1){const h=document.createElement('div');h.style.cssText='text-align:left;font-weight:700;margin:6px 0 2px;color:#cfe8ff';h.textContent=label;l.appendChild(h);}
+    if(!keys.length){const p=document.createElement('div');p.style.cssText='font-size:12px;opacity:.75;text-align:left';p.textContent=empty;l.appendChild(p);continue;}
+    for(const k of keys){any.push([store,k]);const n=store[k],pr=price(k),low=basePrice(k)<LOW,dm=demand(k),row=document.createElement('div');row.style.cssText='display:flex;align-items:center;gap:6px;margin:3px 0';
+      const c=document.createElement('canvas');c.width=c.height=16;c.style.cssText='width:24px;height:24px;image-rendering:pixelated';c.getContext('2d').drawImage(itemIcon(k),0,0);row.appendChild(c);
+      const sp=document.createElement('span');sp.style.cssText='flex:1;min-width:0;text-align:left;font-size:13px;line-height:1.25';
+      sp.innerHTML=`${itemName(k)} <b>×${n}</b><br><small style="color:#ffe07a">● ${pr} each</small>`+(low&&dm<.99?` <small style="color:#ff9a8a">↓ ${Math.round(dm*100)}% demand</small>`:low?' <small style="opacity:.6">(cheap)</small>':'');row.appendChild(sp);
+      for(const[lab,q]of[['Sell 1',1],['All '+quote(k,n)[0],n]]){const x=document.createElement('button');x.textContent=lab;x.style.cssText='flex:0 0 auto;width:auto;min-width:0;margin:0;padding:5px 9px;font-size:12px';
+        x.onclick=()=>{sellItems(store,k,q);sfx.tink();reopen();};row.appendChild(x);}
+      l.appendChild(row);}}
   b.appendChild(l);
-  const all=document.createElement('div');all.className='row';const x=document.createElement('button');x.className='cur';
-  const tot=keys.reduce((a,k)=>a+CM.inv[k]*fishPrice(k),0);x.textContent=`Sell every fish (${tot})`;x.onclick=()=>{for(const k of keys)sell(k,CM.inv[k],1);sfx.chime();openFishStall();};all.appendChild(x);b.appendChild(all);
- },()=>{say('Jao: "'+pick(JAO_SELL,'js')+'"');});}
-function sell(k,q,quiet){q=Math.min(q,CM.inv[k]||0);if(!q)return;const v=q*fishPrice(k);addItem(CM.inv,k,-q);CM.coins+=v;cmSave();if(!quiet){sfx.tink();openFishStall();}}
+  if(any.length>1){const r=document.createElement('div');r.className='row';const x=document.createElement('button');x.className='cur';
+    const tot=any.reduce((a,[st,k])=>a+quote(k,st[k])[0],0);x.textContent=`Sell everything (${tot})`;x.onclick=()=>{for(const[st,k]of any)sellItems(st,k,st[k]);sfx.chime();reopen();};r.appendChild(x);b.appendChild(r);}
+  const note=document.createElement('p');note.innerHTML='<small style="opacity:.7">Cheap items lose value the more you sell; demand comes back over time.</small>';b.appendChild(note);
+ },onClose);}
+
+/* ---------------- fish stall ---------------- */
+function openFishStall(){openSell('FISH STALL','Sell what you catch at Mirror Lake. Better tier = more coins.',
+  [['Fish',CM.inv,k=>k.startsWith('fish:'),'You have no fish. Go fishing at the end of the Mirror Lake dock!']],
+  ()=>{say('Jao: "'+pick(JAO_SELL,'js')+'"');});}
 
 /* ---------------- animal shop ---------------- */
 /* unlock rules (v1.3). Once unlocked it stays unlocked. Buying still waits until the animal's barn task exists. */
@@ -129,11 +153,17 @@ function openShop(line){checkUnlocks(false);line=line||pick(BINS,'b');openPanel(
   if(n>=MAX_CHICKENS){row.disabled=true;row.innerHTML+='<br><small>The coop is full!</small>';}
   else if(CM.coins<CHICKEN_PRICE){row.disabled=true;row.innerHTML+=`<br><small>Need ${CHICKEN_PRICE-CM.coins} more coins. Sell fish at the fish stall.</small>`;}
   row.onclick=()=>nameAnimal('chicken');l.appendChild(row);
+  const sb=document.createElement('button');sb.className='cur';const ne=Object.keys(CM.barn).filter(k=>k.startsWith('egg:')).reduce((a,k)=>a+CM.barn[k],0),nf=Object.keys(CM.inv).filter(k=>k.startsWith('fruit:')).reduce((a,k)=>a+CM.inv[k],0);
+  sb.innerHTML=`🥚 Sell eggs & fruit <small>(${ne} eggs in barn storage, ${nf} fruit in bag)</small>`;sb.onclick=openProduce;l.insertBefore(sb,l.firstChild);
   for(const a of SOON){const x=document.createElement('button');x.disabled=true;
     if(CM.unlocked[a.k])x.innerHTML=`✓ ${a.nm} <small>(${a.what})</small>: <b style="color:#b6f0a0">unlocked!</b><br><small>Barn task coming soon, then you can buy it.</small>`;
     else x.innerHTML=`🔒 ${a.nm} <small>(${a.what})</small><br><small>${a.goal}: ${Math.min(a.have(),a.need)}/${a.need}</small>`;
     l.appendChild(x);}
   b.appendChild(l);});}
+function openProduce(){openSell('BINS BUYS','Bins cooks for everyone, so he buys eggs (from the barn storage) and fruit (from your bag).',
+  [['Eggs (barn storage)',CM.barn,k=>k.startsWith('egg:'),'No eggs yet. Work a shift in the barn!'],['Fruit (bag)',CM.inv,k=>k.startsWith('fruit:'),'No fruit. Play Fruit Catch under the big mango tree.']],
+  ()=>{say('Bins: "'+pick(BINS_BUY,'bb')+'"');});}
+const BINS_BUY=['Eggs! Perfect. Breakfast tomorrow, my place. I\'ll cook these.','Thank you! Now you HAVE to come for lunch. It\'s your fruit.','Turon says thank you. He wants the mango. He can\'t have the mango.','This is a lot of eggs. Omelette party. You\'re invited. Obviously.'];
 const SUGGEST=['Nugget','Mochi','Pepper','Kwek','Biscuit','Sunny','Tisoy','Bibingka','Pandesal','Chico'];
 function nameAnimal(kind){const taken=new Set(CM.animals.map(a=>a.name.toLowerCase()));const sug=SUGGEST.filter(s=>!taken.has(s.toLowerCase()));const def=sug[Math.random()*sug.length|0]||'Chick';
   ask('Name your chicken',`Bins: "Good choice! What's her name?"<br><input id="anName" maxlength="12" placeholder="${def}" style="margin-top:8px;padding:6px;font-size:16px;width:70%;text-align:center">`,
@@ -150,5 +180,5 @@ addSpot('market',{x:JX+16,y:JFEET-16,w:26,h:26},()=>{jf=JT.indexOf('exhale')-1;s
 addSpot('market',{x:AX+30,y:AY+80,w:14,h:20},()=>openShop(),'A: animal shop');
 addSpot('market',{x:AX+44,y:AY+97,w:44,h:12},()=>openShop(),'A: animal shop');
 
-window.MARKET={openFishStall,openShop,fishPrice,checkUnlocks,_dbg:{get puffs(){return puffs.length;}}};
+window.MARKET={openFishStall,openShop,openProduce,fishPrice,price,basePrice,quote,checkUnlocks,_dbg:{get puffs(){return puffs.length;}}};
 })();

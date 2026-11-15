@@ -41,7 +41,12 @@ jobs:
           cat > notes.md <<EOF
           **Cottage Meadow v${VER}** (build ${{ github.run_number }}) — download **CottageMeadow.apk** below and install it.
 
-          New in v1.3:
+          New in v1.4:
+          - Sell eggs (from the barn storage) and fruit (from your bag) to Bins at the animal shop
+          - Cheap items lose value the more you sell them (demand drops 15% per item, recovers over ~10 min); valuable items keep full price
+          - Fish stall uses the same demand rule for cheap fish
+
+          v1.3:
           - Animal unlocks at Bins' shop: Duck (own 3 chickens), Cow (own 4 chickens), Goat (finish 5 barn shifts), Bees (get a golden egg)
           - The shop shows each goal and your progress; unlocked animals become buyable once their barn task is added
 
