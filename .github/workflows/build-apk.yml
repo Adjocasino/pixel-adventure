@@ -61,6 +61,8 @@ jobs:
             One last time: uninstall the old Cottage Meadow, then install this. After this, just install updates.
           - Fishing fix: no more silent start and sudden speed-up (steady game clock, music scheduled as it plays)
           - Fruit Catch: faint solo, or everyone down in co-op, and the fruit is lost
+          - New cottage in Willow Village that matches the app icon; no chickens in the front yard
+          - The Kid is removed from character select (Inad and Adjo)
 
           v1.4:
           - Sell eggs (from the barn storage) and fruit (from your bag) to Bins at the animal shop

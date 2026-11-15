@@ -7,6 +7,9 @@
 - Still to decide: whether the gift is used up, how often it can happen, and where the Jao ascend triggers.
 
 ## v1.5 (waiting for the signing secrets)
+- **Kid removed** from character select (old saves that picked him start as Inad; a multiplayer friend still on an old Kid save shows as Inad).
+- **No chickens** in front of the cottage (they live in the barn).
+- **New cottage** in Willow Village matching the app icon (terracotta roof, round attic window, chimney, timber frame, blue cross windows, orange flower boxes). Same size and door.
 - **Fishing fix:** no sound at the start, then the game suddenly raced. Cause: the whole song (~1500 sound nodes) was created at once when you tapped, freezing phone audio, and the game clock was the audio clock, so when audio caught up the notes jumped. Now the game uses its own steady clock and the music is scheduled ~0.5 s ahead as it plays; audio re-syncs if it starts late or stalls.
 - **Fruit Catch: no fruit if you faint.** Solo: 0 hearts = game over and the fruit is lost. Co-op (and versus): if everyone is down, the fruit is lost. Reaching "time's up" still banks your fruit. The best score is still recorded. The results screen says "you fainted / everyone fainted: the fruit is lost!".
 
