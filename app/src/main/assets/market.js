@@ -103,12 +103,16 @@ const LOW=10,DROP=.85,FLOOR=.25,RECOVER_PER_MIN=.075;
 function basePrice(k){const p=k.split(':');
   if(p[0]==='fish')return fishPrice(k);if(p[0]==='egg')return EGG_BASE[p[1]]||2;if(p[0]==='fruit')return FRUIT_BASE[p[1]]||1;return 1;}
 CM.demand=CM.demand||{};
-function demand(k){const d=CM.demand[k];if(!d)return 1;const m=Math.min(1,d[0]+RECOVER_PER_MIN*(Date.now()-d[1])/60000);if(m>=1){delete CM.demand[k];return 1;}return m;}
+/* demand recovers on time the game is open (CM.playT, seconds), not the phone clock, so changing the phone's time does nothing */
+CM.playT=CM.playT||0;let lastPT=performance.now();
+setInterval(()=>{const n=performance.now();CM.playT+=Math.min(5,(n-lastPT)/1000);lastPT=n;},1000);
+for(const k in CM.demand)if(CM.demand[k][1]>1e11)CM.demand[k][1]=CM.playT;   // old saves stored phone-clock times
+function demand(k){const d=CM.demand[k];if(!d)return 1;const m=Math.min(1,d[0]+RECOVER_PER_MIN*Math.max(0,CM.playT-d[1])/60);if(m>=1){delete CM.demand[k];return 1;}return m;}
 function priceAt(k,m){const b=basePrice(k);return b>=LOW?b:Math.max(1,Math.round(b*m));}
 function price(k){return priceAt(k,demand(k));}
 function quote(k,q){let m=demand(k),v=0;const b=basePrice(k);for(let i=0;i<q;i++){v+=priceAt(k,m);if(b<LOW)m=Math.max(FLOOR,m*DROP);}return[v,m];}
 function sellItems(store,k,q){q=Math.min(q,store[k]||0);if(!q)return 0;const[v,m]=quote(k,q);addItem(store,k,-q);CM.coins+=v;
-  if(basePrice(k)<LOW)CM.demand[k]=[m,Date.now()];cmSave();return v;}
+  if(basePrice(k)<LOW)CM.demand[k]=[m,CM.playT];cmSave();return v;}
 /* groups: [[label,store,filter],...] */
 function openSell(title,intro,groups,onClose){const reopen=()=>openSell(title,intro,groups,onClose);openPanel(title,b=>{
   const top=document.createElement('p');top.innerHTML=`${coinTxt()}<br><small>${intro}</small>`;b.appendChild(top);
@@ -126,7 +130,7 @@ function openSell(title,intro,groups,onClose){const reopen=()=>openSell(title,in
   b.appendChild(l);
   if(any.length>1){const r=document.createElement('div');r.className='row';const x=document.createElement('button');x.className='cur';
     const tot=any.reduce((a,[st,k])=>a+quote(k,st[k])[0],0);x.textContent=`Sell everything (${tot})`;x.onclick=()=>{for(const[st,k]of any)sellItems(st,k,st[k]);sfx.chime();reopen();};r.appendChild(x);b.appendChild(r);}
-  const note=document.createElement('p');note.innerHTML='<small style="opacity:.7">Cheap items lose value the more you sell; demand comes back over time.</small>';b.appendChild(note);
+  const note=document.createElement('p');note.innerHTML='<small style="opacity:.7">Cheap items lose value the more you sell; demand comes back while you play.</small>';b.appendChild(note);
  },onClose);}
 
 /* ---------------- fish stall ---------------- */

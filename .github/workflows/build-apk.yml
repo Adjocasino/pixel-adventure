@@ -56,7 +56,15 @@ jobs:
           cat > notes.md <<EOF
           **Cottage Meadow v${VER}** (build ${{ github.run_number }}) — download **CottageMeadow.apk** below and install it.
 
-          New in v1.5:
+          New in v1.6:
+          - Play together only side by side: Co-op / Versus at the mango tree and Barn Together at the clipboard show up when your friend stands next to you; everything else you do freely on your own
+          - Fishing: your friend sees "<name> caught a ... !" when you finish
+          - Fishing pauses if you switch apps mid-song
+          - Multiplayer warns when the two phones have different game versions
+          - Cheap-item prices recover while you play (changing the phone clock does nothing)
+          - Installs over v1.5 and keeps your save
+
+          v1.5:
           - Updates now install over the old app and keep your save (permanent signing key).
             One last time: uninstall the old Cottage Meadow, then install this. After this, just install updates.
           - Fishing fix: no more silent start and sudden speed-up (steady game clock, music scheduled as it plays)

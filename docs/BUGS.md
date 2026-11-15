@@ -6,7 +6,10 @@
 - Cats: the trending AI-cat **clapping** animation. All three cats do the full clip (`demos/cats_clap.html`, art `tools/cat_clap.py` → `assets/characters/cats/<cat>_clap.png`): grin + wide claps, grin vanishes, paw lick, look up, arm swoosh.
 - Still to decide: whether the gift is used up, how often it can happen, and where the Jao ascend triggers.
 
-## Next build (committed, not built yet)
+## v1.6 — final v1 polish (in the APK)
+- Fishing pauses when you switch apps mid-song (song clock frozen, queued sounds cancelled, resumes at the same spot).
+- Cheap-item demand recovers on time the game is open (`CM.playT`), not the phone clock.
+- Multiplayer version check (`GAME_VER` in systems.js, keep equal to versionName): a mismatch shows a message and hides Co-op / Versus / Together.
 - **Play together only side by side:** Fruit Catch Co-op/Versus (mango tree) and Barn Together (clipboard) only show up when your friend is standing next to you there. Otherwise only Solo. The ⇄ panel no longer has invite buttons; it explains this.
 - **Fishing announcement:** when you finish fishing, your friend sees "<name> caught a Karpa (Silver)!" as a message and floating over your head for 5 s. No animation.
 - Note: while you fish, your friend still sees you standing still at the dock.

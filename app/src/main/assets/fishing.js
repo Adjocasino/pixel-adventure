@@ -47,7 +47,16 @@ function makeFishing(){
     for(let q=0;q<4;q++){const t=st+q*BEAT;if(!ok(t))continue;osc('sine',150,at(t),.12,.9,45);if(q%2)nz(at(t),.09,.35,1500);}
     for(let e=0;e<8;e++){const t=st+e*SL;if(!ok(t))continue;nz(at(t),.025,b<INTRO?.12:.08,7000);if(b>=INTRO)osc('sawtooth',hz(ch[e%3]-12),at(t),.1,.06);}
     if(b<INTRO)[[72,0,.08,.12],[72,1,.08,.08],[72,2,.08,.08],[79,3,.12,.14]].forEach(([n,q,d,v])=>{const t=st+q*BEAT;if(ok(t))osc('square',hz(n),at(t),d,v);});}
-  function pumpAudio(){if(!AC||!chart)return;const sn=songNow();
+  /* app switched away mid-song: pause the song clock, cancel queued sounds; on return carry on from the same spot */
+  let pausedAt=0;
+  const onVis=()=>{if(state!=='play'||!chart)return;
+    if(document.hidden){if(!pausedAt){pausedAt=performance.now();stopSound();}}
+    else if(pausedAt){t0+=(performance.now()-pausedAt)/1000;pausedAt=0;const sn=songNow();
+      schedB=0;while(schedB<chart.total&&chart.start[schedB]+4*60/chart.bpm[schedB]<sn)schedB++;
+      schedN=0;while(schedN<chart.notes.length&&chart.notes[schedN].t<sn)schedN++;
+      if(AC)acBase=AC.currentTime-sn+.05;}};
+  document.addEventListener('visibilitychange',onVis);
+  function pumpAudio(){if(!AC||!chart||pausedAt)return;const sn=songNow();
     if(AC.state!=='running'){if(AC.state==='suspended')AC.resume();   // still asleep: skip what has passed so nothing bursts later
       while(schedB<chart.total&&chart.start[schedB]+4*60/chart.bpm[schedB]<sn)schedB++;while(schedN<chart.notes.length&&chart.notes[schedN].t<sn)schedN++;return;}
     if(Math.abs((AC.currentTime-acBase)-sn)>.06)acBase=AC.currentTime-sn+.02;   // re-sync audio to the game clock
@@ -61,7 +70,7 @@ function makeFishing(){
     {n:'SILVER',c:['#aeb8c4','#e2e8ef','#7d8794'],s:'#ffffff'},{n:'PLATINUM',c:['#bfe6f2','#f2fcff','#86b8cc'],s:'#ffffff'},{n:'GOLD',c:['#e3a92a','#ffe07a','#a8721a'],s:'#fff6c8'}];
   const WIN={perfect:.05,great:.09,good:.13},PTS={perfect:1,great:.75,good:.4,miss:0};
   let state='dock',T=0,chart,t0=0,score=0,combo=0,maxCombo=0,judg=null,cnt={},fx=[],trans=0,result=null,pressFlash={a:0,b:0},seed=(Math.random()*1e6)|0;
-  const songNow=()=>performance.now()/1000-t0,now=songNow;
+  const songNow=()=>(pausedAt||performance.now())/1000-t0,now=songNow;
   function startSong(){audio();if(AC&&AC.state!=='running')AC.resume();chart=buildChart(seed++);t0=performance.now()/1000+.6;acBase=AC?AC.currentTime+.6:0;schedB=0;schedN=0;
     score=0;combo=0;maxCombo=0;judg=null;cnt={perfect:0,great:0,good:0,miss:0};fx=[];state='play';}
   function judge(n,j){n.done=j;cnt[j]++;score+=PTS[j];if(j==='miss')combo=0;else{combo++;maxCombo=Math.max(maxCombo,combo);}
@@ -148,7 +157,7 @@ function makeFishing(){
       else if(state==='enter'){drawDock();trans++;const r=trans*9;ctx.fillStyle='#0e1a24';ctx.beginPath();ctx.rect(0,0,W,H);ctx.arc(214,96,Math.max(0,300-r),0,7,true);ctx.fill();if(trans>34)startSong();}
       else if(state==='play')drawPlay();else if(state==='result')drawResult();},
     back(){if(state==='play'){ask('Stop fishing?','The fish will get away.',[['Stop',()=>{stopSound();mgClose();}],['Keep fishing',null,'cur']]);}else mgClose();},
-    end(){removeEventListener('keydown',onKey);stopSound();},
+    end(){removeEventListener('keydown',onKey);document.removeEventListener('visibilitychange',onVis);stopSound();},
     get state(){return state;},
     get songT(){return chart?songNow():0;},get queued(){return live.length;},
     _finish(pct){score=pct;cnt={perfect:0,great:0,good:0,miss:0};finish();},

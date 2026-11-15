@@ -18,13 +18,15 @@ window.MPN={
   scanDone(){MP.scanning=false;refresh();},
   error(m){MP.status=m;refresh();say(m);},
   connected(isHost){MP.connected=true;MP.isHost=!!isHost;MP.status='Connected!';MP.partner=null;sfx.chime();
-    MP.send('hello',{ch:pl.char,v:1});refresh();say(isHost?'Your friend joined! You are the host.':'Connected to your friend!');document.getElementById('bMP').style.background='rgba(120,200,140,.45)';},
+    MP.send('hello',{ch:pl.char,v:1,gv:GAME_VER});refresh();say(isHost?'Your friend joined! You are the host.':'Connected to your friend!');document.getElementById('bMP').style.background='rgba(120,200,140,.45)';},
   closed(){const was=MP.connected;MP.connected=false;MP.partner=null;MP.status='Disconnected.';document.getElementById('bMP').style.background='';
     if(window.FRUIT&&FRUIT.running)FRUIT.onLeave();if(was)say('Multiplayer disconnected.');refresh();},
   msg(line){let m;try{m=JSON.parse(line);}catch(e){return;}const d=m.d||{};
     switch(m.t){
       case 'ann':{const p=MP.partner||(MP.partner={});p.ann={txt:d.txt,c:d.c||'#ffe07a',t:performance.now()};say(charName(p.ch)+' '+d.txt);sfx.chime();break;}
-      case 'hello':MP.partner=Object.assign(MP.partner||{},{ch:d.ch,name:charName(d.ch)});refresh();break;
+      case 'hello':MP.partner=Object.assign(MP.partner||{},{ch:d.ch,name:charName(d.ch),gv:d.gv||'old'});
+        if(d.gv!==GAME_VER)setTimeout(()=>say(`Your friend has a different game version (${d.gv?'v'+d.gv:'older'}, you have v${GAME_VER}). Install the same version on both phones to play together.`),900);
+        refresh();break;
       case 'pos':{const p=MP.partner||(MP.partner={});if(p.map!==d.m||p.x==null){p.x=d.x;p.y=d.y;}Object.assign(p,{map:d.m,tx:d.x,ty:d.y,dir:d.dir,mv:d.mv,rd:d.rd,sp:d.sp,ch:d.ch,em:d.em,t:performance.now()});break;}
       case 'inv':askInvite(d);break;
       case 'inv_ok':if(MP.isHost)hostStart(d.g,d.mode,d.ch);pendingInv=null;break;
@@ -61,7 +63,8 @@ HOOKS.extraDraw.push(list=>{const p=MP.partner;if(!MP.connected||!p||!map||p.map
     wtxt(charName(p.ch)+' (P'+(MP.isHost?2:1)+')',Math.round(p.x-cx),y-5,'#9ae0ff',6);
     if(p.ann){const age=(performance.now()-p.ann.t)/1000;if(age>5)p.ann=null;else wtxt(p.ann.txt,Math.round(p.x-cx),y-14-Math.min(4,age*8),p.ann.c,7);}}});});
 /* is my friend standing right next to me (same map)? Co-op / Versus / Barn together need that. */
-MP.nearMe=(r=64)=>{const p=MP.partner;return !!(MP.connected&&p&&map&&p.map===map.id&&p.tx!=null&&Math.hypot(p.tx-pl.x,p.ty-pl.y)<r);};
+MP.sameVer=()=>!!(MP.partner&&MP.partner.gv===GAME_VER);
+MP.nearMe=(r=64)=>{const p=MP.partner;return !!(MP.connected&&p&&MP.sameVer()&&map&&p.map===map.id&&p.tx!=null&&Math.hypot(p.tx-pl.x,p.ty-pl.y)<r);};
 /* tell my friend something that pops over my head on their screen */
 MP.announce=(txt,c)=>{if(MP.connected)MP.send('ann',{txt,c});};
 /* ---------------- the Multiplayer panel ---------------- */
