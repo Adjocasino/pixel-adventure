@@ -67,6 +67,63 @@ GEN.market={name:'Market Square',seed:61,base:T_G,music:'day',spawn:[45,16],
     m.flowers=60;m.butterflies=5;m.leafCols=['#5aa86a','#7cbf6e','#e6ae5a'];
   }};
 
+/* ---------------- Jao ascends (golden-fish gift) ----------------
+   Original synthesized piece (gong, plucks, pentatonic bamboo flute, rising chimes), ported from demos/jao_ascend.html. */
+let ac,out,rev;
+function initAudio(){if(ac)return;ac=gameAC();if(!ac)return;
+  out=ac.createGain();out.gain.value=.8;out.connect(gameMaster());
+  rev=ac.createConvolver();const L=ac.sampleRate*3.2,ir=ac.createBuffer(2,L,ac.sampleRate);
+  for(let ch=0;ch<2;ch++){const d=ir.getChannelData(ch);for(let i=0;i<L;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/L,2.6);}
+  rev.buffer=ir;const rg=ac.createGain();rg.gain.value=.55;rev.connect(rg);rg.connect(out);}
+const hz=n=>440*Math.pow(2,(n-69)/12);
+function noiseBuf(sec){const b=ac.createBuffer(1,ac.sampleRate*sec,ac.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;return b;}
+function send(node,dry=.6,wet=.8){const a=ac.createGain(),b=ac.createGain();a.gain.value=dry;b.gain.value=wet;node.connect(a);node.connect(b);a.connect(out);b.connect(rev);}
+function gong(t){const m=ac.createGain();m.gain.setValueAtTime(0,t);m.gain.linearRampToValueAtTime(.5,t+.02);m.gain.exponentialRampToValueAtTime(.001,t+5.5);send(m,.5,.9);
+  [[1,.6],[1.48,.35],[2.09,.25],[2.73,.18],[3.56,.1]].forEach(([r,v],i)=>{const o=ac.createOscillator(),q=ac.createGain();o.frequency.value=73*r;o.frequency.setValueAtTime(73*r*1.01,t);o.frequency.exponentialRampToValueAtTime(73*r,t+1.5);
+    q.gain.value=v;q.gain.setValueAtTime(v,t);q.gain.exponentialRampToValueAtTime(.001,t+5-i*.6);o.connect(q);q.connect(m);o.start(t);o.stop(t+5.6);});
+  const n=ac.createBufferSource();n.buffer=noiseBuf(.4);const f=ac.createBiquadFilter();f.type='bandpass';f.frequency.value=900;const ng=ac.createGain();ng.gain.setValueAtTime(.25,t);ng.gain.exponentialRampToValueAtTime(.001,t+.35);n.connect(f);f.connect(ng);ng.connect(m);n.start(t);}
+function pluck(t,n,v=.25){const f=hz(n),m=ac.createGain();m.gain.setValueAtTime(v,t);m.gain.exponentialRampToValueAtTime(.001,t+1.6);send(m,.6,.6);
+  [[1,1],[2,.45],[3,.2],[4.02,.08]].forEach(([r,a])=>{const o=ac.createOscillator();o.type=r===1?'triangle':'sine';o.frequency.setValueAtTime(f*r*1.012,t);o.frequency.exponentialRampToValueAtTime(f*r,t+.05);
+    const q=ac.createGain();q.gain.setValueAtTime(a,t);q.gain.exponentialRampToValueAtTime(.001,t+1.4/r);o.connect(q);q.connect(m);o.start(t);o.stop(t+1.7);});}
+/* flute: notes [[midi,dur],...] played legato with grace slides and delayed vibrato */
+function flute(t0,notes,v=.2){const o=ac.createOscillator(),o2=ac.createOscillator(),m=ac.createGain(),lfo=ac.createOscillator(),ld=ac.createGain();
+  o.type='sine';o2.type='triangle';const o2g=ac.createGain();o2g.gain.value=.18;
+  lfo.frequency.value=5.2;lfo.connect(ld);ld.connect(o.frequency);ld.connect(o2.detune);
+  const lp=ac.createBiquadFilter();lp.type='lowpass';lp.frequency.value=3200;
+  o.connect(m);o2.connect(o2g);o2g.connect(m);m.connect(lp);send(lp,.55,.9);
+  const br=ac.createBufferSource();br.buffer=noiseBuf(12);br.loop=true;const bf=ac.createBiquadFilter();bf.type='bandpass';bf.Q.value=1.4;const bg=ac.createGain();bg.gain.value=0;br.connect(bf);bf.connect(bg);send(bg,.5,.6);
+  let t=t0;m.gain.setValueAtTime(0,t);m.gain.linearRampToValueAtTime(v,t+.12);bg.gain.setValueAtTime(0,t);bg.gain.linearRampToValueAtTime(.05,t+.06);bg.gain.linearRampToValueAtTime(.012,t+.3);
+  for(const[n,d,slide]of notes){const f=hz(n);
+    if(slide){o.frequency.setValueAtTime(o.frequency.value||f,t);o.frequency.exponentialRampToValueAtTime(f,t+.16);o2.frequency.exponentialRampToValueAtTime(f*2,t+.16);}
+    else{o.frequency.setValueAtTime(f*.985,t);o.frequency.exponentialRampToValueAtTime(f,t+.07);o2.frequency.setValueAtTime(f*2,t);
+      m.gain.setValueAtTime(v*.82,t);m.gain.linearRampToValueAtTime(v,t+.08);bg.gain.setValueAtTime(.035,t);bg.gain.linearRampToValueAtTime(.012,t+.15);}
+    bf.frequency.setValueAtTime(f*2,t);
+    ld.gain.setValueAtTime(0,t);if(d>.6)ld.gain.linearRampToValueAtTime(f*.012,t+Math.min(.9,d*.6));
+    o.frequency.value=f;t+=d;}
+  m.gain.setValueAtTime(v,t-.9);m.gain.linearRampToValueAtTime(0,t+.4);bg.gain.linearRampToValueAtTime(0,t+.2);
+  for(const x of[o,o2,lfo,br]){x.start(t0);x.stop(t+.6);}return t;}
+function chime(t,n,v=.12){const o=ac.createOscillator(),q=ac.createGain(),o2=ac.createOscillator(),q2=ac.createGain();o.frequency.value=hz(n);o2.frequency.value=hz(n)*2.76;
+  q.gain.setValueAtTime(0,t);q.gain.linearRampToValueAtTime(v,t+.005);q.gain.exponentialRampToValueAtTime(.001,t+2.4);q2.gain.setValueAtTime(v*.3,t);q2.gain.exponentialRampToValueAtTime(.001,t+.8);
+  o.connect(q);o2.connect(q2);send(q,.4,1);send(q2,.3,1);o.start(t);o2.start(t);o.stop(t+2.5);o2.stop(t+1);}
+function wind(t,dur){const n=ac.createBufferSource();n.buffer=noiseBuf(dur+.5);const f=ac.createBiquadFilter();f.type='bandpass';f.Q.value=.8;
+  f.frequency.setValueAtTime(400,t);f.frequency.exponentialRampToValueAtTime(2400,t+dur);const q=ac.createGain();q.gain.setValueAtTime(0,t);q.gain.linearRampToValueAtTime(.09,t+dur*.6);q.gain.linearRampToValueAtTime(0,t+dur);
+  n.connect(f);f.connect(q);send(q,.5,.8);n.start(t);n.stop(t+dur+.4);}
+/* the piece: D minor pentatonic (D F G A C), original line */
+function playAscend(){initAudio();if(!ac)return;if(ac.state==='suspended')ac.resume();const t=ac.currentTime+.08;
+  gong(t);
+  [50,57,62,57,62,65].forEach((n,i)=>pluck(t+.25+i*.11,n,.18));
+  flute(t+.9,[[69,.45],[72,.4],[74,1.1],[77,.32,1],[79,.32,1],[81,1.25],[79,.22],[84,.3,1],[86,2.4,1]],.19);
+  pluck(t+2.45,62,.14);pluck(t+2.55,69,.12);pluck(t+4.05,65,.14);pluck(t+4.15,72,.12);
+  wind(t+4.2,3.4);
+  [86,89,91,93,96,98,101,103].forEach((n,i)=>chime(t+4.9+i*.17,n,.09));
+  chime(t+6.6,98,.07);chime(t+6.9,103,.05);
+  return t;}
+
+const ASC_QUOTES=['I was not gone. I was buffering.','I went up. Too many clouds. No signal. Came back.',
+ 'Ascending is easy. Coming back down for the stall... that is the real journey. *puff*','You saw nothing. The vape saw everything. Hmm.'];
+let asc=null,gold=[];   // asc = {t0} while Jao ascends
+function jaoAscend(){asc={t0:performance.now()};pauseWorldMusic(true);playAscend();}
+
 /* ---------------- animation + smoke ---------------- */
 const SEQ=(a)=>a.flatMap(([p,n])=>Array(n).fill(p));
 const JT=SEQ([['idle',6],['breath',6],['idle',4],['raise',3],['inhale',9],['raise',2],['exhale',5],['idle',6],['breath',6],['idle',5]]);
@@ -84,7 +141,13 @@ HOOKS.extraTick.push(()=>{if(!here())return;const T=__pa.T;if(T%7)return;jf++;
   for(const p of puffs){p[3]++;p[0]+=.45+Math.sin(p[3]*.3+p[2])*.35;p[1]-=.45;p[2]+=.22;}
   puffs=puffs.filter(p=>p[3]<p[4]);
   if(jf%6===0)for(const c of chicks)if(Math.random()<.5)c[2]=1-c[2];
-  if(wagT>0)wagT--;if(purrT>0)purrT--;});
+  if(wagT>0)wagT--;if(purrT>0)purrT--;
+  if(asc){const T=(performance.now()-asc.t0)/1000;
+    if(T>1.2&&T<4.4)puffs.push([JX+15,JFEET-17,1,0,40]);
+    if(T>3.6&&T<7.2){const lift=Math.min(1,(T-3.6)/2.4)*14;for(let i=0;i<4;i++)puffs.push([JX+3+Math.random()*18,JFEET-36+Math.random()*34-lift,2+Math.random()*2,0,70+Math.random()*40]);
+      for(let i=0;i<2;i++)gold.push([JX+4+Math.random()*16,JFEET-30+Math.random()*28-lift,(Math.random()-.5)*.6,-.3-Math.random()*.6,60]);}
+    if(T>=9){asc=null;pauseWorldMusic(false);say('Jao: "'+pick(ASC_QUOTES,'aq')+'"');}}
+  for(const g of gold){g[4]--;g[0]+=g[2]*3;g[1]+=g[3]*3;}gold=gold.filter(g=>g[4]>0);});
 HOOKS.extraDraw.push(list=>{if(!here())return;
   list.push({y:FY+88,fn:(cx,cy)=>spr('fishStall',FX-cx,FY-cy)});
   list.push({y:AY+82,fn:(cx,cy)=>{spr('animalBack',AX-cx,AY-cy);spr('bins_'+BT[jf%BT.length],AX+A._binsOff[0]-cx,AY+A._binsOff[1]-cy);spr('animalFront',AX+A._frontOff[0]-cx,AY+A._frontOff[1]-cy);}});
@@ -97,8 +160,14 @@ HOOKS.extraDraw.push(list=>{if(!here())return;
   list.push({y:RY+23,fn:(cx,cy)=>{const fr=purrT>0?1:(jf%40===7?1:(jf%40>=20&&jf%40<23?2:0));ctx.fillStyle='rgba(120,96,60,.45)';ctx.fillRect(Math.round(RX+4-cx),Math.round(RY+21-cy),14,3);
     if(ARAW.complete)ctx.drawImage(ARAW,fr*22,0,22,24,Math.round(RX-cx),Math.round(RY-cy+(purrT>0&&jf%2?1:0)),22,24);
     if(purrT>0&&jf%3===0){ctx.fillStyle='#ff7a9a';const hx=Math.round(RX+11-cx+((jf*5)%9)-4),hy=Math.round(RY-4-cy-(30-purrT)%12);ctx.fillRect(hx,hy,2,1);ctx.fillRect(hx+3,hy,2,1);ctx.fillRect(hx,hy+1,5,1);ctx.fillRect(hx+1,hy+2,3,1);ctx.fillRect(hx+2,hy+3,1,1);}}});
-  list.push({y:JFEET,fn:(cx,cy)=>{ctx.fillStyle='rgba(120,96,60,.45)';ctx.fillRect(Math.round(JX+4-cx),Math.round(JFEET-1-cy),16,3);spr('jao_'+JT[jf%JT.length],JX-cx,JFEET-37-cy);}});});
+  list.push({y:JFEET,fn:(cx,cy)=>{ctx.fillStyle='rgba(120,96,60,.45)';ctx.fillRect(Math.round(JX+4-cx),Math.round(JFEET-1-cy),16,3);
+    if(!asc){spr('jao_'+JT[jf%JT.length],JX-cx,JFEET-37-cy);return;}
+    const T=(performance.now()-asc.t0)/1000;let pose=T<1.2?'inhale':T<4.4?'idle':'exhale',al=1,lift=0;
+    if(T>3.6){const k=Math.min(1,(T-3.6)/2.4);al=1-k;lift=k*14;}
+    if(T>7.2&&T<8.6)al=0;if(T>=8.6)al=Math.min(1,(T-8.6)/.35);if(T>=8.6)lift=0,pose='idle';
+    if(al>0){ctx.globalAlpha=al;spr('jao_'+pose,JX-cx,JFEET-37-lift-cy);ctx.globalAlpha=1;}}});});
 HOOKS.extraOverlay.push((cx,cy)=>{if(!here())return;
+  for(const g of gold){const tw=(g[4]>>2)%2,x=Math.round(g[0]-cx),y=Math.round(g[1]-cy);ctx.fillStyle=tw?'#ffe07a':'#d9a520';ctx.fillRect(x,y,1,1);if(tw){ctx.fillRect(x-1,y,3,1);ctx.fillRect(x,y-1,1,3);}}
   for(const p of puffs){const a=Math.max(0,.67*(1-p[3]/p[4]));ctx.fillStyle=`rgba(232,236,244,${a.toFixed(3)})`;ctx.beginPath();ctx.arc(p[0]-cx,p[1]-cy,p[2],0,7);ctx.fill();}
   wtxt('Jao',Math.round(JX+12-cx),Math.round(JFEET-46-cy),'#fff6c8',6);});
 
@@ -190,9 +259,14 @@ function nameAnimal(kind){const taken=new Set(CM.animals.map(a=>a.name.toLowerCa
 addSpot('market',{x:TX-4,y:TY+18,w:32,h:16},()=>{wagT=30;sfx.chime();say('Turon wags his tail. Bins: "He likes you! Stay for lunch, he\'s sharing."');},'A: pet Turon');
 addSpot('market',{x:FX+8,y:FY+86,w:76,h:18},openFishStall,'A: sell fish');
 addSpot('market',{x:RX-2,y:RY+16,w:26,h:16},()=>{purrT=30;if(sfx.purr)sfx.purr();else sfx.chime();say(pick(ARAW_LINES,'a'));},'A: pet Araw');
-addSpot('market',{x:JX+16,y:JFEET-16,w:26,h:26},()=>{jf=JT.indexOf('exhale')-1;say('Jao: "'+pick(JAO,'j')+'"');},'A: talk to Jao');
+addSpot('market',{x:JX+16,y:JFEET-16,w:26,h:26},()=>{if(asc)return;
+  const gf=Object.keys(CM.inv).filter(k=>CM.inv[k]>0&&/^fish:.*:GOLD$/.test(k)).sort((x,y)=>fishPrice(x)-fishPrice(y))[0];
+  const talk=()=>{jf=JT.indexOf('exhale')-1;say('Jao: "'+pick(JAO,'j')+'"');};
+  if(!gf)return talk();
+  ask('Jao',`You have a golden fish: <b>${itemName(gf)}</b>. Give it to Jao?<br><small>He has never been given anything golden. (The fish is used up.)</small>`,
+    [['Give it',()=>{addItem(CM.inv,gf,-1);cmSave();say('Jao: "...Gold. Hmm." *long inhale*');jaoAscend();},'cur'],['Just talk',talk]]);},'A: talk to Jao');
 addSpot('market',{x:AX+30,y:AY+80,w:14,h:20},()=>openShop(),'A: animal shop');
 addSpot('market',{x:AX+44,y:AY+97,w:44,h:12},()=>openShop(),'A: animal shop');
 
-window.MARKET={openFishStall,openShop,openProduce,fishPrice,price,basePrice,quote,checkUnlocks,_dbg:{get puffs(){return puffs.length;}}};
+window.MARKET={jaoAscend,get ascending(){return !!asc;},openFishStall,openShop,openProduce,fishPrice,price,basePrice,quote,checkUnlocks,_dbg:{get puffs(){return puffs.length;}}};
 })();

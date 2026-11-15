@@ -4,9 +4,11 @@
 - Giving a **golden fish to Jao**, or **anything golden** (golden fish, golden egg, etc.) **to a cat**, triggers a special interaction.
 - Jao: candidate is the "ascend" moment (`demos/jao_ascend.html`). He dissolves into vape smoke + gold sparkles, then comes back with a line.
 - Cats: the trending AI-cat **clapping** animation. All three cats do the full clip (`demos/cats_clap.html`, art `tools/cat_clap.py` → `assets/characters/cats/<cat>_clap.png`): grin + wide claps, grin vanishes, paw lick, look up, arm swoosh.
-- Still to decide: whether the gift is used up, how often it can happen, and where the Jao ascend triggers.
+- Decided: the gift is used up; works any time; Jao's ascend triggers when you give him a Gold fish. Built in v1.7.
 
-## Next build (committed, not built yet)
+## v1.7 (in the APK)
+- **Golden gifts** (`gift.js`): talk to a cat while you own something golden (Gold-tier fish, golden mango, gold or golden egg) → "Give it / Just pet". The cheapest golden item is offered and used up. She does the full clap clip with sounds (claps, mlem, whoosh, jingle) and hearts. Works any time.
+- **Jao ascends:** talk to Jao with a Gold fish → "Give it / Just talk". He inhales, dissolves upward into smoke + gold sparkles to the original flute piece (world music pauses), vanishes, then fades back with a line ("I was not gone. I was buffering.").
 - **Music going silent:** phones can suspend the audio (screen off, a notification, another app). The game never woke it up again, so music stopped until restart. Now a watchdog resumes the audio every second, when you come back to the app and on any tap, then restarts the song. Piano/harp loops also restart cleanly if they fell behind (instead of scheduling loops in the past). Checked: loops have no silent gaps (biggest pause 1.3 s).
 - **Araw**, Jao's orange cat: plain orange tabby, orange eyes, very light white stripes. Sits in front of Jao at the fish stall, blinks and flicks his tail. "A: pet Araw" → purr + hearts + a Jao line. Art: `tools/araw.py` → `assets/characters/araw/`.
 

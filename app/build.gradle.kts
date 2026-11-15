@@ -10,8 +10,8 @@ android {
         applicationId = "com.pixeladventure.game"
         minSdk = 26
         targetSdk = 34
-        versionCode = 18
-        versionName = "1.6"
+        versionCode = 19
+        versionName = "1.7"
     }
 
     // One permanent key for every build, so a new APK installs over the old one and keeps the save.

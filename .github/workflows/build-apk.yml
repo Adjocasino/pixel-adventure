@@ -56,7 +56,13 @@ jobs:
           cat > notes.md <<EOF
           **Cottage Meadow v${VER}** (build ${{ github.run_number }}) — download **CottageMeadow.apk** below and install it.
 
-          New in v1.6:
+          New in v1.7:
+          - Golden gifts: give a cat anything golden (Gold fish, golden mango, gold/golden egg) and she does the trending clap clip
+          - Give Jao a golden fish and he ascends into his vape smoke... then comes back
+          - Araw, Jao's orange cat, sits by the fish stall (pet him)
+          - Music no longer goes silent after the phone pauses the audio
+
+          v1.6:
           - Play together only side by side: Co-op / Versus at the mango tree and Barn Together at the clipboard show up when your friend stands next to you; everything else you do freely on your own
           - Fishing: your friend sees "<name> caught a ... !" when you finish
           - Fishing pauses if you switch apps mid-song
