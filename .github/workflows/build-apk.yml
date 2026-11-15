@@ -27,6 +27,21 @@ jobs:
       - name: Point Gradle at the runner's Android SDK
         run: echo "sdk.dir=$ANDROID_HOME" > local.properties
 
+      - name: Load the permanent signing key
+        env:
+          KS_B64: ${{ secrets.SIGNING_KEYSTORE_B64 }}
+          KS_PASS: ${{ secrets.SIGNING_PASSWORD }}
+        run: |
+          if [ -n "$KS_B64" ] && [ -n "$KS_PASS" ]; then
+            echo "$KS_B64" | base64 -d > "$RUNNER_TEMP/cottage.jks"
+            echo "CM_KEYSTORE=$RUNNER_TEMP/cottage.jks" >> "$GITHUB_ENV"
+            echo "CM_KEY_PASS=$KS_PASS" >> "$GITHUB_ENV"
+            echo "Signing with the permanent key"
+          else
+            echo "::error::SIGNING_KEYSTORE_B64 / SIGNING_PASSWORD secrets are missing; refusing to build an APK that cannot update."
+            exit 1
+          fi
+
       - name: Build debug APK
         run: gradle assembleDebug --no-daemon --stacktrace
 
@@ -41,7 +56,13 @@ jobs:
           cat > notes.md <<EOF
           **Cottage Meadow v${VER}** (build ${{ github.run_number }}) — download **CottageMeadow.apk** below and install it.
 
-          New in v1.4:
+          New in v1.5:
+          - Updates now install over the old app and keep your save (permanent signing key).
+            One last time: uninstall the old Cottage Meadow, then install this. After this, just install updates.
+          - Fishing fix: no more silent start and sudden speed-up (steady game clock, music scheduled as it plays)
+          - Fruit Catch: faint solo, or everyone down in co-op, and the fruit is lost
+
+          v1.4:
           - Sell eggs (from the barn storage) and fruit (from your bag) to Bins at the animal shop
           - Cheap items lose value the more you sell them (demand drops 15% per item, recovers over ~10 min); valuable items keep full price
           - Fish stall uses the same demand rule for cheap fish

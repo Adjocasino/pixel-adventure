@@ -6,7 +6,8 @@
 - Cats: the trending AI-cat **clapping** animation. All three cats do the full clip (`demos/cats_clap.html`, art `tools/cat_clap.py` → `assets/characters/cats/<cat>_clap.png`): grin + wide claps, grin vanishes, paw lick, look up, arm swoosh.
 - Still to decide: whether the gift is used up, how often it can happen, and where the Jao ascend triggers.
 
-## Next build (committed, not built yet)
+## v1.5 (waiting for the signing secrets)
+- **Fishing fix:** no sound at the start, then the game suddenly raced. Cause: the whole song (~1500 sound nodes) was created at once when you tapped, freezing phone audio, and the game clock was the audio clock, so when audio caught up the notes jumped. Now the game uses its own steady clock and the music is scheduled ~0.5 s ahead as it plays; audio re-syncs if it starts late or stalls.
 - **Fruit Catch: no fruit if you faint.** Solo: 0 hearts = game over and the fruit is lost. Co-op (and versus): if everyone is down, the fruit is lost. Reaching "time's up" still banks your fruit. The best score is still recorded. The results screen says "you fainted / everyone fainted: the fruit is lost!".
 
 ## Planned: save sync between phones (not built, waiting for "go")
@@ -17,9 +18,11 @@
   3. **Cloud save:** sign in, progress saved online and the same everywhere (needs a server, accounts, internet; may cost money).
 - Still to decide: one player on two phones, or a **shared farm** between friends (closer to option 3).
 
-## Planned: fix APK updates (waiting for "go")
+## APK updates: permanent signing key (v1.5)
 - Each CI build is signed with a **new throwaway debug key** (checked: build 15 and build 16 have different certificates). Android only updates an app when the key matches, so a new APK **can't install over** the old one: you must uninstall first, which **wipes the save**.
-- Fix: one permanent signing key stored as a GitHub secret; the workflow signs every build with it. Needs one last uninstall per phone, then every update installs over the top and keeps the save.
+- Fix (v1.5): one permanent key (`cottage`, PKCS12) kept in the GitHub secrets **SIGNING_KEYSTORE_B64** and **SIGNING_PASSWORD** (the user adds them in Settings → Secrets and variables → Actions; Claude can't set secrets from its session). The workflow decodes it and `app/build.gradle.kts` signs the APK with it. CI **refuses to build** without the secrets, so no APK can go out with a random key again.
+- Needs one last uninstall per phone (old builds have other keys); after that every update installs over the top and keeps that phone's save.
+- **Keep a backup** of the key file and password: if they are lost, the next APK can't update the app again.
 
 ## Build rule
 - Changes are committed with `[skip ci]`. A release is built **only when the user says build/release**.

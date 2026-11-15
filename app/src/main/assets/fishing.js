@@ -16,10 +16,10 @@ function makeFishing(){
   const W=320,H=180;let cv,ctx,AC=null,master=null,pads=[];
   function audio(){if(AC)return;AC=gameAC();if(!AC)return;master=AC.createGain();master.gain.value=.55;master.connect(gameMaster());}
   function osc(type,f,t,d,v,f2){if(!AC)return;const o=AC.createOscillator(),g=AC.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+d);
-    g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0008,t+d);o.connect(g);g.connect(master);o.start(t);o.stop(t+d+.02);live.push(o);}
+    g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0008,t+d);o.connect(g);g.connect(master);o.start(t);o.stop(t+d+.02);o._end=t+d+.05;live.push(o);}
   let NB=null;const live=[];
   function nz(t,d,v,hp){if(!AC)return;if(!NB){NB=AC.createBuffer(1,AC.sampleRate*.5,AC.sampleRate);const a=NB.getChannelData(0);for(let i=0;i<a.length;i++)a[i]=Math.random()*2-1;}
-    const s=AC.createBufferSource(),f=AC.createBiquadFilter(),g=AC.createGain();s.buffer=NB;f.type='highpass';f.frequency.value=hp;g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0008,t+d);s.connect(f);f.connect(g);g.connect(master);s.start(t);s.stop(t+d+.02);live.push(s);}
+    const s=AC.createBufferSource(),f=AC.createBiquadFilter(),g=AC.createGain();s.buffer=NB;f.type='highpass';f.frequency.value=hp;g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0008,t+d);s.connect(f);f.connect(g);g.connect(master);s.start(t);s.stop(t+d+.02);s._end=t+d+.05;live.push(s);}
   function stopSound(){for(const n of live){try{n.stop();}catch(e){}}live.length=0;}
   const hz=n=>440*Math.pow(2,(n-69)/12);
   // ---- chart
@@ -38,21 +38,31 @@ function makeFishing(){
     return{notes,bars:nb,bpm,start,total,end:t,introEnd:start[INTRO]};}
   function bpmAt(tn){if(!chart)return BPM0;let b=0;while(b+1<chart.total&&chart.start[b+1]<=tn)b++;return chart.bpm[b];}
   const PROG=[[48,52,55],[45,48,52],[41,45,48],[43,47,50]],SCALE=[0,2,4,7,9],TOP='a';
-  function scheduleSong(t0,chart){const total=chart.total;
-    for(let b=0;b<total;b++){const bt=t0+chart.start[b],ch=PROG[b%4],BEAT=60/chart.bpm[b],SL=BEAT/2;
-      for(let q=0;q<4;q++){const t=bt+q*BEAT;osc('sine',150,t,.12,.9,45);if(q%2)nz(t,.09,.35,1500);}
-      for(let e=0;e<8;e++){const t=bt+e*SL;nz(t,.025,b<INTRO?.12:.08,7000);if(b>=INTRO)osc('sawtooth',hz(ch[e%3]-12),t,.1,.06);}
-      if(b<INTRO){osc('square',hz(72),bt,.08,.12);osc('square',hz(72),bt+BEAT,.08,.08);osc('square',hz(72),bt+BEAT*2,.08,.08);osc('square',hz(79),bt+BEAT*3,.12,.14);}}
-    chart.notes.forEach((n,i)=>{const b=n.bar%4,root=PROG[b][0]+24,deg=SCALE[(i*3+(n.lane===TOP?2:0))%5];osc('square',hz(root+deg+(n.lane===TOP?12:0)),t0+n.t,.09,.09);});
-    return t0+chart.end;}
+  /* Music is scheduled a little at a time (about half a second ahead), not the whole song at once:
+     creating ~1500 sound nodes in one go froze phone audio. The game runs on its own steady clock (performance.now);
+     the audio follows it. If audio starts late (still waking up) or its clock stalls, it re-syncs instead of the game
+     racing to catch up. */
+  const AHEAD=.5;let acBase=0,schedB=0,schedN=0;
+  function schedBar(b,sn){const st=chart.start[b],ch=PROG[b%4],BEAT=60/chart.bpm[b],SL=BEAT/2,at=x=>acBase+x,ok=x=>x>=sn-.01;
+    for(let q=0;q<4;q++){const t=st+q*BEAT;if(!ok(t))continue;osc('sine',150,at(t),.12,.9,45);if(q%2)nz(at(t),.09,.35,1500);}
+    for(let e=0;e<8;e++){const t=st+e*SL;if(!ok(t))continue;nz(at(t),.025,b<INTRO?.12:.08,7000);if(b>=INTRO)osc('sawtooth',hz(ch[e%3]-12),at(t),.1,.06);}
+    if(b<INTRO)[[72,0,.08,.12],[72,1,.08,.08],[72,2,.08,.08],[79,3,.12,.14]].forEach(([n,q,d,v])=>{const t=st+q*BEAT;if(ok(t))osc('square',hz(n),at(t),d,v);});}
+  function pumpAudio(){if(!AC||!chart)return;const sn=songNow();
+    if(AC.state!=='running'){if(AC.state==='suspended')AC.resume();   // still asleep: skip what has passed so nothing bursts later
+      while(schedB<chart.total&&chart.start[schedB]+4*60/chart.bpm[schedB]<sn)schedB++;while(schedN<chart.notes.length&&chart.notes[schedN].t<sn)schedN++;return;}
+    if(Math.abs((AC.currentTime-acBase)-sn)>.06)acBase=AC.currentTime-sn+.02;   // re-sync audio to the game clock
+    while(schedB<chart.total&&chart.start[schedB]<sn+AHEAD){schedBar(schedB,sn);schedB++;}
+    while(schedN<chart.notes.length&&chart.notes[schedN].t<sn+AHEAD){const n=chart.notes[schedN],i=schedN;schedN++;if(n.t<sn-.01)continue;
+      const b=n.bar%4,root=PROG[b][0]+24,deg=SCALE[(i*3+(n.lane===TOP?2:0))%5];osc('square',hz(root+deg+(n.lane===TOP?12:0)),acBase+n.t,.09,.09);}
+    for(let k=live.length-1;k>=0;k--)if(live[k]._end&&live[k]._end<AC.currentTime)live.splice(k,1);}
   function hitSfx(j){if(!AC)return;const t=AC.currentTime;if(j==='miss'){nz(t,.06,.15,200);return;}osc('triangle',j==='perfect'?1320:j==='great'?990:760,t,.05,.18);}
   // ---- state
   const RANKS=[{n:'IRON',c:['#5d616b','#8a8f9a','#3e4149'],s:'#b7bcc6'},{n:'BRONZE',c:['#a4612c','#d18a4e','#6e3d18'],s:'#f2b47a'},
     {n:'SILVER',c:['#aeb8c4','#e2e8ef','#7d8794'],s:'#ffffff'},{n:'PLATINUM',c:['#bfe6f2','#f2fcff','#86b8cc'],s:'#ffffff'},{n:'GOLD',c:['#e3a92a','#ffe07a','#a8721a'],s:'#fff6c8'}];
   const WIN={perfect:.05,great:.09,good:.13},PTS={perfect:1,great:.75,good:.4,miss:0};
   let state='dock',T=0,chart,t0=0,score=0,combo=0,maxCombo=0,judg=null,cnt={},fx=[],trans=0,result=null,pressFlash={a:0,b:0},seed=(Math.random()*1e6)|0;
-  const now=()=>AC?AC.currentTime-t0:0;
-  function startSong(){audio();if(!AC){state='dock';return;}if(AC.state==='suspended')AC.resume();chart=buildChart(seed++);t0=AC.currentTime+.6;scheduleSong(t0,chart);
+  const songNow=()=>performance.now()/1000-t0,now=songNow;
+  function startSong(){audio();if(AC&&AC.state!=='running')AC.resume();chart=buildChart(seed++);t0=performance.now()/1000+.6;acBase=AC?AC.currentTime+.6:0;schedB=0;schedN=0;
     score=0;combo=0;maxCombo=0;judg=null;cnt={perfect:0,great:0,good:0,miss:0};fx=[];state='play';}
   function judge(n,j){n.done=j;cnt[j]++;score+=PTS[j];if(j==='miss')combo=0;else{combo++;maxCombo=Math.max(maxCombo,combo);}
     judg={j,t:T,lane:n.lane};hitSfx(j);if(j!=='miss')fx.push({x:HITX,y:LANEY[n.lane],t:0,j});}
@@ -131,7 +141,7 @@ function makeFishing(){
       for(const[el,l]of[[pa,'a'],[pb,'b']]){el.addEventListener('pointerdown',e=>{e.preventDefault();el.classList.add('on');press(l);});
         for(const ev of['pointerup','pointercancel','pointerleave'])el.addEventListener(ev,()=>el.classList.remove('on'));}
       addEventListener('keydown',onKey);},
-    update(){},
+    update(){if(state==='play')pumpAudio();},
     draw(){T++;for(const l in pressFlash)if(pressFlash[l]>0)pressFlash[l]--;ctx.clearRect(0,0,W,H);
       if(state==='dock')drawDock();
       else if(state==='enter'){drawDock();trans++;const r=trans*9;ctx.fillStyle='#0e1a24';ctx.beginPath();ctx.rect(0,0,W,H);ctx.arc(214,96,Math.max(0,300-r),0,7,true);ctx.fill();if(trans>34)startSong();}
@@ -139,6 +149,7 @@ function makeFishing(){
     back(){if(state==='play'){ask('Stop fishing?','The fish will get away.',[['Stop',()=>{stopSound();mgClose();}],['Keep fishing',null,'cur']]);}else mgClose();},
     end(){removeEventListener('keydown',onKey);stopSound();},
     get state(){return state;},
+    get songT(){return chart?songNow():0;},get queued(){return live.length;},
     _finish(pct){score=pct;cnt={perfect:0,great:0,good:0,miss:0};finish();},
     get result(){return result;},
   };
