@@ -65,6 +65,12 @@ function musicPick(n){   // called by setMusic(n): returns the chip song to play
 function stopMod(){if(modPlaying){for(const k in MUSIC.mods)MUSIC.mods[k].stop();modPlaying=null;}}
 function musicRefresh(){curSong=null;songTr=[];setMusic(map?map.music:null);}
 function pauseWorldMusic(v){musicPaused=v;musicRefresh();}
+/* Music watchdog: phones can suspend the audio (screen off, notification, another app took the sound).
+   When that happens the game went silent until restarted. Wake it up again and restart the song. */
+function wakeAudio(){if(!AC||document.hidden)return;if(AC.state!=='running'){AC.resume().then(()=>{if(!musicPaused)musicRefresh();}).catch(()=>{});}}
+setInterval(wakeAudio,1000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(wakeAudio,150);});
+addEventListener('pointerdown',wakeAudio,{capture:true});
 function openSettings(){openPanel('SETTINGS',b=>{const h=document.createElement('p');h.innerHTML='<b>Music</b>: pick a song, or Auto to let each place play its own.';b.appendChild(h);
   const l=document.createElement('div');l.className='list';for(const s of SONG_LIST){const x=document.createElement('button');x.textContent=(CM.music===s.id?'♪ ':'')+s.name;if(CM.music===s.id)x.className='cur';
     x.onclick=()=>{audioInit();CM.music=s.id;cmSave();musicRefresh();openSettings();};l.appendChild(x);}b.appendChild(l);});}

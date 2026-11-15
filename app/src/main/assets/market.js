@@ -32,6 +32,10 @@ const JAO=['The moon never goes to the gym. Still full.','You are not late. Ever
  'Cats never say sorry. Still everybody loves them.'];
 const JAO_SELL=['Money never stays. Still everyone wants it.','You did not lose the item. You gained coins. Big brain.','Be like a coin. Shiny. Valuable. ...Always passed around. Hmm.',
  'You are not spending. You are moving money to a better home.','Wallets never smile. Still they feel happy when full. *puff*'];
+const ARAW_LINES=['Araw purrs like a tiny motorcycle. Jao: "Araw means sun. Never goes to work. Still shining. *puff*"',
+ 'Araw headbutts your hand. Jao: "Be like a cat. Sleep all day. ...Still everybody loves you. Hmm."',
+ 'Araw slow-blinks at you. Jao: "He likes you. He does not like the vape. Smart cat."',
+ 'Araw rolls over, then pretends nothing happened. Jao: "Cats never apologize. Still family."'];
 const BINS=['Have you eaten? No? Breakfast at my place. It\'s always ready.','Tomorrow, breakfast at my house, 6 AM. Turon will save you a seat.',
  'Lunch at my place later? I cooked too much again. On purpose.','You look hungry. You always look hungry. Dinner, my place, 7 o\'clock.',
  'Breakfast is the most important meal of the day. That\'s why I invite you every day.','My door is open for breakfast, lunch and dinner. Merienda too, if you knock twice.',
@@ -43,14 +47,16 @@ function pick(list,key){let i;do{i=Math.random()*list.length|0;}while(list.lengt
 const FX=178,FY=136;                         // fish stall top-left (91x88, bottom = 192)
 const AX=300,AY=142;                         // animal stall back top-left (91x70); counter front bottom = AY+82
 const JX=FX+92,JFEET=FY+92;                  // Jao: image left, feet y
-const TX=AX+8,TY=AY+77;                      // Turon image top-left (22x24)
+const TX=AX+8,TY=AY+77;
+const RX=JX-12,RY=JFEET-14;                  // Araw (Jao's orange cat), image top-left (22x24), sits in front of Jao
+const ARAW=new Image();ARAW.src='araw.png';let purrT=0;                      // Turon image top-left (22x24)
 const PX=AX+44,PY=AY+80;                     // chick pen top-left (42x19)
 GEN.market={name:'Market Square',seed:61,base:T_G,music:'day',spawn:[45,16],
   exits:[{side:'e',a:14,b:19,to:'village',sx:2,sy:17,dir:'right'}],
   build(m,R){
     ell(m,22,14,17,9,T_S);path(m,[[50,17],[42,16],[34,15]],4,T_S);
     addBlock(m,FX+2,FY+24,87,64);addBlock(m,AX+2,AY+24,87,58);
-    addBlock(m,JX+5,JFEET-4,13,4);addBlock(m,TX+2,TY+18,18,6);addBlock(m,PX,PY+4,42,15);
+    addBlock(m,JX+5,JFEET-4,13,4);addBlock(m,RX+5,RY+18,13,5);addBlock(m,TX+2,TY+18,18,6);addBlock(m,PX,PY+4,42,15);
     for(let ty=8;ty<=14;ty++)for(let tx=11;tx<=25;tx++)occ(m,tx,ty);
     addAt(m,'barrel',10,13);addAt(m,'crate',9,14);addAt(m,'crate',27,14);addAt(m,'barrel',26,10);addAt(m,'barrel',8,10);
     for(const[tx,ty]of[[7,17],[30,18],[18,21]])addAt(m,'lamp',tx,ty);
@@ -78,7 +84,7 @@ HOOKS.extraTick.push(()=>{if(!here())return;const T=__pa.T;if(T%7)return;jf++;
   for(const p of puffs){p[3]++;p[0]+=.45+Math.sin(p[3]*.3+p[2])*.35;p[1]-=.45;p[2]+=.22;}
   puffs=puffs.filter(p=>p[3]<p[4]);
   if(jf%6===0)for(const c of chicks)if(Math.random()<.5)c[2]=1-c[2];
-  if(wagT>0)wagT--;});
+  if(wagT>0)wagT--;if(purrT>0)purrT--;});
 HOOKS.extraDraw.push(list=>{if(!here())return;
   list.push({y:FY+88,fn:(cx,cy)=>spr('fishStall',FX-cx,FY-cy)});
   list.push({y:AY+82,fn:(cx,cy)=>{spr('animalBack',AX-cx,AY-cy);spr('bins_'+BT[jf%BT.length],AX+A._binsOff[0]-cx,AY+A._binsOff[1]-cy);spr('animalFront',AX+A._frontOff[0]-cx,AY+A._frontOff[1]-cy);}});
@@ -88,6 +94,9 @@ HOOKS.extraDraw.push(list=>{if(!here())return;
       ctx.fillStyle='#1c1c1c';ctx.fillRect(c[2]?x+3:x+1,y,1,1);}}});
   list.push({y:TY+24,fn:(cx,cy)=>{ctx.fillStyle='rgba(120,96,60,.45)';ctx.fillRect(Math.round(TX+3-cx),Math.round(TY+22-cy),16,3);
     spr('turon_'+(wagT>0?(jf%2?'wag':'idle'):TT[jf%TT.length]),TX-cx,TY-cy);}});
+  list.push({y:RY+23,fn:(cx,cy)=>{const fr=purrT>0?1:(jf%40===7?1:(jf%40>=20&&jf%40<23?2:0));ctx.fillStyle='rgba(120,96,60,.45)';ctx.fillRect(Math.round(RX+4-cx),Math.round(RY+21-cy),14,3);
+    if(ARAW.complete)ctx.drawImage(ARAW,fr*22,0,22,24,Math.round(RX-cx),Math.round(RY-cy+(purrT>0&&jf%2?1:0)),22,24);
+    if(purrT>0&&jf%3===0){ctx.fillStyle='#ff7a9a';const hx=Math.round(RX+11-cx+((jf*5)%9)-4),hy=Math.round(RY-4-cy-(30-purrT)%12);ctx.fillRect(hx,hy,2,1);ctx.fillRect(hx+3,hy,2,1);ctx.fillRect(hx,hy+1,5,1);ctx.fillRect(hx+1,hy+2,3,1);ctx.fillRect(hx+2,hy+3,1,1);}}});
   list.push({y:JFEET,fn:(cx,cy)=>{ctx.fillStyle='rgba(120,96,60,.45)';ctx.fillRect(Math.round(JX+4-cx),Math.round(JFEET-1-cy),16,3);spr('jao_'+JT[jf%JT.length],JX-cx,JFEET-37-cy);}});});
 HOOKS.extraOverlay.push((cx,cy)=>{if(!here())return;
   for(const p of puffs){const a=Math.max(0,.67*(1-p[3]/p[4]));ctx.fillStyle=`rgba(232,236,244,${a.toFixed(3)})`;ctx.beginPath();ctx.arc(p[0]-cx,p[1]-cy,p[2],0,7);ctx.fill();}
@@ -180,6 +189,7 @@ function nameAnimal(kind){const taken=new Set(CM.animals.map(a=>a.name.toLowerCa
 /* ---------------- interaction spots ---------------- */
 addSpot('market',{x:TX-4,y:TY+18,w:32,h:16},()=>{wagT=30;sfx.chime();say('Turon wags his tail. Bins: "He likes you! Stay for lunch, he\'s sharing."');},'A: pet Turon');
 addSpot('market',{x:FX+8,y:FY+86,w:76,h:18},openFishStall,'A: sell fish');
+addSpot('market',{x:RX-2,y:RY+16,w:26,h:16},()=>{purrT=30;if(sfx.purr)sfx.purr();else sfx.chime();say(pick(ARAW_LINES,'a'));},'A: pet Araw');
 addSpot('market',{x:JX+16,y:JFEET-16,w:26,h:26},()=>{jf=JT.indexOf('exhale')-1;say('Jao: "'+pick(JAO,'j')+'"');},'A: talk to Jao');
 addSpot('market',{x:AX+30,y:AY+80,w:14,h:20},()=>openShop(),'A: animal shop');
 addSpot('market',{x:AX+44,y:AY+97,w:44,h:12},()=>openShop(),'A: animal shop');

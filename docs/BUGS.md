@@ -6,6 +6,10 @@
 - Cats: the trending AI-cat **clapping** animation. All three cats do the full clip (`demos/cats_clap.html`, art `tools/cat_clap.py` → `assets/characters/cats/<cat>_clap.png`): grin + wide claps, grin vanishes, paw lick, look up, arm swoosh.
 - Still to decide: whether the gift is used up, how often it can happen, and where the Jao ascend triggers.
 
+## Next build (committed, not built yet)
+- **Music going silent:** phones can suspend the audio (screen off, a notification, another app). The game never woke it up again, so music stopped until restart. Now a watchdog resumes the audio every second, when you come back to the app and on any tap, then restarts the song. Piano/harp loops also restart cleanly if they fell behind (instead of scheduling loops in the past). Checked: loops have no silent gaps (biggest pause 1.3 s).
+- **Araw**, Jao's orange cat: plain orange tabby, orange eyes, very light white stripes. Sits in front of Jao at the fish stall, blinks and flicks his tail. "A: pet Araw" → purr + hearts + a Jao line. Art: `tools/araw.py` → `assets/characters/araw/`.
+
 ## v1.6 — final v1 polish (in the APK)
 - Fishing pauses when you switch apps mid-song (song clock frozen, queued sounds cancelled, resumes at the same spot).
 - Cheap-item demand recovers on time the game is open (`CM.playT`), not the phone clock.

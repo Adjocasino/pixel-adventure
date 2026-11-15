@@ -61,7 +61,8 @@ function scheduleLoop(v,t){
 let _timer=null,_ver=null;
 function stop(){for(const n of live){try{n.stop();}catch(e){}}live.length=0;clearInterval(_timer);_timer=null;_ver=null;if(typeof loopN!=='undefined')loopN=0;}
 function start(v){init();if(!AC)return;stop();_ver=v;t0=AC.currentTime+.15;scheduleLoop(v,t0);nextLoop=t0+loopLen;
-  _timer=setInterval(()=>{if(AC.currentTime>nextLoop-2){scheduleLoop(v,nextLoop);nextLoop+=loopLen;}if(live.length>4000)live.splice(0,2000);},250);}
+  _timer=setInterval(()=>{if(AC.state!=='running')return;if(nextLoop<AC.currentTime+.05)nextLoop=AC.currentTime+.1;   /* fell behind (app paused / timers slept): restart the loop now instead of piling up loops in the past */
+  if(AC.currentTime>nextLoop-2){scheduleLoop(v,nextLoop);nextLoop+=loopLen;}if(live.length>4000)live.splice(0,2000);},250);}
 return{start,stop,get ver(){return _ver;}};
 })();
 MUSIC.mods.quiet=(function(){
@@ -122,7 +123,8 @@ function scheduleLoop(v,t){loopLen=LOOP*ST;
 let _timer=null,_ver=null;
 function stop(){for(const n of live){try{n.stop();}catch(e){}}live.length=0;clearInterval(_timer);_timer=null;_ver=null;if(typeof loopN!=='undefined')loopN=0;}
 function start(v){init();if(!AC)return;stop();_ver=v;t0=AC.currentTime+.15;scheduleLoop(v,t0);nextLoop=t0+loopLen;
-  _timer=setInterval(()=>{if(AC.currentTime>nextLoop-2){scheduleLoop(v,nextLoop);nextLoop+=loopLen;}if(live.length>4000)live.splice(0,2000);},250);}
+  _timer=setInterval(()=>{if(AC.state!=='running')return;if(nextLoop<AC.currentTime+.05)nextLoop=AC.currentTime+.1;   /* fell behind (app paused / timers slept): restart the loop now instead of piling up loops in the past */
+  if(AC.currentTime>nextLoop-2){scheduleLoop(v,nextLoop);nextLoop+=loopLen;}if(live.length>4000)live.splice(0,2000);},250);}
 return{start,stop,get ver(){return _ver;}};
 })();
 MUSIC.mods.porch=(function(){
@@ -193,7 +195,8 @@ function scheduleLoop(v,t){loopLen=LOOP*ST;const n=loopN++;
 let _timer=null,_ver=null;
 function stop(){for(const n of live){try{n.stop();}catch(e){}}live.length=0;clearInterval(_timer);_timer=null;_ver=null;if(typeof loopN!=='undefined')loopN=0;}
 function start(v){init();if(!AC)return;stop();_ver=v;t0=AC.currentTime+.15;scheduleLoop(v,t0);nextLoop=t0+loopLen;
-  _timer=setInterval(()=>{if(AC.currentTime>nextLoop-2){scheduleLoop(v,nextLoop);nextLoop+=loopLen;}if(live.length>4000)live.splice(0,2000);},250);}
+  _timer=setInterval(()=>{if(AC.state!=='running')return;if(nextLoop<AC.currentTime+.05)nextLoop=AC.currentTime+.1;   /* fell behind (app paused / timers slept): restart the loop now instead of piling up loops in the past */
+  if(AC.currentTime>nextLoop-2){scheduleLoop(v,nextLoop);nextLoop+=loopLen;}if(live.length>4000)live.splice(0,2000);},250);}
 return{start,stop,get ver(){return _ver;}};
 })();
 
