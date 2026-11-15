@@ -417,6 +417,8 @@ window.FRUIT={
 /* the big mango tree in Sunny Meadow (tree at tile 12,9) starts Fruit Catch */
 addSpot('meadow',{x:12*TS-22,y:9*TS-6,w:60,h:34},()=>{
   const btns=[['Solo',()=>FRUIT.start('solo','local',0,[pl.char]),'cur']];
-  if(window.MP&&MP.connected){btns.push(['Co-op',()=>MP.invite('fruit','coop')]);btns.push(['Versus',()=>MP.invite('fruit','vs')]);}
+  const near=window.MP&&MP.nearMe();   // multiplayer only when your friend is right here by the tree
+  if(near){btns.push(['Co-op',()=>MP.invite('fruit','coop')]);btns.push(['Versus',()=>MP.invite('fruit','vs')]);}
   btns.push(['Not now',null]);
-  ask('The big mango tree','Play <b>Fruit Catch</b>? Catch fruit in your bilao and bank it in a crate.'+(window.MP&&MP.connected?'':'<br><small>Connect with a friend in Multiplayer (⇄) for Co-op or Versus.</small>'),btns);},'A: Fruit Catch');
+  const hint=near?'<br><small>Your friend is here: play Solo, Co-op or Versus.</small>':window.MP&&MP.connected?'<br><small>For Co-op or Versus, your friend has to stand here by the tree with you.</small>':'<br><small>Connect with a friend in Multiplayer (⇄) and stand here together for Co-op or Versus.</small>';
+  ask('The big mango tree','Play <b>Fruit Catch</b>? Catch fruit in your bilao and bank it in a crate.'+hint,btns);},'A: Fruit Catch');

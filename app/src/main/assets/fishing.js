@@ -74,6 +74,7 @@ function makeFishing(){
     if(best){const d=Math.abs(best.t-tn);judge(best,d<=WIN.perfect?'perfect':d<=WIN.great?'great':'good');}}
   function finish(){const pct=Math.round(score),f=fishFor(pct);result={pct,fish:f,rank:RANKS[f.tierI],cnt:{...cnt},maxCombo};state='result';T=0;
     addItem(CM.inv,`fish:${f.name}:${f.tier}`);CM.best.fish=Math.max(CM.best.fish||0,pct);cmSave();
+    if(window.MP)MP.announce(`caught a ${f.name} (${f.tier[0]+f.tier.slice(1).toLowerCase()})!`,f.tier==='GOLD'?'#ffe07a':f.tier==='PLATINUM'?'#bfe6f2':'#ffffff');
     if(AC){const t=AC.currentTime;[0,4,7,12].forEach((d,i)=>osc('square',hz(72+d),t+i*.09,.18,.1));}}
   // ---- input
   const KEYB=['KeyF','KeyZ','ArrowDown','KeyD','KeyS','KeyK','ShiftLeft'],KEYA=['KeyJ','KeyX','ArrowUp','Space','Enter'];

@@ -6,7 +6,12 @@
 - Cats: the trending AI-cat **clapping** animation. All three cats do the full clip (`demos/cats_clap.html`, art `tools/cat_clap.py` → `assets/characters/cats/<cat>_clap.png`): grin + wide claps, grin vanishes, paw lick, look up, arm swoosh.
 - Still to decide: whether the gift is used up, how often it can happen, and where the Jao ascend triggers.
 
-## v1.5 (waiting for the signing secrets)
+## Next build (committed, not built yet)
+- **Play together only side by side:** Fruit Catch Co-op/Versus (mango tree) and Barn Together (clipboard) only show up when your friend is standing next to you there. Otherwise only Solo. The ⇄ panel no longer has invite buttons; it explains this.
+- **Fishing announcement:** when you finish fishing, your friend sees "<name> caught a Karpa (Silver)!" as a message and floating over your head for 5 s. No animation.
+- Note: while you fish, your friend still sees you standing still at the dock.
+
+## v1.5 (built: build 17)
 - **Kid removed** from character select (old saves that picked him start as Inad; a multiplayer friend still on an old Kid save shows as Inad).
 - **No chickens** in front of the cottage (they live in the barn).
 - **New cottage** in Willow Village matching the app icon (terracotta roof, round attic window, chimney, timber frame, blue cross windows, orange flower boxes). Same size and door.

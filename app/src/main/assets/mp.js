@@ -23,6 +23,7 @@ window.MPN={
     if(window.FRUIT&&FRUIT.running)FRUIT.onLeave();if(was)say('Multiplayer disconnected.');refresh();},
   msg(line){let m;try{m=JSON.parse(line);}catch(e){return;}const d=m.d||{};
     switch(m.t){
+      case 'ann':{const p=MP.partner||(MP.partner={});p.ann={txt:d.txt,c:d.c||'#ffe07a',t:performance.now()};say(charName(p.ch)+' '+d.txt);sfx.chime();break;}
       case 'hello':MP.partner=Object.assign(MP.partner||{},{ch:d.ch,name:charName(d.ch)});refresh();break;
       case 'pos':{const p=MP.partner||(MP.partner={});if(p.map!==d.m||p.x==null){p.x=d.x;p.y=d.y;}Object.assign(p,{map:d.m,tx:d.x,ty:d.y,dir:d.dir,mv:d.mv,rd:d.rd,sp:d.sp,ch:d.ch,em:d.em,t:performance.now()});break;}
       case 'inv':askInvite(d);break;
@@ -57,7 +58,12 @@ HOOKS.extraDraw.push(list=>{const p=MP.partner;if(!MP.connected||!p||!map||p.map
     if(p.rd&&ch.ride)s=ch.ride[dir][(T>>3)%4];else if(p.mv&&p.sp&&ch.run&&ch.run[dir])s=ch.run[dir][Math.floor(p.anim*1.5)%ch.run[dir].length];
     else if(p.mv)s=set.walk[Math.floor(p.anim)%4];else s=set.idle[(T>>5)%2];
     const x=Math.round(p.x-cx-(s.width>>1)),y=Math.round(p.y-cy-(s.height-1)-(p.rd?2:0));ctx.drawImage(shadowC(6,2),Math.round(p.x-cx-6),Math.round(p.y-cy-1));ctx.drawImage(s,x,y);
-    wtxt(charName(p.ch)+' (P'+(MP.isHost?2:1)+')',Math.round(p.x-cx),y-5,'#9ae0ff',6);}});});
+    wtxt(charName(p.ch)+' (P'+(MP.isHost?2:1)+')',Math.round(p.x-cx),y-5,'#9ae0ff',6);
+    if(p.ann){const age=(performance.now()-p.ann.t)/1000;if(age>5)p.ann=null;else wtxt(p.ann.txt,Math.round(p.x-cx),y-14-Math.min(4,age*8),p.ann.c,7);}}});});
+/* is my friend standing right next to me (same map)? Co-op / Versus / Barn together need that. */
+MP.nearMe=(r=64)=>{const p=MP.partner;return !!(MP.connected&&p&&map&&p.map===map.id&&p.tx!=null&&Math.hypot(p.tx-pl.x,p.ty-pl.y)<r);};
+/* tell my friend something that pops over my head on their screen */
+MP.announce=(txt,c)=>{if(MP.connected)MP.send('ann',{txt,c});};
 /* ---------------- the Multiplayer panel ---------------- */
 let manualIp='';
 function refresh(){if(panelOpen()&&document.getElementById('pnlT').textContent==='MULTIPLAYER')openMP();}
@@ -66,9 +72,7 @@ function openMP(){openPanel('MULTIPLAYER',b=>{const P=(h)=>{const p=document.cre
   const btn=(r,label,fn,cls)=>{const x=document.createElement('button');x.textContent=label;if(cls)x.className=cls;x.onclick=()=>{audioInit();fn();};r.appendChild(x);return x;};
   if(!NAT&&!window.AndroidMP){P('Multiplayer works in the phone app (two phones on the same hotspot or Wi-Fi).');return;}
   if(MP.connected){P(`<b>Connected</b> ${MP.isHost?'(you are the host)':'(you joined)'}${MP.partner&&MP.partner.name?` with <b>${MP.partner.name}</b>`:''}.`);
-    P('Walk around together, or play: <b>Fruit Catch</b> at the big mango tree in Sunny Meadow (Co-op / Versus), and the <b>Barn</b> clipboard (Together).');
-    const r=row();btn(r,'Fruit Catch Co-op',()=>{closePanel();MP.invite('fruit','coop');});btn(r,'Fruit Catch Versus',()=>{closePanel();MP.invite('fruit','vs');});
-    btn(r,'Barn together',()=>{closePanel();MP.invite('barn',CM.barnMode==='relaxed'?'relaxed':'timed');});
+    P('Walk around together. To play together, <b>both</b> of you stand next to each other at the big mango tree in Sunny Meadow (<b>Fruit Catch</b> Co-op / Versus) or at the <b>Barn</b> clipboard (Together), then press A.');
     btn(row(),'Disconnect',()=>{(window.AndroidMP).close();MPN.closed();},'');return;}
   P('Play with a friend on the <b>same hotspot or Wi-Fi</b>. Both phones need this app. No internet needed.');
   if(MP.status)P(`<i>${MP.status}</i>`);

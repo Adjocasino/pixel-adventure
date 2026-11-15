@@ -147,7 +147,8 @@ function act(id){if(!B||!B.active){if(id==='clip')return;say('Start a shift at t
 addSpot('barn',{x:POS.clip[0]-12,y:32,w:38,h:20},()=>{
   if(B&&B.active){if(B.mode==='relaxed'||bRole!=='client')ask('Barn shift',B.mode==='relaxed'?'End the relaxed shift now?':'End the shift early?',[['End shift',()=>{if(bRole==='client')MP.send('bn_stop',{});else endShift();}],['Keep going',null,'cur']]);return;}
   const mode=CM.barnMode==='relaxed'?'relaxed':'timed',btns=[['Start',()=>startShift(mode,'local',0),'cur']];
-  if(window.MP&&MP.connected)btns.push(['Together',()=>MP.invite('barn',mode)]);btns.push(['Not now',null]);
+  // 'Together' only when your friend is at the clipboard too
+  const near=window.MP&&MP.nearMe();if(near)btns.push(['Together',()=>MP.invite('barn',mode)]);btns.push(['Not now',null]);
   ask('Tend the animals?',`${mode==='relaxed'?'<b>Relaxed</b> shift: no timer.':'<b>Timed panic</b>: 90 seconds.'} Feed ${hens().map(h=>h.name).join(', ').replace(/, ([^,]*)$/,' and $1')} (corn bin → feeder), give water (pump → waterer), collect eggs (nests → egg crate) and catch runaways!<br><small>Change Timed/Relaxed at the sign outside the barn.</small>`,btns);},'A: clipboard');
 addSpot('barn',{x:POS.bin[0]-6,y:POS.bin[1]-6,w:42,h:40},()=>act('bin'),'A: corn');
 addSpot('barn',{x:POS.pump[0]-6,y:POS.pump[1]+4,w:42,h:36},()=>act('pump'),'A: pump');
