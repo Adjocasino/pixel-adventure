@@ -1,5 +1,16 @@
 # Bugs & feature notes
 
+## Next (in code, not built yet): barn animals
+- Duck, goat, cow and bees can be bought from Bins once unlocked (duck 250, goat 400, cow 600, bees 500; one of each). You name them.
+- Each gets a stall on the east side of the barn, with need bars inside the stall:
+  - Duck: pour water in her tub (pump bucket), pick up her egg, take it to the crate.
+  - Goat: bring hay (new hay bale by the corn bin), then press A 5 times to milk.
+  - Cow: hay and water, then squeeze 3 times when the marker is in the green. Miss = she kicks the bucket (−5).
+  - Bees: take the smoker from the tool wall and smoke the hive, then take the honey. Unsmoked = stung (−10).
+- Quality (bronze/silver/gold) comes from how happy the animal is when you collect.
+- The happy-animals bonus now adds extra of every product, not only eggs.
+- New items: duck egg, goat milk, milk, honey. Bins buys them all. Duck eggs and goat milk are cheap (price drops if you sell a lot).
+
 ## Planned (not built): golden gifts
 - Giving a **golden fish to Jao**, or **anything golden** (golden fish, golden egg, etc.) **to a cat**, triggers a special interaction.
 - Jao: candidate is the "ascend" moment (`demos/jao_ascend.html`). He dissolves into vape smoke + gold sparkles, then comes back with a line.

@@ -20,6 +20,8 @@ function itemName(k){const p=k.split(':');
   if(p[0]==='fish')return `${p[1]} (${p[2][0]+p[2].slice(1).toLowerCase()})`;
   if(p[0]==='fruit')return FRUIT_NAMES[p[1]]||p[1];
   if(p[0]==='egg')return p[1]==='golden'?'Golden egg':`Egg (${p[1]})`;
+  const BARN_NM={duckegg:'Duck egg',goatmilk:'Goat milk',milk:'Milk',honey:'Honey'};
+  if(BARN_NM[p[0]])return `${BARN_NM[p[0]]} (${p[1]})`;
   return k;}
 const ICON_CACHE={};
 function itemIcon(k){if(ICON_CACHE[k])return ICON_CACHE[k];const c=document.createElement('canvas');c.width=c.height=16;const g=c.getContext('2d'),p=k.split(':');
@@ -29,6 +31,12 @@ function itemIcon(k){if(ICON_CACHE[k])return ICON_CACHE[k];const c=document.crea
     else{px(2,6,10,5,'#7f95a8');px(12,7,3,3,'#5f6b7a');temp=true;}g.fillStyle=TIER_COL[p[2]];g.fillRect(12,12,4,4);}
   else if(p[0]==='egg'){const col=p[1]==='golden'?'#ffd34a':'#f4ecd8';g.fillStyle='#3a2a1a';g.beginPath();g.ellipse(8,9,5,6,0,0,7);g.fill();g.fillStyle=col;g.beginPath();g.ellipse(8,9,4,5,0,0,7);g.fill();
     px(6,6,2,2,'#ffffff');if(p[1]!=='golden'){g.fillStyle=TIER_COL[p[1]];g.fillRect(12,12,4,4);}}
+  else if(p[0]==='duckegg'){g.fillStyle='#3a2a1a';g.beginPath();g.ellipse(8,9,5,6,0,0,7);g.fill();g.fillStyle='#d8ece4';g.beginPath();g.ellipse(8,9,4,5,0,0,7);g.fill();
+    px(6,6,2,2,'#ffffff');g.fillStyle=TIER_COL[p[1]];g.fillRect(12,12,4,4);}
+  else if(p[0]==='goatmilk'||p[0]==='milk'){px(5,1,6,3,'#3a2a1a');px(4,4,8,11,'#3a2a1a');px(6,2,4,1,'#8fb0c8');px(5,5,6,9,p[0]==='milk'?'#ffffff':'#f4ecd8');px(5,9,6,2,p[0]==='milk'?'#7fb0e0':'#c8a060');
+    g.fillStyle=TIER_COL[p[1]];g.fillRect(12,12,4,4);}
+  else if(p[0]==='honey'){px(4,2,8,3,'#3a2a1a');px(5,3,6,1,'#c48a52');px(3,5,10,10,'#3a2a1a');px(4,6,8,8,'#f0a830');px(5,7,2,3,'#ffd890');
+    g.fillStyle=TIER_COL[p[1]];g.fillRect(12,12,4,4);}
   else if(p[0]==='fruit'){const col={mango:'#f6c844',guava:'#a7d36a',cala:'#7fbf3a',banana:'#f6d84a',melon:'#4f9a3a',gold:'#ffe07a'}[p[1]]||'#f6c844';
     g.fillStyle='#2a1d14';g.beginPath();g.ellipse(8,9,p[1]==='melon'?7:5,p[1]==='melon'?5:6,0,0,7);g.fill();g.fillStyle=col;g.beginPath();g.ellipse(8,9,p[1]==='melon'?6:4,p[1]==='melon'?4:5,0,0,7);g.fill();
     px(7,2,2,2,'#4f8a3c');px(6,6,2,2,'rgba(255,255,255,.6)');}
@@ -51,7 +59,7 @@ function itemsGrid(b,store,empty){const keys=Object.keys(store).sort();if(!keys.
   const g=document.createElement('div');g.className='items';for(const k of keys){const d=document.createElement('div');d.className='it';const ic=itemIcon(k),c=document.createElement('canvas');c.width=c.height=16;c.getContext('2d').drawImage(ic,0,0);d.appendChild(c);
     const s=document.createElement('span');s.textContent=`${itemName(k)} ×${store[k]}`;d.appendChild(s);g.appendChild(d);}b.appendChild(g);}
 function openBag(){openPanel('BAG',b=>itemsGrid(b,CM.inv,'Your bag is empty. Go fishing at Mirror Lake or play Fruit Catch under the big mango tree in Sunny Meadow!'));}
-function openStorage(){openPanel('BARN STORAGE',b=>{const p=document.createElement('p');p.textContent='Everything Ginger, Rocky and friends give you is kept here.';b.appendChild(p);
+function openStorage(){openPanel('BARN STORAGE',b=>{const p=document.createElement('p');p.textContent='Everything your animals give you is kept here: eggs, milk and honey.';b.appendChild(p);
   itemsGrid(b,CM.barn,'Empty. Tend the animals in the barn to fill it.');});}
 document.getElementById('bInv').onclick=()=>{audioInit();openBag();};
 

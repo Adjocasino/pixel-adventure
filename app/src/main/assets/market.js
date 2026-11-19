@@ -177,9 +177,11 @@ HOOKS.extraOverlay.push((cx,cy)=>{if(!here())return;
    of real time). Valuable items always sell at full price. So grinding common stuff is a poor way to get rich. */
 const EGG_BASE={bronze:2,silver:6,gold:14,golden:80};
 const FRUIT_BASE={cala:1,banana:1,guava:2,mango:3,melon:8,gold:40};
+/* barn products (v1.8): duck eggs and goat milk are cheap (their price drops if you sell a lot), cow milk and honey hold value */
+const BARN_BASE={duckegg:{bronze:4,silver:9,gold:18},goatmilk:{bronze:6,silver:12,gold:24},milk:{bronze:8,silver:16,gold:30},honey:{bronze:10,silver:20,gold:40}};
 const LOW=10,DROP=.85,FLOOR=.25,RECOVER_PER_MIN=.075;
 function basePrice(k){const p=k.split(':');
-  if(p[0]==='fish')return fishPrice(k);if(p[0]==='egg')return EGG_BASE[p[1]]||2;if(p[0]==='fruit')return FRUIT_BASE[p[1]]||1;return 1;}
+  if(p[0]==='fish')return fishPrice(k);if(p[0]==='egg')return EGG_BASE[p[1]]||2;if(p[0]==='fruit')return FRUIT_BASE[p[1]]||1;if(BARN_BASE[p[0]])return BARN_BASE[p[0]][p[1]]||1;return 1;}
 CM.demand=CM.demand||{};
 /* demand recovers on time the game is open (CM.playT, seconds), not the phone clock, so changing the phone's time does nothing */
 CM.playT=CM.playT||0;let lastPT=performance.now();
@@ -217,7 +219,8 @@ function openFishStall(){openSell('FISH STALL','Sell what you catch at Mirror La
   ()=>{say('Jao: "'+pick(JAO_SELL,'js')+'"');});}
 
 /* ---------------- animal shop ---------------- */
-/* unlock rules (v1.3). Once unlocked it stays unlocked. Buying still waits until the animal's barn task exists. */
+/* unlock rules (v1.3). Once unlocked it stays unlocked. Since v1.8 an unlocked animal can be bought (one of each, it gets a stall in the barn). */
+const ANIMAL_PRICE={duck:250,goat:400,cow:600,bees:500};
 const SOON=[
   {k:'duck',nm:'Duck',what:'duck eggs',goal:'Own 3 chickens',need:3,have:()=>chickens().length},
   {k:'cow',nm:'Cow',what:'milk',goal:'Own 4 chickens',need:4,have:()=>chickens().length},
@@ -235,24 +238,33 @@ function openShop(line){checkUnlocks(false);line=line||pick(BINS,'b');openPanel(
   if(n>=MAX_CHICKENS){row.disabled=true;row.innerHTML+='<br><small>The coop is full!</small>';}
   else if(CM.coins<CHICKEN_PRICE){row.disabled=true;row.innerHTML+=`<br><small>Need ${CHICKEN_PRICE-CM.coins} more coins. Sell fish at the fish stall.</small>`;}
   row.onclick=()=>nameAnimal('chicken');l.appendChild(row);
-  const sb=document.createElement('button');sb.className='cur';const ne=Object.keys(CM.barn).filter(k=>k.startsWith('egg:')).reduce((a,k)=>a+CM.barn[k],0),nf=Object.keys(CM.inv).filter(k=>k.startsWith('fruit:')).reduce((a,k)=>a+CM.inv[k],0);
-  sb.innerHTML=`🥚 Sell eggs & fruit <small>(${ne} eggs in barn storage, ${nf} fruit in bag)</small>`;sb.onclick=openProduce;l.insertBefore(sb,l.firstChild);
-  for(const a of SOON){const x=document.createElement('button');x.disabled=true;
-    if(CM.unlocked[a.k])x.innerHTML=`✓ ${a.nm} <small>(${a.what})</small>: <b style="color:#b6f0a0">unlocked!</b><br><small>Barn task coming soon, then you can buy it.</small>`;
+  const sb=document.createElement('button');sb.className='cur';const ne=Object.keys(CM.barn).filter(k=>/^(egg|duckegg|goatmilk|milk|honey):/.test(k)).reduce((a,k)=>a+CM.barn[k],0),nf=Object.keys(CM.inv).filter(k=>k.startsWith('fruit:')).reduce((a,k)=>a+CM.inv[k],0);
+  sb.innerHTML=`🥚 Sell barn goods & fruit <small>(${ne} in barn storage, ${nf} fruit in bag)</small>`;sb.onclick=openProduce;l.insertBefore(sb,l.firstChild);
+  const ICON={duck:'🦆',goat:'🐐',cow:'🐄',bees:'🐝'};
+  for(const a of SOON){const x=document.createElement('button');x.disabled=true;const pr=ANIMAL_PRICE[a.k],mine=CM.animals.find(z=>z.k===a.k);
+    if(mine)x.innerHTML=`${ICON[a.k]} ${a.nm}: <b style="color:#b6f0a0">${mine.name} lives in your barn</b><br><small>Makes ${a.what}. One stall each.</small>`;
+    else if(CM.unlocked[a.k]){x.innerHTML=`${ICON[a.k]} ${a.nm}: <b style="color:#ffe07a">● ${pr}</b><br><small>Makes ${a.what} in the barn</small>`;
+      if(CM.coins<pr)x.innerHTML+=`<br><small>Need ${pr-CM.coins} more coins.</small>`;else{x.disabled=false;x.onclick=()=>nameAnimal(a.k);}}
     else x.innerHTML=`🔒 ${a.nm} <small>(${a.what})</small><br><small>${a.goal}: ${Math.min(a.have(),a.need)}/${a.need}</small>`;
     l.appendChild(x);}
   b.appendChild(l);});}
-function openProduce(){openSell('BINS BUYS','Bins cooks for everyone, so he buys eggs (from the barn storage) and fruit (from your bag).',
-  [['Eggs (barn storage)',CM.barn,k=>k.startsWith('egg:'),'No eggs yet. Work a shift in the barn!'],['Fruit (bag)',CM.inv,k=>k.startsWith('fruit:'),'No fruit. Play Fruit Catch under the big mango tree.']],
+function openProduce(){openSell('BINS BUYS','Bins cooks for everyone, so he buys eggs, milk and honey (from the barn storage) and fruit (from your bag).',
+  [['Barn storage',CM.barn,k=>/^(egg|duckegg|goatmilk|milk|honey):/.test(k),'Nothing yet. Work a shift in the barn!'],['Fruit (bag)',CM.inv,k=>k.startsWith('fruit:'),'No fruit. Play Fruit Catch under the big mango tree.']],
   ()=>{say('Bins: "'+pick(BINS_BUY,'bb')+'"');});}
 const BINS_BUY=['Eggs! Perfect. Breakfast tomorrow, my place. I\'ll cook these.','Thank you! Now you HAVE to come for lunch. It\'s your fruit.','Turon says thank you. He wants the mango. He can\'t have the mango.','This is a lot of eggs. Omelette party. You\'re invited. Obviously.'];
 const SUGGEST=['Nugget','Mochi','Pepper','Kwek','Biscuit','Sunny','Tisoy','Bibingka','Pandesal','Chico'];
-function nameAnimal(kind){const taken=new Set(CM.animals.map(a=>a.name.toLowerCase()));const sug=SUGGEST.filter(s=>!taken.has(s.toLowerCase()));const def=sug[Math.random()*sug.length|0]||'Chick';
-  ask('Name your chicken',`Bins: "Good choice! What's her name?"<br><input id="anName" maxlength="12" placeholder="${def}" style="margin-top:8px;padding:6px;font-size:16px;width:70%;text-align:center">`,
-    [['Buy ●'+CHICKEN_PRICE,()=>{const el=document.getElementById('anName');let nm=(el&&el.value||'').trim().replace(/[<>&"]/g,'')||def;
-        if(taken.has(nm.toLowerCase()))nm+=' 2';if(CM.coins<CHICKEN_PRICE||chickens().length>=MAX_CHICKENS)return;
-        CM.coins-=CHICKEN_PRICE;CM.animals.push({k:kind,name:nm});cmSave();sfx.chime();
-        say(`${nm} moved into the barn! Bins: "Now you have to come for breakfast. ${nm} insists."`);setTimeout(()=>checkUnlocks(true),2600);},'cur'],['Back',()=>openShop()]]);
+const NAME_SUG={chicken:SUGGEST,duck:['Kwak','Itik','Puddle','Waddles','Bibi'],goat:['Kambi','Pepper','Billy','Tsokolate','Gruff'],cow:['Bessie','Gatas','Mumu','Daisy','Kesong'],bees:['Queen Pulot','Buzzy','Reyna','Honeybun','Bubuyog']};
+const NAME_ASK={chicken:["Name your chicken","Good choice! What's her name?"],duck:["Name your duck","She quacks at everyone. What's her name?"],
+  goat:["Name your goat","He will eat your hay AND your basket. Name?"],cow:["Name your cow","Big girl, gentle heart. What do we call her?"],bees:["Name your queen bee","The hive needs a queen with a name."]};
+function nameAnimal(kind){const taken=new Set(CM.animals.map(a=>a.name.toLowerCase()));const sug=(NAME_SUG[kind]||SUGGEST).filter(s=>!taken.has(s.toLowerCase()));const def=sug[Math.random()*sug.length|0]||'Buddy';
+  const pr=kind==='chicken'?CHICKEN_PRICE:ANIMAL_PRICE[kind],[title,line]=NAME_ASK[kind]||NAME_ASK.chicken;
+  ask(title,`Bins: "${line}"<br><input id="anName" maxlength="12" placeholder="${def}" style="margin-top:8px;padding:6px;font-size:16px;width:70%;text-align:center">`,
+    [['Buy ●'+pr,()=>{const el=document.getElementById('anName');let nm=(el&&el.value||'').trim().replace(/[<>&"]/g,'')||def;
+        if(taken.has(nm.toLowerCase()))nm+=' 2';if(CM.coins<pr)return;
+        if(kind==='chicken'?chickens().length>=MAX_CHICKENS:CM.animals.some(a=>a.k===kind))return;
+        CM.coins-=pr;CM.animals.push({k:kind,name:nm});cmSave();sfx.chime();
+        say(kind==='chicken'?`${nm} moved into the barn! Bins: "Now you have to come for breakfast. ${nm} insists."`:`${nm} moved into a stall in the barn! Bins: "Bring me some of what ${nm} makes. I'll cook it."`);
+        setTimeout(()=>checkUnlocks(true),2600);},'cur'],['Back',()=>openShop()]]);
   setTimeout(()=>{const el=document.getElementById('anName');if(el)el.focus();},50);}
 
 /* ---------------- interaction spots ---------------- */
