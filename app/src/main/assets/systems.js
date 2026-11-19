@@ -1,5 +1,5 @@
 /* game version: multiplayer only works when both phones have the same one. Keep in step with versionName in app/build.gradle.kts. */
-const GAME_VER='1.7';
+const GAME_VER='1.8';
 /* Cottage Meadow v1.0 systems: save data, bag + barn storage, panels/dialogs, Settings (music), minigame overlay host,
    world interactions and the hooks the main loop calls (HOOKS.*). Loaded after index.html's main script. */
 const gameAC=()=>{audioInit();return AC;};

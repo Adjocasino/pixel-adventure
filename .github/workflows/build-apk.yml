@@ -56,7 +56,13 @@ jobs:
           cat > notes.md <<EOF
           **Cottage Meadow v${VER}** (build ${{ github.run_number }}) — download **CottageMeadow.apk** below and install it.
 
-          New in v1.7:
+          New in v1.8:
+          - Barn animals: buy a duck, goat, cow and bees from Bins once unlocked (one of each, you name them)
+          - Each has a stall in the barn with its own task: water the duck, hay and milk the goat, squeeze the cow in the green, smoke the bees before taking honey
+          - New products: duck eggs, goat milk, milk, honey (bronze/silver/gold). Bins buys them all
+          - Happy animals bonus now gives extra of every product
+
+          v1.7:
           - Golden gifts: give a cat anything golden (Gold fish, golden mango, gold/golden egg) and she does the trending clap clip
           - Give Jao a golden fish and he ascends into his vape smoke... then comes back
           - Araw, Jao's orange cat, sits by the fish stall (pet him)

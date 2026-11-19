@@ -1,6 +1,6 @@
 # Bugs & feature notes
 
-## Next (in code, not built yet): barn animals
+## v1.8 (in the APK): barn animals
 - Duck, goat, cow and bees can be bought from Bins once unlocked (duck 250, goat 400, cow 600, bees 500; one of each). You name them.
 - Each gets a stall on the east side of the barn, with need bars inside the stall:
   - Duck: pour water in her tub (pump bucket), pick up her egg, take it to the crate.
